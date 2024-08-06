@@ -35,45 +35,45 @@ const INFO = {
 
 	projects: [
 		{
-			title: "Project 1",
+			title: "Weaver Book",
 			description:
-				"Lorem ipsum dolor sit amet. Et incidunt voluptatem ex tempore repellendus qui dicta nemo sit deleniti minima.",
+				"This is MERN project where the website helps the weavers to buys the weaving materials from the stock manager and helps the stock manager to manage the stocks without paper work.",
 			logo: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/javascript/javascript.png",
 			linkText: "View Project",
 			link: "https://github.com",
 		},
 
 		{
-			title: "Project 2",
+			title: "Maruti Opticals",
 			description:
-				"Lorem ipsum dolor sit amet. Et incidunt voluptatem ex tempore repellendus qui dicta nemo sit deleniti minima.",
+				"This is a MERN project where the website helps the customer to buys the eye care products from the opticals and customers can also book an appointment regarding their eye checkup.",
 			logo: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/python/python.png",
 			linkText: "View Project",
 			link: "https://github.com",
 		},
 
 		{
-			title: "Project 3",
+			title: "Car Renovation Spa",
 			description:
-				"Lorem ipsum dolor sit amet. Et incidunt voluptatem ex tempore repellendus qui dicta nemo sit deleniti minima.",
+				"This is a MERN project where the website helps the customer to renovate their car from wherever they was. Customer can book a appointment regarding car renovation and services.",
 			logo: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/html/html.png",
 			linkText: "View Project",
 			link: "https://github.com",
 		},
 
 		{
-			title: "Project 4",
+			title: "Digital Notice Board",
 			description:
-				"Lorem ipsum dolor sit amet. Et incidunt voluptatem ex tempore repellendus qui dicta nemo sit deleniti minima.",
+				"This is an IOT project which is used to create a digitalized infrastructure of Advertise and noticing the information by making the notice board digitalized form.",
 			logo: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/javascript/javascript.png",
 			linkText: "View Project",
 			link: "https://github.com",
 		},
 
 		{
-			title: "Project 5",
+			title: "Rain Detecter and Flood Controller",
 			description:
-				"Lorem ipsum dolor sit amet. Et incidunt voluptatem ex tempore repellendus qui dicta nemo sit deleniti minima.",
+				"This is an IOT project where the rainfall is detected and the measures can be take to control the upcoming flood. This project can helps the urbanized area by avoiding the flood.",
 			logo: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/javascript/javascript.png",
 			linkText: "View Project",
 			link: "https://github.com",
