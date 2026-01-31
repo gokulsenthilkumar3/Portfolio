@@ -4,19 +4,19 @@
 export const portfolioConfig = {
   // 👤 PERSONAL INFORMATION
   personal: {
-    name: "Your Name",
+    name: "Gokul Senthilkumar",
     title: "Full-Stack Developer",
     tagline: "Building the future of the web, one line of code at a time",
     bio: "I'm a full-stack developer with 5+ years of experience building web applications. I love working with React, Next.js, and modern JavaScript frameworks to create fast, accessible, and beautiful user interfaces.",
-    email: "your.email@example.com",
+    email: "gokul@gokulsenthilkumar.dev",
     location: "San Francisco, CA",
     availability: "available" as "available" | "busy" | "open-to-offers",
-    avatar: "https://picsum.photos/seed/avatar/400/400.jpg",
+    avatar: "https://picsum.photos/seed/gokulsenthilkumar/400/400.jpg",
     resume: "/resume.pdf", // Path to your resume file
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername",
-    twitter: "https://twitter.com/yourusername",
-    website: "https://yourwebsite.com"
+    github: "https://github.com/gokulsenthilkumar3",
+    linkedin: "https://linkedin.com/in/gokulsenthilkumar",
+    twitter: "https://twitter.com/gokulsenthilkumar",
+    website: "https://gokulsenthilkumar.dev"
   },
 
   // 🎨 THEME & APPEARANCE
@@ -250,38 +250,38 @@ export const portfolioConfig = {
     {
       id: "1",
       platform: "github" as const,
-      url: "https://github.com/yourusername",
+      url: "https://github.com/gokulsenthilkumar3",
       icon: "github",
       color: "#333333",
-      username: "yourusername"
+      username: "gokulsenthilkumar3"
     },
     {
       id: "2",
       platform: "linkedin" as const,
-      url: "https://linkedin.com/in/yourusername",
+      url: "https://linkedin.com/in/gokulsenthilkumar",
       icon: "linkedin",
       color: "#0077B5",
-      username: "yourusername"
+      username: "gokulsenthilkumar"
     },
     {
       id: "3",
       platform: "twitter" as const,
-      url: "https://twitter.com/yourusername",
+      url: "https://twitter.com/gokulsenthilkumar",
       icon: "twitter",
       color: "#1DA1F2",
-      username: "yourusername"
+      username: "gokulsenthilkumar"
     },
     {
       id: "4",
       platform: "email" as const,
-      url: "mailto:your.email@example.com",
+      url: "mailto:gokul@gokulsenthilkumar.dev",
       icon: "mail",
       color: "#EA4335"
     },
     {
       id: "5",
       platform: "website" as const,
-      url: "https://yourwebsite.com",
+      url: "https://gokulsenthilkumar.dev",
       icon: "globe",
       color: "#4285F4"
     }
@@ -289,11 +289,11 @@ export const portfolioConfig = {
 
   // 📝 SEO & METADATA
   seo: {
-    title: "Portfolio | Your Name",
+    title: "Portfolio | Gokul Senthilkumar",
     description: "Full-stack developer portfolio showcasing projects, skills, and experience",
     keywords: ["full-stack developer", "react", "next.js", "typescript", "portfolio"],
-    siteUrl: "https://yourportfolio.com",
-    author: "Your Name"
+    siteUrl: "https://gokulsenthilkumar.github.io/Portfolio",
+    author: "Gokul Senthilkumar"
   }
 }
 
