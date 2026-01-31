@@ -8,10 +8,11 @@ import { MagneticButton } from '@/components/effects/MagneticButton'
 import { FloatingModels } from '@/components/3d/FloatingModels'
 import { projects, siteConfig, skills } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills } from '@/lib/utils/content-helpers'
+import type { Project } from '@/lib/types/portfolio'
 import Link from 'next/link'
 
 export default function Home() {
-  const featuredProjects = getFeaturedProjects(projects)
+  const featuredProjects = getFeaturedProjects(projects as Project[])
   const topSkills = getTopSkills(skills, 6)
 
   return (

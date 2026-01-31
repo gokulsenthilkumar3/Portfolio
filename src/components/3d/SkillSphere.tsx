@@ -6,13 +6,14 @@ import { OrbitControls, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
+import type { Skill } from '@/lib/types/portfolio'
 
 interface SkillNodeProps {
-  skill: typeof skills[0]
+  skill: Skill
   position: [number, number, number]
   isSelected: boolean
-  onClick: (skill: typeof skills[0]) => void
-  onHover: (skill: typeof skills[0] | null) => void
+  onClick: (skill: Skill) => void
+  onHover: (skill: Skill | null) => void
 }
 
 function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeProps) {
@@ -88,14 +89,14 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
 }
 
 interface SkillSphereProps {
-  onSkillSelect?: (skill: typeof skills[0]) => void
+  onSkillSelect?: (skill: Skill) => void
   selectedCategory?: string
   className?: string
 }
 
 export function SkillSphere({ onSkillSelect, selectedCategory, className }: SkillSphereProps) {
-  const [selectedSkill, setSelectedSkill] = useState<typeof skills[0] | null>(null)
-  const [hoveredSkill, setHoveredSkill] = useState<typeof skills[0] | null>(null)
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
+  const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null)
   const groupRef = useRef<THREE.Group>(null)
 
   const filteredSkills = useMemo(() => {
@@ -122,12 +123,12 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
     }
   })
 
-  const handleSkillClick = (skill: typeof skills[0]) => {
+  const handleSkillClick = (skill: Skill) => {
     setSelectedSkill(skill)
     onSkillSelect?.(skill)
   }
 
-  const handleSkillHover = (skill: typeof skills[0] | null) => {
+  const handleSkillHover = (skill: Skill | null) => {
     setHoveredSkill(skill)
   }
 

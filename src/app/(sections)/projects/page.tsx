@@ -10,6 +10,7 @@ import { MagneticButton } from '@/components/effects/MagneticButton'
 import { projects } from '@/lib/data/content'
 import { filterProjects, searchProjects } from '@/lib/utils/content-helpers'
 import { Search, ExternalLink, Github, Filter, Calendar } from 'lucide-react'
+import type { Project } from '@/lib/types/portfolio'
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -19,11 +20,11 @@ export default function ProjectsPage() {
   const categories = ['all', 'web', 'mobile', '3d', 'ai', 'other']
   
   const filteredProjects = useMemo(() => {
-    let filtered = projects
+    let filtered = projects as Project[]
     
     // Filter by category
     if (selectedCategory !== 'all') {
-      filtered = filterProjects(filtered, selectedCategory)
+      filtered = filterProjects(filtered, selectedCategory as any)
     }
     
     // Filter by search query

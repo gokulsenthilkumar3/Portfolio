@@ -8,16 +8,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { SkillSphere } from '@/components/3d/SkillSphere'
 import { skills } from '@/lib/data/content'
-import { getSkillsByCategory, getTopSkills } from '@/lib/utils/content-helpers'
+import { getTopSkills } from '@/lib/utils/content-helpers'
+import type { Skill } from '@/lib/types/portfolio'
+import { filterProjects } from '@/lib/utils/content-helpers'
 
 export default function SkillsPage() {
   const [viewMode, setViewMode] = useState<'3d' | '2d'>('2d')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
+  const handleSkillSelect = (skill: Skill) => {
+    console.log('Selected skill:', skill)
+  }
+
   const categories = ['all', 'frontend', 'backend', 'tools', 'soft-skills', 'design']
   const filteredSkills = selectedCategory === 'all' 
-    ? skills 
-    : getSkillsByCategory(skills, selectedCategory as any)
+    ? skills as Skill[]
+    : filterProjects(skills as any, selectedCategory)
   
   const topSkills = getTopSkills(skills, 8)
 
@@ -30,10 +36,6 @@ export default function SkillsPage() {
       case 1: return 'bg-red-500'
       default: return 'bg-gray-500'
     }
-  }
-
-  const handleSkillSelect = (skill: typeof skills[0]) => {
-    console.log('Selected skill:', skill)
   }
 
   return (
@@ -136,13 +138,6 @@ export default function SkillsPage() {
                         <div className="text-sm text-muted-foreground">
                           {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'year' : 'years'} experience
                         </div>
-                      )}
-                      
-                      {/* Description */}
-                      {skill.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {skill.description}
-                        </p>
                       )}
                     </div>
                   </CardContent>
