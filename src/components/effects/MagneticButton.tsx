@@ -19,41 +19,40 @@ export function MagneticButton({
   disabled = false 
 }: MagneticButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const mousePosition = useMousePosition()
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled || !buttonRef.current) return
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || !containerRef.current) return
 
-    const rect = buttonRef.current.getBoundingClientRect()
+    const rect = containerRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
 
     const deltaX = (mousePosition.x - centerX) * strength
     const deltaY = (mousePosition.y - centerY) * strength
 
-    buttonRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+    containerRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`
   }
 
   const handleMouseLeave = () => {
-    if (buttonRef.current) {
-      buttonRef.current.style.transform = 'translate(0, 0)'
+    if (containerRef.current) {
+      containerRef.current.style.transform = 'translate(0, 0)'
     }
     setIsHovered(false)
   }
 
   return (
-    <motion.button
-      ref={buttonRef}
+    <motion.div
+      ref={containerRef}
       className={cn(
-        'relative transition-transform duration-300 ease-out',
+        'relative transition-transform duration-300 ease-out inline-block',
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      disabled={disabled}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
@@ -68,6 +67,6 @@ export function MagneticButton({
           transition={{ duration: 0.2 }}
         />
       )}
-    </motion.button>
+    </motion.div>
   )
 }

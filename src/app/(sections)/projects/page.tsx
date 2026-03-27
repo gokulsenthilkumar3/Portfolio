@@ -11,6 +11,9 @@ import { projects } from '@/lib/data/content'
 import { filterProjects, searchProjects } from '@/lib/utils/content-helpers'
 import { Search, ExternalLink, Github, Filter, Calendar } from 'lucide-react'
 import type { Project } from '@/lib/types/portfolio'
+import Link from 'next/link'
+import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/lib/utils/cn'
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -170,19 +173,29 @@ export default function ProjectsPage() {
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
                     {project.links.live && (
-                      <MagneticButton strength={0.2}>
-                        <Button size="sm" className="flex-1">
+                      <MagneticButton strength={0.2} className="flex-1">
+                        <Link 
+                          href={project.links.live} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className={cn(buttonVariants({ size: 'sm' }), "w-full")}
+                        >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           Live
-                        </Button>
+                        </Link>
                       </MagneticButton>
                     )}
                     {project.links.github && (
-                      <MagneticButton strength={0.2}>
-                        <Button variant="outline" size="sm" className="flex-1">
+                      <MagneticButton strength={0.2} className="flex-1">
+                        <Link 
+                          href={project.links.github} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), "w-full")}
+                        >
                           <Github className="h-3 w-3 mr-1" />
                           Code
-                        </Button>
+                        </Link>
                       </MagneticButton>
                     )}
                   </div>

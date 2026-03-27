@@ -8,6 +8,7 @@ import { ProgressBar } from '@/components/shared/ProgressBar'
 import { ScrollToTop } from '@/components/shared/ScrollToTop'
 import { SectionIndicator } from '@/components/shared/SectionIndicator'
 import { CustomizationPanel } from '@/components/shared/CustomizationPanel'
+import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { seo } from '@/lib/data/content'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -48,13 +49,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider>
-          <ProgressBar />
-          <Navigation />
-          <main>{children}</main>
-          <Footer />
-          <ScrollToTop />
-          <SectionIndicator sections={sections} />
-          <CustomizationPanel />
+          <AdminClientWrapper>
+            <ProgressBar />
+            <Navigation />
+            <main>{children}</main>
+            <Footer />
+            <ScrollToTop />
+            <SectionIndicator sections={sections} />
+            <CustomizationPanel />
+          </AdminClientWrapper>
         </ThemeProvider>
       </body>
     </html>
