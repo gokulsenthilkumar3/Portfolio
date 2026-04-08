@@ -4,7 +4,6 @@ A stunning, feature-rich portfolio built with Next.js 15, TypeScript, and modern
 
 
 
-
 ## ✨ Features
 
 ### 🎨 **Theme System**
