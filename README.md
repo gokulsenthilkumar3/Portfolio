@@ -2,6 +2,9 @@
 
 A stunning, feature-rich portfolio built with Next.js 15, TypeScript, and modern web technologies. This portfolio showcases advanced web development capabilities with 3D elements, smooth animations, and comprehensive customization options.
 
+
+
+
 ## ✨ Features
 
 ### 🎨 **Theme System**
