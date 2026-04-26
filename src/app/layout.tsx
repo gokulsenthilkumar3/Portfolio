@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import '../styles/globals.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { Navigation } from '@/components/shared/Navigation'
@@ -9,9 +8,7 @@ import { ScrollToTop } from '@/components/shared/ScrollToTop'
 import { SectionIndicator } from '@/components/shared/SectionIndicator'
 import { CustomizationPanel } from '@/components/shared/CustomizationPanel'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
-import { seo } from '@/lib/data/content'
-
-const inter = Inter({ subsets: ['latin'] })
+import { seo, personal } from '@/lib/data/content'
 
 export const metadata: Metadata = {
   title: seo.title,
@@ -24,11 +21,25 @@ export const metadata: Metadata = {
     type: 'website',
     url: seo.siteUrl,
     siteName: seo.author,
+    images: [
+      {
+        url: `${seo.siteUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: `${seo.author} - SDET & Full-Stack Developer`,
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: seo.title,
     description: seo.description,
+    creator: '@GokulKangeyanS',
+    images: [`${seo.siteUrl}/og-image.png`],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 }
 
@@ -47,7 +58,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        {/* Boska (display) + Satoshi (body) via Fontshare */}
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
+        />
+      </head>
+      <body>
         <ThemeProvider>
           <AdminClientWrapper>
             <ProgressBar />
