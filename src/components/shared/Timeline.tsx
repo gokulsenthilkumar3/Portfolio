@@ -86,7 +86,7 @@ export function Timeline({ className }: TimelineProps) {
                 </div>
 
                 <ul className="space-y-2 mb-4">
-                  {experience.description.map((desc, descIndex) => (
+                  {(Array.isArray(experience.description) ? experience.description : experience.achievements || []).map((desc, descIndex) => (
                     <li key={descIndex} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                       <span>{desc}</span>
