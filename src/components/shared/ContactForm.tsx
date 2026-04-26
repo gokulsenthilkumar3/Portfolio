@@ -1,222 +1,181 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Mail, Send, CheckCircle, AlertCircle } from 'lucide-react'
 
-interface ContactFormData {
+interface FormState {
   name: string
   email: string
   subject: string
   message: string
 }
 
-interface FormStatus {
-  type: 'idle' | 'loading' | 'success' | 'error'
-  message: string
-}
+type Status = 'idle' | 'sending' | 'success' | 'error' | 'fallback'
+
+const FALLBACK_EMAIL = 'gokulsenthilkumar3@gmail.com'
 
 export function ContactForm() {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  })
-  
-  const [formStatus, setFormStatus] = useState<FormStatus>({
-    type: 'idle',
-    message: ''
-  })
+  const [form, setForm] = useState<FormState>({ name: '', email: '', subject: '', message: '' })
+  const [status, setStatus] = useState<Status>('idle')
+  const [statusMsg, setStatusMsg] = useState('')
+  const [errors, setErrors] = useState<Partial<FormState>>({})
+  const formRef = useRef<HTMLFormElement>(null)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+  function validate(): boolean {
+    const e: Partial<FormState> = {}
+    if (!form.name.trim())                          e.name    = 'Name is required'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email'
+    if (!form.subject.trim())                       e.subject = 'Subject is required'
+    if (form.message.trim().length < 10)            e.message = 'Message must be at least 10 characters'
+    setErrors(e)
+    return Object.keys(e).length === 0
   }
 
-  const validateForm = (): boolean => {
-    if (!formData.name.trim()) {
-      setFormStatus({ type: 'error', message: 'Please enter your name' })
-      return false
-    }
-    if (!formData.email.trim()) {
-      setFormStatus({ type: 'error', message: 'Please enter your email' })
-      return false
-    }
-    if (!formData.subject.trim()) {
-      setFormStatus({ type: 'error', message: 'Please enter a subject' })
-      return false
-    }
-    if (!formData.message.trim()) {
-      setFormStatus({ type: 'error', message: 'Please enter your message' })
-      return false
-    }
-    if (!formData.email.includes('@')) {
-      setFormStatus({ type: 'error', message: 'Please enter a valid email address' })
-      return false
-    }
-    return true
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    
-    if (!validateForm()) return
+    if (!validate()) return
 
-    setFormStatus({ type: 'loading', message: 'Sending message...' })
+    setStatus('sending')
+    setStatusMsg('')
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Simulate success (in real app, this would be an actual API call)
-      setFormStatus({ 
-        type: 'success', 
-        message: 'Message sent successfully! I\'ll get back to you soon.' 
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
       })
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      })
-    } catch (error) {
-      setFormStatus({ 
-        type: 'error', 
-        message: 'Failed to send message. Please try again later.' 
-      })
-    }
+      const data = await res.json()
 
-    // Reset status after 5 seconds
-    setTimeout(() => {
-      setFormStatus({ type: 'idle', message: '' })
-    }, 5000)
+      if (data.ok) {
+        setStatus('success')
+        setStatusMsg(data.message)
+        setForm({ name: '', email: '', subject: '', message: '' })
+        setErrors({})
+      } else if (data.fallback) {
+        setStatus('fallback')
+        setStatusMsg(data.message)
+      } else {
+        setStatus('error')
+        setStatusMsg(data.message || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setStatus('error')
+      setStatusMsg('Network error. Please email me directly.')
+    }
   }
+
+  const inputClass = (field: keyof FormState) =>
+    `w-full px-3 py-2 text-sm rounded-md border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
+      errors[field] ? 'border-destructive' : 'border-border'
+    }`
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="h-5 w-5" />
-          Get In Touch
-        </CardTitle>
+        <CardTitle style={{ fontFamily: 'var(--font-display)' }}>Send Me a Message</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
-                Name *
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                placeholder="John Doe"
-                disabled={formStatus.type === 'loading'}
-              />
+        {status === 'success' ? (
+          <div className="flex flex-col items-center text-center py-10 gap-4">
+            <span className="text-4xl">✅</span>
+            <p className="text-base font-medium">{statusMsg}</p>
+            <Button variant="outline" size="sm" onClick={() => setStatus('idle')}>
+              Send Another
+            </Button>
+          </div>
+        ) : (
+          <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              {/* Name */}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium mb-1.5">Name</label>
+                <input
+                  id="name" type="text" autoComplete="name" required
+                  placeholder="Gokul S"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  className={inputClass('name')}
+                />
+                {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-1.5">Email</label>
+                <input
+                  id="email" type="email" autoComplete="email" required
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  className={inputClass('email')}
+                />
+                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+              </div>
             </div>
-            
+
+            {/* Subject */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email *
-              </label>
+              <label htmlFor="subject" className="block text-sm font-medium mb-1.5">Subject</label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                placeholder="john@example.com"
-                disabled={formStatus.type === 'loading'}
+                id="subject" type="text" required
+                placeholder="Project collaboration, feedback…"
+                value={form.subject}
+                onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                className={inputClass('subject')}
               />
+              {errors.subject && <p className="text-xs text-destructive mt-1">{errors.subject}</p>}
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="subject" className="block text-sm font-medium mb-2">
-              Subject *
-            </label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              placeholder="Project Inquiry"
-              disabled={formStatus.type === 'loading'}
-            />
-          </div>
+            {/* Message */}
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium mb-1.5">Message</label>
+              <textarea
+                id="message" rows={5} required
+                placeholder="Hi Gokul, I wanted to reach out about…"
+                value={form.message}
+                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                className={`${inputClass('message')} resize-none`}
+              />
+              {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
+            </div>
 
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium mb-2">
-              Message *
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              rows={6}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-none"
-              placeholder="Tell me about your project..."
-              disabled={formStatus.type === 'loading'}
-            />
-          </div>
-
-          {/* Status Messages */}
-          <AnimatePresence>
-            {formStatus.type !== 'idle' && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={`p-3 rounded-md flex items-center gap-2 ${
-                  formStatus.type === 'success' 
-                    ? 'bg-green-50 text-green-700 border border-green-200' 
-                    : formStatus.type === 'error'
-                    ? 'bg-red-50 text-red-700 border border-red-200'
-                    : 'bg-blue-50 text-blue-700 border border-blue-200'
-                }`}
-              >
-                {formStatus.type === 'success' && <CheckCircle className="h-4 w-4" />}
-                {formStatus.type === 'error' && <AlertCircle className="h-4 w-4" />}
-                {formStatus.type === 'loading' && <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />}
-                <span className="text-sm">{formStatus.message}</span>
-              </motion.div>
+            {/* Status messages */}
+            {status === 'error' && (
+              <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">
+                {statusMsg}{' '}
+                <a
+                  href={`mailto:${FALLBACK_EMAIL}?subject=${encodeURIComponent(form.subject)}`}
+                  className="underline font-medium"
+                >
+                  Email directly instead
+                </a>
+              </div>
             )}
-          </AnimatePresence>
-
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={formStatus.type === 'loading'}
-          >
-            {formStatus.type === 'loading' ? (
-              <>
-                <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send className="h-4 w-4 mr-2" />
-                Send Message
-              </>
+            {status === 'fallback' && (
+              <div className="text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
+                {statusMsg}{' '}
+                <a
+                  href={`mailto:${FALLBACK_EMAIL}?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(form.message)}`}
+                  className="underline font-medium"
+                >
+                  Open email client
+                </a>
+              </div>
             )}
-          </Button>
-        </form>
+
+            <Button type="submit" size="lg" className="w-full" disabled={status === 'sending'}>
+              {status === 'sending' ? 'Sending…' : 'Send Message'}
+            </Button>
+
+            <p className="text-xs text-muted-foreground text-center">
+              Or email me at{' '}
+              <a href={`mailto:${FALLBACK_EMAIL}`} className="underline">
+                {FALLBACK_EMAIL}
+              </a>
+            </p>
+          </form>
+        )}
       </CardContent>
     </Card>
   )
