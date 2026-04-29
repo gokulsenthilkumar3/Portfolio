@@ -34,13 +34,7 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -60, opacity: 0 }}
           transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-          className="fixed top-0 left-0 right-0 z-[9998] flex items-center justify-between px-5 py-2.5"
-          style={{
-            background: 'linear-gradient(90deg, rgba(10,15,30,0.95) 0%, rgba(20,30,50,0.95) 100%)',
-            backdropFilter: 'blur(20px)',
-            borderBottom: '1px solid rgba(59,130,246,0.2)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          }}
+          className="fixed top-0 left-0 right-0 z-[9998] flex items-center justify-between px-5 py-2.5 bg-gradient-to-r from-[#0a0f1e]/95 to-[#141e32]/95 backdrop-blur-3xl border-b border-blue-500/20 shadow-2xl shadow-black/30"
         >
           {/* Left: Mode indicator */}
           <div className="flex items-center gap-3">
@@ -50,7 +44,7 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
                 <div className="w-2 h-2 rounded-full bg-blue-400" />
                 <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-60" />
               </div>
-              <span className="text-xs font-semibold text-blue-300" style={{ letterSpacing: '0.05em' }}>
+              <span className="text-xs font-semibold text-blue-300 tracking-wider">
                 ADMIN MODE
               </span>
             </div>
@@ -79,12 +73,9 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={persistData}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-              style={{
-                background: 'rgba(99,102,241,0.15)',
-                color: '#93c5fd',
-                border: '1px solid rgba(99,102,241,0.25)',
-              }}
+              title="Save to Server"
+              aria-label="Save to Server"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-blue-300 border border-indigo-500/25 transition-colors"
             >
               <Download size={11} />
               Save to Server

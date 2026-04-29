@@ -32,10 +32,10 @@ export function Footer() {
   ]
 
   const navLinks = [
-    { label: 'About', href: '#about' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'About', href: '/#about' },
+    { label: 'Projects', href: '/#projects' },
+    { label: 'Skills', href: '/#skills' },
+    { label: 'Contact', href: '/#contact' },
   ]
 
   return (
@@ -47,7 +47,7 @@ export function Footer() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Code2 className="h-5 w-5 text-primary" />
-              <span className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+              <span className="font-bold text-lg font-display">
                 Gokul S
               </span>
             </div>

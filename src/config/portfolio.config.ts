@@ -43,7 +43,8 @@ export const portfolioConfig = {
       tech: ["PHP", "MySQL", "HTML", "CSS"],
       category: "web",
       featured: true,
-      images: [],
+      images: ["/projects/weaver-book.png"],
+      date: "2023-01-15",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -53,7 +54,8 @@ export const portfolioConfig = {
       tech: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
       featured: true,
-      images: [],
+      images: ["/projects/car-spa.png"],
+      date: "2023-05-20",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -63,7 +65,8 @@ export const portfolioConfig = {
       tech: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
       featured: true,
-      images: [],
+      images: ["/projects/expense-tracker.png"],
+      date: "2023-08-10",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -73,7 +76,8 @@ export const portfolioConfig = {
       tech: ["HTML", "CSS", "JavaScript", "MySQL"],
       category: "web",
       featured: true,
-      images: [],
+      images: ["/projects/maruti-opticals.png"],
+      date: "2022-12-05",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -83,7 +87,8 @@ export const portfolioConfig = {
       tech: ["Raspberry Pi", "Python", "HTML", "CSS"],
       category: "iot",
       featured: false,
-      images: [],
+      images: ["/projects/notice-board.png"],
+      date: "2023-03-25",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -93,26 +98,60 @@ export const portfolioConfig = {
       tech: ["Python", "TensorFlow", "Deep Learning", "GRU"],
       category: "ai",
       featured: true,
-      images: [],
+      images: ["/projects/forex-prediction.png"],
+      date: "2024-02-15",
       links: { github: "https://github.com/gokulsenthilkumar3" }
+    },
+    {
+      id: "oxfin",
+      title: "OxFin",
+      description: "A professional fintech platform for financial management and analytics, featuring real-time data visualization.",
+      tech: ["React", "Node.js", "Express", "PostgreSQL"],
+      category: "fullstack",
+      featured: false,
+      images: ["/projects/oxfin.png"],
+      date: "2024-03-15",
+      links: { github: "https://github.com/gokulsenthilkumar3/OxFin" }
+    },
+    {
+      id: "yarn-management",
+      title: "Yarn-Management",
+      description: "Industrial-grade inventory system for textile yarn management, optimizing stock tracking and order fulfillment.",
+      tech: ["React", "PHP", "MySQL", "Tailwind"],
+      category: "web",
+      featured: false,
+      images: ["/projects/yarn-management.png"],
+      date: "2023-11-20",
+      links: { github: "https://github.com/gokulsenthilkumar3/Yarn-Management" }
+    },
+    {
+      id: "findthemnow",
+      title: "FindThemNow",
+      description: "A real-time search and tracking application for identifying and locating critical assets or personnel.",
+      tech: ["JavaScript", "Firebase", "Geolocation API"],
+      category: "other",
+      featured: false,
+      images: ["/projects/findthemnow.png"],
+      date: "2024-01-10",
+      links: { github: "https://github.com/gokulsenthilkumar3/FindThemNow" }
     }
   ],
   // 💼 SKILLS
   skills: [
-    { id: "ts", name: "TypeScript", category: "language", level: 85, color: "#3178c6" },
-    { id: "js", name: "JavaScript", category: "language", level: 90, color: "#f7df1e" },
-    { id: "react", name: "React.js", category: "frontend", level: 85, color: "#61dafb" },
-    { id: "nextjs", name: "Next.js", category: "frontend", level: 80, color: "#ffffff" },
-    { id: "node", name: "Node.js", category: "backend", level: 80, color: "#339933" },
-    { id: "k6", name: "K6 Load Testing", category: "testing", level: 88, color: "#7d64ff" },
-    { id: "selenium", name: "Selenium", category: "testing", level: 82, color: "#43b02a" },
-    { id: "testcafe", name: "TestCafe", category: "testing", level: 80, color: "#09a8d0" },
-    { id: "azure", name: "Azure DevOps", category: "devops", level: 78, color: "#0078d4" },
-    { id: "mysql", name: "MySQL", category: "database", level: 82, color: "#4479a1" },
-    { id: "python", name: "Python", category: "language", level: 75, color: "#3776ab" },
-    { id: "postman", name: "Postman", category: "testing", level: 85, color: "#ff6c37" },
-    { id: "php", name: "PHP", category: "backend", level: 70, color: "#777bb4" },
-    { id: "git", name: "Git", category: "devops", level: 85, color: "#f05032" }
+    { id: "ts", name: "TypeScript", category: "frontend", proficiency: 5, color: "#3178c6" },
+    { id: "js", name: "JavaScript", category: "frontend", proficiency: 5, color: "#f7df1e" },
+    { id: "react", name: "React.js", category: "frontend", proficiency: 5, color: "#61dafb" },
+    { id: "nextjs", name: "Next.js", category: "frontend", proficiency: 4, color: "#ffffff" },
+    { id: "node", name: "Node.js", category: "backend", proficiency: 4, color: "#339933" },
+    { id: "k6", name: "K6 Load Testing", category: "tools", proficiency: 5, color: "#7d64ff" },
+    { id: "selenium", name: "Selenium", category: "tools", proficiency: 4, color: "#43b02a" },
+    { id: "testcafe", name: "TestCafe", category: "tools", proficiency: 4, color: "#09a8d0" },
+    { id: "azure", name: "Azure DevOps", category: "tools", proficiency: 4, color: "#0078d4" },
+    { id: "mysql", name: "MySQL", category: "backend", proficiency: 4, color: "#4479a1" },
+    { id: "python", name: "Python", category: "backend", proficiency: 4, color: "#3776ab" },
+    { id: "postman", name: "Postman", category: "tools", proficiency: 5, color: "#ff6c37" },
+    { id: "php", name: "PHP", category: "backend", proficiency: 3, color: "#777bb4" },
+    { id: "git", name: "Git", category: "tools", proficiency: 4, color: "#f05032" }
   ],
   // 💼 EXPERIENCE
   experiences: [

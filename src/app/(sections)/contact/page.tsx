@@ -80,9 +80,9 @@ export default function ContactPage() {
                     
                     return (
                       <Button
-                        key={link.id}
+                        key={link.platform}
                         variant="outline"
-                        className="w-full justify-start"
+                        className="w-full justify-start hover:bg-primary/5 group transition-all duration-300"
                         asChild
                       >
                         <a
@@ -91,8 +91,8 @@ export default function ContactPage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-3"
                         >
-                          <Icon className="h-4 w-4" style={{ color: link.color }} />
-                          <span className="capitalize">
+                          <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          <span className="capitalize text-muted-foreground group-hover:text-foreground">
                             {link.platform === 'email' ? 'Email' : link.platform}
                           </span>
                         </a>
@@ -104,13 +104,13 @@ export default function ContactPage() {
             </AnimatedSection>
 
             <AnimatedSection animation="slideRight" delay={0.6}>
-              <Card>
+              <Card className="bg-primary/5 border-primary/10">
                 <CardHeader>
-                  <CardTitle>Response Time</CardTitle>
+                  <CardTitle className="text-sm">Response Time</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    I typically respond to messages within 24-48 hours. For urgent matters, please mention it in your message subject.
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    I typically respond within 24-48 hours. For urgent matters, please mention it in the subject.
                   </p>
                 </CardContent>
               </Card>
@@ -128,18 +128,20 @@ export default function ContactPage() {
         {/* Call to Action */}
         <AnimatedSection animation="slideUp" delay={0.8}>
           <div className="text-center mt-16">
-            <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+            <Card className="bg-gradient-to-r from-primary/10 via-background to-accent/10 border-primary/20 backdrop-blur-sm shadow-xl">
               <CardContent className="p-8">
-                <h3 className="text-2xl font-bold mb-4">Let's Build Something Amazing Together</h3>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold mb-4 font-display">Let's Build Something Amazing Together</h3>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-sm">
                   Whether you have a project in mind, need consultation, or want to collaborate on something exciting, I'm here to help bring your ideas to life.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg">
-                    Start a Project
+                  <Button size="lg" className="px-8 shadow-lg shadow-primary/20" asChild>
+                    <a href="/#contact">Start a Project</a>
                   </Button>
-                  <Button variant="outline" size="lg">
-                    Download Resume
+                  <Button variant="outline" size="lg" className="px-8" asChild>
+                    <a href={siteConfig.resume} target="_blank" rel="noopener noreferrer">
+                      Download Resume
+                    </a>
                   </Button>
                 </div>
               </CardContent>

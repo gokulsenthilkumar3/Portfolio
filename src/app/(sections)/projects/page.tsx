@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/effects/MagneticButton'
 import { projects } from '@/lib/data/content'
-import { filterProjects, searchProjects } from '@/lib/utils/content-helpers'
-import { Search, ExternalLink, Github, Filter, Calendar } from 'lucide-react'
+import { filterProjects, searchProjects, formatDate } from '@/lib/utils/content-helpers'
+import { Search, ExternalLink, Github, Filter, Calendar, Terminal, Globe, Database, Cpu, Brain, Flame, Zap, Code2 } from 'lucide-react'
 import type { Project } from '@/lib/types/portfolio'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/Button'
@@ -18,10 +18,24 @@ import { cn } from '@/lib/utils/cn'
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [showAll, setShowAll] = useState(false)
+  const [showAll, setShowAll] = useState(true)
 
-  const categories = ['all', 'web', 'mobile', '3d', 'ai', 'other']
-  
+  const categories = ['all', 'web', 'fullstack', 'iot', 'ai', 'other']
+
+  const getTechIcon = (tech: string, className = "h-4 w-4") => {
+    const t = tech.toLowerCase()
+    if (t.includes('react') || t.includes('next')) return <Code2 className={cn(className, "text-blue-400")} />
+    if (t.includes('node') || t.includes('express')) return <Zap className={cn(className, "text-green-400")} />
+    if (t.includes('python')) return <Terminal className={cn(className, "text-yellow-400")} />
+    if (t.includes('php')) return <Globe className={cn(className, "text-indigo-400")} />
+    if (t.includes('sql')) return <Database className={cn(className, "text-orange-400")} />
+    if (t.includes('mongodb')) return <Database className={cn(className, "text-green-500")} />
+    if (t.includes('raspberry') || t.includes('iot')) return <Cpu className={cn(className, "text-red-400")} />
+    if (t.includes('dl') || t.includes('ai') || t.includes('learning')) return <Brain className={cn(className, "text-purple-400")} />
+    if (t.includes('firebase')) return <Flame className={cn(className, "text-orange-500")} />
+    return <Code2 className={cn(className, "text-muted-foreground")} />
+  }
+
   const filteredProjects = useMemo(() => {
     let filtered = projects as Project[]
     
@@ -38,7 +52,7 @@ export default function ProjectsPage() {
     return filtered
   }, [selectedCategory, searchQuery])
 
-  const displayProjects = showAll ? filteredProjects : filteredProjects.slice(0, 6)
+  const displayProjects = filteredProjects
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -106,21 +120,20 @@ export default function ProjectsPage() {
             <AnimatedSection 
               key={project.id} 
               animation="scaleIn" 
-              delay={0.1 * (index % 6)}
+              delay={0.05 * index}
             >
-              <Card className="group hover:shadow-lg transition-all duration-300 hover:scale-105 overflow-hidden">
-                {/* Project Image */}
-                <div className="aspect-video bg-muted relative overflow-hidden">
-                  {project.images[0] && (
-                    <img
-                      src={project.images[0]}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  )}
+              <Card className="group h-full flex flex-col bg-background/40 backdrop-blur-md border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] overflow-hidden">
+                {/* Project Tech Visualization (Replaces 'sucking' logos) */}
+                <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                  <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
+                  <div className="relative z-10 p-4 rounded-full bg-background/50 backdrop-blur-xl border border-white/10 shadow-2xl group-hover:rotate-12 transition-transform duration-500">
+                    {getTechIcon(project.tech[0] || 'code', "h-12 w-12")}
+                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                  </div>
+                  
                   {project.featured && (
                     <div className="absolute top-2 right-2">
-                      <Badge className="bg-primary text-primary-foreground">
+                      <Badge className="bg-primary/20 text-primary border-primary/30 backdrop-blur-md">
                         Featured
                       </Badge>
                     </div>
@@ -128,9 +141,9 @@ export default function ProjectsPage() {
                   <div className="absolute top-2 left-2">
                     <Badge 
                       variant="secondary" 
-                      className="text-xs"
+                      className="text-[10px] bg-background/60 backdrop-blur-md border-white/5"
                     >
-                      <div className={`w-2 h-2 rounded-full mr-1 ${getStatusColor(project.status)}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusColor(project.status)}`} />
                       {getStatusText(project.status)}
                     </Badge>
                   </div>
@@ -151,23 +164,23 @@ export default function ProjectsPage() {
                   </p>
                   
                   {/* Technologies */}
-                  <div className="flex flex-wrap gap-1">
-                    {project.tech.slice(0, 4).map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech) => (
+                      <div 
+                        key={tech} 
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/5 border border-primary/10 text-[10px] font-medium text-primary"
+                        title={tech}
+                      >
+                        {getTechIcon(tech)}
+                        <span>{tech}</span>
+                      </div>
                     ))}
-                    {project.tech.length > 4 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{project.tech.length - 4}
-                      </Badge>
-                    )}
                   </div>
                   
                   {/* Date */}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    <span>{new Date(project.date).toLocaleDateString()}</span>
+                    <span>{formatDate(project.date)}</span>
                   </div>
                   
                   {/* Action Buttons */}
@@ -205,20 +218,7 @@ export default function ProjectsPage() {
           ))}
         </div>
 
-        {/* Load More Button */}
-        {!showAll && filteredProjects.length > 6 && (
-          <AnimatedSection animation="slideUp" delay={0.8}>
-            <div className="text-center">
-              <Button 
-                onClick={() => setShowAll(true)}
-                variant="outline"
-                size="lg"
-              >
-                Load More Projects ({filteredProjects.length - 6} remaining)
-              </Button>
-            </div>
-          </AnimatedSection>
-        )}
+
 
         {/* No Results */}
         {filteredProjects.length === 0 && (

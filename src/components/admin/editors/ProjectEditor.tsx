@@ -67,8 +67,8 @@ export function ProjectEditor() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
-          style={{ background: 'rgba(59,130,246,0.2)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)' }}
+          title="Add new project"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30"
         >
           <Plus size={12} />
           Add Project
@@ -81,11 +81,7 @@ export function ProjectEditor() {
           <motion.div
             key={project.id}
             layout
-            className="rounded-xl overflow-hidden"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.07)',
-            }}
+            className="rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.07]"
           >
             <div
               className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-white/4 transition-colors"
@@ -106,12 +102,16 @@ export function ProjectEditor() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditing(project) }}
+                  title="Edit project"
+                  aria-label="Edit project"
                   className="p-1 rounded hover:bg-blue-500/20 text-gray-500 hover:text-blue-400 transition-colors"
                 >
                   <Pencil size={11} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleDelete(project.id) }}
+                  title="Delete project"
+                  aria-label="Delete project"
                   className="p-1 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-colors"
                 >
                   <Trash2 size={11} />
@@ -201,18 +201,13 @@ function ProjectForm({
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="w-[440px] max-w-[95vw] max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4"
-        style={{
-          background: 'rgba(10,15,30,0.98)',
-          border: '1px solid rgba(59,130,246,0.2)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
-        }}
+        className="w-[440px] max-w-[95vw] max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4 bg-[#0a0f1e]/98 border border-blue-500/20 shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
       >
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">
             {project.id ? 'Edit Project' : 'New Project'}
           </h3>
-          <button onClick={onCancel} className="p-1 rounded text-gray-500 hover:text-gray-300">
+          <button onClick={onCancel} title="Cancel" aria-label="Cancel" className="p-1 rounded text-gray-500 hover:text-gray-300">
             <X size={14} />
           </button>
         </div>
@@ -223,17 +218,21 @@ function ProjectForm({
             { key: 'description', label: 'Description', textarea: true },
           ].map(f => (
             <div key={f.key}>
-              <label className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
+              <label htmlFor={`proj-${f.key}`} className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
               {f.textarea ? (
                 <textarea
+                  id={`proj-${f.key}`}
                   value={(form as Record<string, string>)[f.key] || ''}
+                  placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   rows={3}
                   className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none resize-none"
                 />
               ) : (
                 <input
+                  id={`proj-${f.key}`}
                   value={(form as Record<string, string>)[f.key] || ''}
+                  placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
                 />
@@ -243,34 +242,39 @@ function ProjectForm({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] text-gray-400 mb-1">Category</label>
+              <label htmlFor="proj-category" className="block text-[11px] text-gray-400 mb-1">Category</label>
               <select
+                id="proj-category"
+                title="Category"
                 value={form.category}
                 onChange={e => setForm(prev => ({ ...prev, category: e.target.value as Project['category'] }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               >
                 {['web', 'mobile', '3d', 'ai', 'other'].map(c => (
-                  <option key={c} value={c} className="bg-gray-900">{c}</option>
+                  <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] text-gray-400 mb-1">Status</label>
+              <label htmlFor="proj-status" className="block text-[11px] text-gray-400 mb-1">Status</label>
               <select
+                id="proj-status"
+                title="Status"
                 value={form.status}
                 onChange={e => setForm(prev => ({ ...prev, status: e.target.value as Project['status'] }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               >
                 {['completed', 'in-progress', 'planned'].map(s => (
-                  <option key={s} value={s} className="bg-gray-900">{s}</option>
+                  <option key={s} value={s} className="bg-gray-900 text-white">{s}</option>
                 ))}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] text-gray-400 mb-1">Tech Stack (comma-separated)</label>
+            <label htmlFor="proj-tech" className="block text-[11px] text-gray-400 mb-1">Tech Stack (comma-separated)</label>
             <input
+              id="proj-tech"
               value={form.tech.join(', ')}
               onChange={e => handleTechChange(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
@@ -279,8 +283,9 @@ function ProjectForm({
           </div>
 
           <div>
-            <label className="block text-[11px] text-gray-400 mb-1">Image URL</label>
+            <label htmlFor="proj-image" className="block text-[11px] text-gray-400 mb-1">Image URL</label>
             <input
+              id="proj-image"
               value={form.images?.[0] || ''}
               onChange={e => setForm(prev => ({ ...prev, images: [e.target.value] }))}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
@@ -310,9 +315,11 @@ function ProjectForm({
           </div>
 
           <div>
-            <label className="block text-[11px] text-gray-400 mb-1">Date</label>
+            <label htmlFor="proj-date" className="block text-[11px] text-gray-400 mb-1">Date</label>
             <input
+              id="proj-date"
               type="date"
+              title="Project Date"
               value={form.date}
               onChange={e => setForm(prev => ({ ...prev, date: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
@@ -341,8 +348,7 @@ function ProjectForm({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSave(form)}
-            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-gradient-to-br from-blue-500 to-indigo-600"
           >
             Save Project
           </motion.button>

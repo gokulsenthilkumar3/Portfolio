@@ -6,19 +6,23 @@ import { Button } from '@/components/ui/Button'
 import { ThemeSelector } from '@/components/shared/ThemeSelector'
 import { useThemeStore } from '@/lib/hooks/use-theme'
 import { cn } from '@/lib/utils/cn'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const { theme, toggleTheme } = useThemeStore()
+  const pathname = usePathname()
+  const router = useRouter()
 
   const navItems = [
-    { label: 'Home', href: '#home', id: 'home' },
-    { label: 'About', href: '#about', id: 'about' },
-    { label: 'Projects', href: '#projects', id: 'projects' },
-    { label: 'Skills', href: '#skills', id: 'skills' },
-    { label: 'Contact', href: '#contact', id: 'contact' },
+    { label: 'Home', href: '/#home', id: 'home' },
+    { label: 'About', href: '/#about', id: 'about' },
+    { label: 'Projects', href: '/#projects', id: 'projects' },
+    { label: 'Skills', href: '/#skills', id: 'skills' },
+    { label: 'Contact', href: '/#contact', id: 'contact' },
   ]
 
   useEffect(() => {
@@ -39,7 +43,11 @@ export function Navigation() {
   }, [])
 
   const scrollToSection = (href: string, id: string) => {
-    const element = document.querySelector(href)
+    if (pathname !== '/') {
+      router.push(href)
+      return
+    }
+    const element = document.getElementById(id)
     element?.scrollIntoView({ behavior: 'smooth' })
     setActiveSection(id)
     setIsOpen(false)
@@ -58,8 +66,14 @@ export function Navigation() {
         <div className="flex h-16 items-center justify-between">
 
           {/* Logo */}
-          <button
-            onClick={() => scrollToSection('#home', 'home')}
+          <Link
+            href="/#home"
+            onClick={(e) => {
+              if (pathname === '/') {
+                e.preventDefault()
+                scrollToSection('/#home', 'home')
+              }
+            }}
             className="flex items-center gap-2 group"
             aria-label="Go to top"
           >
@@ -67,10 +81,10 @@ export function Navigation() {
               <Code2 className="h-4 w-4 text-primary" />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-base" style={{ fontFamily: 'var(--font-display)' }}>Gokul S</span>
+              <span className="font-bold text-base font-display">Gokul S</span>
               <span className="text-[10px] text-muted-foreground font-mono tracking-wider">SDET & Dev</span>
             </div>
-          </button>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">

@@ -45,18 +45,22 @@ export function PersonalEditor() {
       
       {FIELDS.map(field => (
         <div key={field.key}>
-          <label className="block text-[11px] text-gray-400 mb-1.5 font-medium">{field.label}</label>
+          <label htmlFor={`personal-${field.key}`} className="block text-[11px] text-gray-400 mb-1.5 font-medium">{field.label}</label>
           {field.type === 'textarea' ? (
             <textarea
+              id={`personal-${field.key}`}
               value={(form as Record<string, string>)[field.key] || ''}
+              placeholder={field.label}
               onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
               rows={4}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none focus:bg-white/8 transition-all resize-none"
             />
           ) : (
             <input
+              id={`personal-${field.key}`}
               type={field.type || 'text'}
               value={(form as Record<string, string>)[field.key] || ''}
+              placeholder={field.label}
               onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none focus:bg-white/8 transition-all"
             />
@@ -66,15 +70,17 @@ export function PersonalEditor() {
 
       {/* Availability */}
       <div>
-        <label className="block text-[11px] text-gray-400 mb-1.5 font-medium">Availability Status</label>
+        <label htmlFor="personal-availability" className="block text-[11px] text-gray-400 mb-1.5 font-medium">Availability Status</label>
         <select
+          id="personal-availability"
+          title="Availability Status"
           value={form.availability}
           onChange={e => setForm(prev => ({ ...prev, availability: e.target.value as typeof form.availability }))}
           className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none transition-all"
         >
-          <option value="available" className="bg-gray-900">✅ Available for hire</option>
-          <option value="busy" className="bg-gray-900">🔴 Busy / Not available</option>
-          <option value="open-to-offers" className="bg-gray-900">🟡 Open to offers</option>
+          <option value="available" className="bg-gray-900 text-white">✅ Available for hire</option>
+          <option value="busy" className="bg-gray-900 text-white">🔴 Busy / Not available</option>
+          <option value="open-to-offers" className="bg-gray-900 text-white">🟡 Open to offers</option>
         </select>
       </div>
 
@@ -82,13 +88,11 @@ export function PersonalEditor() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleSave}
-        className="w-full py-2.5 rounded-lg text-sm font-medium transition-all mt-2"
-        style={{
-          background: saved
-            ? 'linear-gradient(135deg, #10b981, #059669)'
-            : 'linear-gradient(135deg, #3b82f6, #6366f1)',
-          boxShadow: '0 4px 15px rgba(59,130,246,0.25)',
-        }}
+        className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all mt-2 shadow-xl ${
+          saved 
+            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20' 
+            : 'bg-gradient-to-r from-blue-500 to-indigo-600 shadow-blue-500/20'
+        }`}
       >
         {saved ? '✓ Saved!' : 'Save Changes'}
       </motion.button>
