@@ -8,6 +8,7 @@ import { ScrollToTop } from '@/components/shared/ScrollToTop'
 import { SectionIndicator } from '@/components/shared/SectionIndicator'
 import { CustomizationPanel } from '@/components/shared/CustomizationPanel'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
+import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
 
 export const metadata: Metadata = {

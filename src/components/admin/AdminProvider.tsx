@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { portfolioConfig } from '@/config/portfolio.config'
+import { toast } from 'sonner'
 
 const STORAGE_KEY = 'portfolio_data_v1'
 const SESSION_KEY = 'portfolio_admin_session'
@@ -15,6 +16,7 @@ interface PortfolioData {
   projects: typeof portfolioConfig.projects
   skills: typeof portfolioConfig.skills
   experiences: typeof portfolioConfig.experiences
+  education: typeof portfolioConfig.education
   socialLinks: typeof portfolioConfig.socialLinks
   seo: typeof portfolioConfig.seo
 }
@@ -28,7 +30,7 @@ interface AdminContextType {
   isSaving: boolean
   exportConfig: () => string
   verifyPin: (pin: string) => Promise<boolean>
-  persistData: () => Promise<void>
+  persistData: () => Promise<boolean>
 }
 
 export type { PortfolioData }
@@ -39,6 +41,7 @@ const defaultData: PortfolioData = {
   projects: portfolioConfig.projects as typeof portfolioConfig.projects,
   skills: portfolioConfig.skills,
   experiences: portfolioConfig.experiences,
+  education: portfolioConfig.education,
   socialLinks: portfolioConfig.socialLinks,
   seo: portfolioConfig.seo,
 }
@@ -74,7 +77,7 @@ const AdminContext = createContext<AdminContextType>({
   isSaving: false,
   exportConfig: () => '',
   verifyPin: async () => false,
-  persistData: async () => {},
+  persistData: async () => false,
 })
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
@@ -127,7 +130,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }, [portfolioData])
 
   // Persist data to server (development only)
-  const persistData = useCallback(async () => {
+  const persistData = useCallback(async (): Promise<boolean> => {
     try {
       const res = await fetch('/api/admin/save', {
         method: 'POST',
@@ -136,11 +139,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       })
       if (!res.ok) {
         console.error('Failed to persist data', await res.text())
-      } else {
-        console.log('Portfolio data persisted successfully')
+        toast.error('Failed to save to server')
+        return false
       }
+      toast.success('Saved to server successfully!')
+      return true
     } catch (e) {
       console.error('Error persisting data', e)
+      toast.error('Server error during save')
+      return false
     }
   }, [portfolioData])
 

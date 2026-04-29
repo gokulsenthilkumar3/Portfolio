@@ -53,12 +53,11 @@ export function SkillEditor() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className="px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all capitalize"
-            style={{
-              background: activeCategory === cat ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.04)',
-              color: activeCategory === cat ? '#60a5fa' : '#6b7280',
-              border: `1px solid ${activeCategory === cat ? 'rgba(59,130,246,0.3)' : 'transparent'}`,
-            }}
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all capitalize border ${
+              activeCategory === cat 
+                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' 
+                : 'bg-white/5 text-gray-500 border-transparent'
+            }`}
           >
             {cat}
           </button>
@@ -75,20 +74,22 @@ export function SkillEditor() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="flex items-center gap-2 p-2.5 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
             >
               {/* Color dot */}
-              <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ background: (skill as Record<string, string>).color || '#3b82f6' }}
+              <motion.div
+                className="w-3 h-3 rounded-full flex-shrink-0 border border-white/10 shadow-sm"
+                initial={false}
+                animate={{ backgroundColor: (skill as any).color || '#3b82f6' }}
               />
 
               {/* Name */}
               <input
                 value={skill.name}
+                aria-label="Skill name"
+                title="Skill name"
                 onChange={e => updateSkill(skill.id, { name: e.target.value })}
-                className="flex-1 min-w-0 bg-transparent text-xs text-white border-none outline-none"
+                className="flex-1 min-w-0 bg-transparent text-xs text-white border-none outline-none focus:ring-0"
               />
 
               {/* Proficiency stars */}
@@ -97,8 +98,11 @@ export function SkillEditor() {
                   <button
                     key={star}
                     onClick={() => updateSkill(skill.id, { proficiency: star })}
-                    className="transition-colors"
-                    style={{ color: star <= skill.proficiency ? '#f59e0b' : '#374151', fontSize: '10px' }}
+                    title={`Set proficiency to ${star}`}
+                    aria-label={`Set proficiency to ${star}`}
+                    className={`transition-colors text-[10px] ${
+                      star <= skill.proficiency ? 'text-amber-500' : 'text-gray-700'
+                    }`}
                   >
                     ★
                   </button>
@@ -108,6 +112,8 @@ export function SkillEditor() {
               {/* Delete */}
               <button
                 onClick={() => deleteSkill(skill.id)}
+                title="Delete skill"
+                aria-label="Delete skill"
                 className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
               >
                 <Trash2 size={10} />
@@ -125,8 +131,7 @@ export function SkillEditor() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={addSkill}
-        className="w-full py-2 rounded-xl text-xs font-medium border border-dashed transition-colors"
-        style={{ borderColor: 'rgba(59,130,246,0.3)', color: '#60a5fa' }}
+        className="w-full py-2 rounded-xl text-xs font-medium border border-dashed border-blue-500/30 text-blue-400 hover:bg-blue-500/5 transition-colors"
       >
         <Plus size={12} className="inline mr-1" />
         Add Skill to {activeCategory}

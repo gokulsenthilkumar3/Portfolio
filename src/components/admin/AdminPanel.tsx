@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, User, FolderGit2, Wrench, Briefcase, Link2, ChevronRight } from 'lucide-react'
+import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save } from 'lucide-react'
 import { useAdmin } from './AdminProvider'
 import { PersonalEditor } from './editors/PersonalEditor'
 import { ProjectEditor } from './editors/ProjectEditor'
 import { SkillEditor } from './editors/SkillEditor'
-import { ExperienceEditor } from './editors/ExperienceEditor'
+import { ResumeEditor } from './editors/ResumeEditor'
+import { AdminDashboard } from './editors/AdminDashboard'
 
 interface AdminPanelProps {
   isOpen: boolean
@@ -16,15 +17,16 @@ interface AdminPanelProps {
 }
 
 const tabs = [
+  { id: 'dashboard', label: 'Overview', icon: LayoutDashboard, description: 'Stats & Activity' },
   { id: 'personal', label: 'Personal', icon: User, description: 'Bio, contact, links' },
   { id: 'projects', label: 'Projects', icon: FolderGit2, description: 'Add, edit, remove projects' },
   { id: 'skills', label: 'Skills', icon: Wrench, description: 'Tech stack & proficiency' },
-  { id: 'experience', label: 'Experience', icon: Briefcase, description: 'Work history & roles' },
+  { id: 'resume', label: 'Resume', icon: Briefcase, description: 'Work & Education' },
 ]
 
-export function AdminPanel({ isOpen, onClose, initialTab = 'personal' }: AdminPanelProps) {
+export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState(initialTab)
-  const { isSaving } = useAdmin()
+  const { isSaving, persistData } = useAdmin()
 
   return (
     <AnimatePresence>
@@ -54,23 +56,36 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'personal' }: AdminPa
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b"
-              style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-            >
-              <div>
-                <h2 className="text-sm font-semibold text-white">Portfolio Editor</h2>
-                <p className="text-[10px] text-gray-500 mt-0.5">Changes save automatically</p>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider">Admin Panel</h2>
+                {isSaving && (
+                  <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                )}
               </div>
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors"
-              >
-                <X size={16} />
-              </button>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => persistData()}
+                  disabled={isSaving}
+                  className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-[11px] font-bold transition-all shadow-lg shadow-blue-500/20"
+                >
+                  <Save size={12} />
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                
+                <button 
+                  onClick={onClose}
+                  title="Close editor"
+                  className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex px-3 py-2 gap-1 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+            <div className="flex px-3 py-2 gap-1 border-b border-white/5">
               {tabs.map(tab => {
                 const Icon = tab.icon
                 const isActive = activeTab === tab.id
@@ -78,11 +93,11 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'personal' }: AdminPa
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className="flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all text-center"
-                    style={{
-                      background: isActive ? 'rgba(59,130,246,0.15)' : 'transparent',
-                      border: isActive ? '1px solid rgba(59,130,246,0.25)' : '1px solid transparent',
-                    }}
+                    className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all text-center border ${
+                      isActive 
+                        ? 'bg-blue-500/15 border-blue-500/25' 
+                        : 'bg-transparent border-transparent'
+                    }`}
                   >
                     <Icon size={14} className={isActive ? 'text-blue-400' : 'text-gray-500'} />
                     <span className={`text-[10px] font-medium ${isActive ? 'text-blue-300' : 'text-gray-500'}`}>
@@ -104,10 +119,11 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'personal' }: AdminPa
                   transition={{ duration: 0.2 }}
                   className="p-5"
                 >
+                  {activeTab === 'dashboard' && <AdminDashboard />}
                   {activeTab === 'personal' && <PersonalEditor />}
                   {activeTab === 'projects' && <ProjectEditor />}
                   {activeTab === 'skills' && <SkillEditor />}
-                  {activeTab === 'experience' && <ExperienceEditor />}
+                  {activeTab === 'resume' && <ResumeEditor />}
                 </motion.div>
               </AnimatePresence>
             </div>

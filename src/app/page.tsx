@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Section } from '@/components/shared/Section'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -10,7 +11,7 @@ import { TextReveal } from '@/components/effects/TextReveal'
 import { MagneticButton } from '@/components/effects/MagneticButton'
 import { FloatingModels } from '@/components/3d/FloatingModels'
 import { projects as staticProjects, siteConfig, skills as staticSkills } from '@/lib/data/content'
-import { getFeaturedProjects, getTopSkills } from '@/lib/utils/content-helpers'
+import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
 import type { Project } from '@/lib/types/portfolio'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/Button'
@@ -36,7 +37,7 @@ export default function Home() {
   const currentPersonal = isAdmin ? portfolioData.personal : siteConfig
 
   const featuredProjects = getFeaturedProjects(currentProjects)
-  const topSkills = getTopSkills(currentSkills as typeof staticSkills, 8)
+  const topSkills = getTopSkills(currentSkills as any, 8)
 
   const openPanel = (tab: string) => {
     setAdminPanelTab(tab)
@@ -55,60 +56,81 @@ export default function Home() {
       )}
 
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
-      <Section id="home" className="min-h-screen flex items-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
+      <Section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-20">
+        {/* Background 3D elements */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
           <Suspense fallback={null}>
             <FloatingModels className="w-full h-full" />
           </Suspense>
         </div>
 
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full">
-          <div className="max-w-4xl mx-auto px-4">
-            {/* Availability badge */}
-            <AnimatedSection animation="fadeIn" delay={0.1}>
-              <div className="mb-6">
-                <span className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-border bg-muted/50 text-muted-foreground">
-                  <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                  Currently not available for new roles
-                </span>
+          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
+            
+            {/* Left Side: Avatar */}
+            <AnimatedSection animation="scaleIn" delay={0.2} className="relative group">
+              <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-[3rem] overflow-hidden border-2 border-primary/20 shadow-2xl shadow-primary/10 transition-all duration-500 group-hover:rounded-[2rem] group-hover:border-primary/40">
+                <img 
+                  src={currentPersonal.avatar || "/gokul-photo.jpg"} 
+                  alt={currentPersonal.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
+              {/* Decorative rings */}
+              <div className="absolute -inset-4 border border-primary/10 rounded-[3.5rem] -z-10 animate-[spin_20s_linear_infinite]" />
+              <div className="absolute -inset-8 border border-primary/5 rounded-[4rem] -z-10 animate-[spin_30s_linear_infinite_reverse]" />
             </AnimatedSection>
 
-            {/* Name + Title — display font territory */}
-            <AnimatedSection animation="fadeIn" delay={0.2}>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                Gokul S
-              </h1>
-              <p className="text-xl md:text-2xl font-semibold text-muted-foreground mb-4">
-                {currentPersonal.title}
-              </p>
-            </AnimatedSection>
+            {/* Right Side: Content */}
+            <div className="flex-1 text-center md:text-left">
+              {/* Availability badge */}
+              <AnimatedSection animation="fadeIn" delay={0.1}>
+                <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary uppercase tracking-widest">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  {currentPersonal.availability === 'busy' ? 'Currently focusing on core projects' : 'Available for new opportunities'}
+                </div>
+              </AnimatedSection>
 
-            {/* Tagline */}
-            <AnimatedSection animation="slideUp" delay={0.4}>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mb-8 leading-relaxed">
-                {currentPersonal.bio}
-              </p>
-            </AnimatedSection>
+              {/* Name + Title */}
+              <AnimatedSection animation="fadeIn" delay={0.3}>
+                <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 leading-none font-display">
+                  {currentPersonal.name.split(' ')[0]} <span className="text-primary">{currentPersonal.name.split(' ')[1]}</span>
+                </h1>
+                <p className="text-xl md:text-3xl font-bold text-muted-foreground/80 mb-6 tracking-tight">
+                  {currentPersonal.title}
+                </p>
+              </AnimatedSection>
 
-            {/* Single primary CTA + secondary */}
-            <AnimatedSection animation="slideUp" delay={0.6}>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <MagneticButton>
-                  <Link href="#projects" className={cn(buttonVariants({ size: 'lg' }), "px-8")}>
-                    View My Work
+              {/* Tagline */}
+              <AnimatedSection animation="slideUp" delay={0.5}>
+                <p className="text-base md:text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed font-medium">
+                  {currentPersonal.bio}
+                </p>
+              </AnimatedSection>
+
+              {/* CTAs */}
+              <AnimatedSection animation="slideUp" delay={0.7}>
+                <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                  <MagneticButton>
+                    <Link href="#projects" className={cn(buttonVariants({ size: 'lg' }), "px-10 h-14 text-base font-bold rounded-2xl shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]")}>
+                      Explore Projects
+                    </Link>
+                  </MagneticButton>
+                  <Link
+                    href={currentPersonal.resume || "/Gokul_S_Resume.pdf"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), "px-10 h-14 text-base font-bold rounded-2xl border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10")}
+                  >
+                    Download CV
                   </Link>
-                </MagneticButton>
-                <Link
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), "px-8")}
-                >
-                  Download Résumé
-                </Link>
-              </div>
-            </AnimatedSection>
+                </div>
+              </AnimatedSection>
+            </div>
           </div>
         </EditableSection>
       </Section>
@@ -117,7 +139,7 @@ export default function Home() {
       <Section id="about" background="muted">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection animation="slideDown">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>About Me</h2>
+            <h2 className="text-3xl font-bold mb-2 font-display">About Me</h2>
             <p className="text-muted-foreground mb-10">SDET by day, builder by night.</p>
           </AnimatedSection>
 
@@ -128,7 +150,7 @@ export default function Home() {
               <AnimatedSection animation="slideLeft" delay={0.2} className="md:col-span-2">
                 <Card className="h-full">
                   <CardHeader>
-                    <CardTitle style={{ fontFamily: 'var(--font-display)' }}>Quality Engineering</CardTitle>
+                    <CardTitle className="font-display">Quality Engineering</CardTitle>
                     <CardDescription>Automated testing, load testing, CI/CD quality gates</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -151,7 +173,7 @@ export default function Home() {
                 <AnimatedSection animation="slideRight" delay={0.3}>
                   <Card className="h-full">
                     <CardHeader>
-                      <CardTitle className="text-base" style={{ fontFamily: 'var(--font-display)' }}>Full-Stack Dev</CardTitle>
+                      <CardTitle className="text-base font-display">Full-Stack Dev</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-1.5">
@@ -167,7 +189,7 @@ export default function Home() {
                 <AnimatedSection animation="slideRight" delay={0.4}>
                   <Card className="h-full">
                     <CardHeader>
-                      <CardTitle className="text-base" style={{ fontFamily: 'var(--font-display)' }}>Education</CardTitle>
+                      <CardTitle className="text-base font-display">Education</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-xs text-muted-foreground">MS Software Systems</p>
@@ -194,7 +216,7 @@ export default function Home() {
       <Section id="skills">
         <div className="max-w-6xl mx-auto">
           <AnimatedSection animation="fadeIn">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>Core Skills</h2>
+            <h2 className="text-3xl font-bold mb-2 font-display">Core Skills</h2>
             <p className="text-muted-foreground mb-10">Tools and tech I work with every day.</p>
           </AnimatedSection>
 
@@ -206,9 +228,10 @@ export default function Home() {
                     key={skill.id}
                     className="flex items-center gap-2.5 p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors"
                   >
-                    <span
+                    <motion.span
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: skill.color || '#6366f1' }}
+                      initial={false}
+                      animate={{ backgroundColor: skill.color || '#6366f1' }}
                     />
                     <span className="text-sm font-medium truncate">{skill.name}</span>
                   </div>
@@ -229,7 +252,7 @@ export default function Home() {
       <Section id="projects" background="muted">
         <div className="max-w-6xl mx-auto">
           <AnimatedSection animation="fadeIn">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>Featured Projects</h2>
+            <h2 className="text-3xl font-bold mb-2 font-display">Featured Projects</h2>
             <p className="text-muted-foreground mb-10">Things I&apos;ve built and shipped.</p>
           </AnimatedSection>
 
@@ -241,32 +264,23 @@ export default function Home() {
                   animation="scaleIn"
                   delay={0.1 * index}
                 >
-                  <Card className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden h-full flex flex-col">
-                    <div className="aspect-video bg-muted relative overflow-hidden">
-                      {project.images && project.images[0] ? (
-                        <img
-                          src={project.images[0]}
-                          alt={`${project.title} preview`}
-                          width={800}
-                          height={450}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm bg-secondary/20">
-                          {project.title}
-                        </div>
-                      )}
+                  <Card className="group h-full flex flex-col bg-background/40 backdrop-blur-md border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] overflow-hidden">
+                    <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
+                      <div className="relative z-10 p-4 rounded-full bg-background/50 backdrop-blur-xl border border-white/10 shadow-2xl group-hover:rotate-12 transition-transform duration-500">
+                        {getTechIcon(project.tech[0] || 'code', "h-12 w-12")}
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                      </div>
+                      
                       <div className="absolute bottom-2 left-2">
-                        <Badge variant="secondary" className="capitalize text-[10px] opacity-90 backdrop-blur-sm border-none">
+                        <Badge variant="secondary" className="capitalize text-[10px] bg-background/60 backdrop-blur-md border-white/5 opacity-90">
                           {project.category}
                         </Badge>
                       </div>
                     </div>
 
                     <CardHeader>
-                      <CardTitle className="text-lg line-clamp-1" style={{ fontFamily: 'var(--font-display)' }}>{project.title}</CardTitle>
+                      <CardTitle className="text-lg line-clamp-1 font-display">{project.title}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 flex-1 flex flex-col pt-0">
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-auto">
@@ -336,7 +350,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
             <AnimatedSection animation="fadeIn">
-              <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>Get In Touch</h2>
+              <h2 className="text-3xl font-bold mb-2 font-display">Get In Touch</h2>
               <p className="text-muted-foreground mb-8">
                 Not currently looking for new roles, but I&apos;m always happy to chat about interesting projects, open source, or just tech in general.
               </p>

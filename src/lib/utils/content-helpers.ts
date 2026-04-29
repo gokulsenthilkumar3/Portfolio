@@ -1,4 +1,7 @@
 import { Project, Skill, Experience } from '../types/portfolio'
+import { Code2, Zap, Terminal, Globe, Database, Cpu, Brain, Flame, LucideIcon } from 'lucide-react'
+import React from 'react'
+import { cn } from './cn'
 
 // Project helpers
 export const filterProjects = (projects: Project[], category?: string) => {
@@ -74,13 +77,17 @@ export const getExperienceDuration = (experience: Experience) => {
 
 // Date helpers
 export const formatDate = (date: string, options: Intl.DateTimeFormatOptions = {}) => {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return date || ''
+  
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     ...options
   }
   
-  return new Date(date).toLocaleDateString('en-US', defaultOptions)
+  return d.toLocaleDateString('en-US', defaultOptions)
 }
 
 export const formatDateShort = (date: string) => {
@@ -158,4 +165,35 @@ export const generateReadingTime = (content: string) => {
   const wordsPerMinute = 200
   const words = content.trim().split(/\s+/).length
   return Math.ceil(words / wordsPerMinute)
+}
+
+/**
+ * Maps technology names to representative Lucide icons
+ */
+export function getTechIcon(tech: string, className = "h-4 w-4") {
+  const t = tech.toLowerCase()
+  
+  const iconMap: Record<string, { icon: LucideIcon; color: string }> = {
+    'react': { icon: Code2, color: 'text-blue-400' },
+    'next': { icon: Code2, color: 'text-blue-400' },
+    'node': { icon: Zap, color: 'text-green-400' },
+    'express': { icon: Zap, color: 'text-green-400' },
+    'python': { icon: Terminal, color: 'text-yellow-400' },
+    'php': { icon: Globe, color: 'text-indigo-400' },
+    'sql': { icon: Database, color: 'text-orange-400' },
+    'mysql': { icon: Database, color: 'text-orange-400' },
+    'postgres': { icon: Database, color: 'text-blue-500' },
+    'mongodb': { icon: Database, color: 'text-green-500' },
+    'raspberry': { icon: Cpu, color: 'text-red-400' },
+    'iot': { icon: Cpu, color: 'text-red-400' },
+    'dl': { icon: Brain, color: 'text-purple-400' },
+    'ai': { icon: Brain, color: 'text-purple-400' },
+    'learning': { icon: Brain, color: 'text-purple-400' },
+    'firebase': { icon: Flame, color: 'text-orange-500' },
+  }
+
+  const match = Object.keys(iconMap).find(key => t.includes(key))
+  const { icon: Icon, color } = match ? iconMap[match] : { icon: Code2, color: 'text-muted-foreground' }
+  
+  return React.createElement(Icon, { className: cn(className, color) })
 }

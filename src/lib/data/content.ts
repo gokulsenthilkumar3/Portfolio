@@ -25,3 +25,4 @@ export const socialLinks = portfolioConfig.socialLinks
 export const stats = portfolioConfig.stats
 export const theme = portfolioConfig.theme
 export const seo = portfolioConfig.seo
+export const personal = portfolioConfig.personal

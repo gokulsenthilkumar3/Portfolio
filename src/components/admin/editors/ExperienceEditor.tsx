@@ -53,8 +53,7 @@ export function ExperienceEditor() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setEditing({ ...BLANK, id: Date.now().toString() })}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
-          style={{ background: 'rgba(59,130,246,0.2)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)' }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30"
         >
           <Plus size={12} /> Add Experience
         </motion.button>
@@ -64,8 +63,7 @@ export function ExperienceEditor() {
         <motion.div
           key={exp.id}
           layout
-          className="p-3 rounded-xl space-y-1"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          className="p-3 rounded-xl space-y-1 bg-white/[0.03] border border-white/[0.06]"
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -78,12 +76,16 @@ export function ExperienceEditor() {
             <div className="flex gap-1 flex-shrink-0">
               <button
                 onClick={() => setEditing(exp)}
+                title="Edit experience"
+                aria-label="Edit experience"
                 className="p-1 rounded text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
               >
                 <Pencil size={10} />
               </button>
               <button
                 onClick={() => handleDelete(exp.id)}
+                title="Delete experience"
+                aria-label="Delete experience"
                 className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
               >
                 <Trash2 size={10} />
@@ -132,18 +134,13 @@ function ExperienceForm({
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="w-[440px] max-w-[95vw] max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4"
-        style={{
-          background: 'rgba(10,15,30,0.98)',
-          border: '1px solid rgba(59,130,246,0.2)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
-        }}
+        className="w-[440px] max-w-[95vw] max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4 bg-[#0a0f1e]/98 border border-blue-500/20 shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
       >
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">
             {experience.id ? 'Edit Experience' : 'New Experience'}
           </h3>
-          <button onClick={onCancel} className="p-1 rounded text-gray-500 hover:text-gray-300">
+          <button onClick={onCancel} title="Cancel" aria-label="Cancel" className="p-1 rounded text-gray-500 hover:text-gray-300">
             <X size={14} />
           </button>
         </div>
@@ -155,9 +152,11 @@ function ExperienceForm({
             { key: 'location', label: 'Location' },
           ].map(f => (
             <div key={f.key}>
-              <label className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
+              <label htmlFor={`exp-${f.key}`} className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
               <input
+                id={`exp-${f.key}`}
                 value={(form as Record<string, string>)[f.key] || ''}
+                placeholder={f.label}
                 onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               />
@@ -166,18 +165,22 @@ function ExperienceForm({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] text-gray-400 mb-1">Start Date</label>
+              <label htmlFor="exp-start" className="block text-[11px] text-gray-400 mb-1">Start Date</label>
               <input
+                id="exp-start"
                 type="date"
+                title="Start Date"
                 value={form.period?.start || ''}
                 onChange={e => setForm(prev => ({ ...prev, period: { ...prev.period, start: e.target.value } }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] text-gray-400 mb-1">End Date</label>
+              <label htmlFor="exp-end" className="block text-[11px] text-gray-400 mb-1">End Date</label>
               <input
+                id="exp-end"
                 type="date"
+                title="End Date"
                 value={form.period?.end || ''}
                 disabled={form.period?.present}
                 onChange={e => setForm(prev => ({ ...prev, period: { ...prev.period, end: e.target.value } }))}
@@ -196,14 +199,16 @@ function ExperienceForm({
           </label>
 
           <div>
-            <label className="block text-[11px] text-gray-400 mb-1">Employment Type</label>
+            <label htmlFor="exp-type" className="block text-[11px] text-gray-400 mb-1">Employment Type</label>
             <select
+              id="exp-type"
+              title="Employment Type"
               value={form.type}
               onChange={e => setForm(prev => ({ ...prev, type: e.target.value as Experience['type'] }))}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
             >
               {['full-time', 'part-time', 'contract', 'freelance', 'internship'].map(t => (
-                <option key={t} value={t} className="bg-gray-900">{t}</option>
+                <option key={t} value={t} className="bg-gray-900 text-white">{t}</option>
               ))}
             </select>
           </div>
@@ -226,9 +231,11 @@ function ExperienceForm({
           </div>
 
           <div>
-            <label className="block text-[11px] text-gray-400 mb-1">Technologies (comma-separated)</label>
+            <label htmlFor="exp-tech" className="block text-[11px] text-gray-400 mb-1">Technologies (comma-separated)</label>
             <input
+              id="exp-tech"
               value={form.technologies?.join(', ') || ''}
+              placeholder="e.g. React, TypeScript, Node.js"
               onChange={e => setForm(prev => ({
                 ...prev,
                 technologies: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
@@ -249,8 +256,7 @@ function ExperienceForm({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSave(form)}
-            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-gradient-to-br from-blue-500 to-indigo-600"
           >
             Save Experience
           </motion.button>
