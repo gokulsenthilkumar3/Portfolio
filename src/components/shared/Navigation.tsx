@@ -43,7 +43,8 @@ export function Navigation() {
   }, [])
 
   const scrollToSection = (href: string, id: string) => {
-    if (pathname !== '/') {
+    const isHome = pathname === '/' || pathname === (process.env.NEXT_PUBLIC_BASE_PATH || '') + '/'
+    if (!isHome) {
       router.push(href)
       return
     }

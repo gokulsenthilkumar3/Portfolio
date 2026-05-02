@@ -49,7 +49,7 @@ const defaultData: PortfolioData = {
   skills: portfolioConfig.skills as Skill[],
   experiences: portfolioConfig.experiences as Experience[],
   education: portfolioConfig.education,
-  socialLinks: portfolioConfig.socialLinks as SocialLink[],
+  socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
   seo: portfolioConfig.seo,
 }
 
@@ -139,7 +139,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // Persist data to server (development only)
   const persistData = useCallback(async (): Promise<boolean> => {
     try {
-      const res = await fetch('/api/admin/save', {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+      const apiPath = `${basePath}/api/admin/save`.replace(/\/+/g, '/')
+      
+      console.log('DEBUG: Persisting data to', apiPath)
+      
+      const res = await fetch(apiPath, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(portfolioData),
