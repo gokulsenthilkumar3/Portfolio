@@ -3,6 +3,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { portfolioConfig } from '@/config/portfolio.config'
 import { toast } from 'sonner'
+import { 
+  Project, 
+  Skill, 
+  Experience, 
+  SiteConfig,
+  SocialLink
+} from '@/lib/types/portfolio'
 
 const STORAGE_KEY = 'portfolio_data_v1'
 const SESSION_KEY = 'portfolio_admin_session'
@@ -11,13 +18,13 @@ const SESSION_KEY = 'portfolio_admin_session'
 const PIN_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
 
 interface PortfolioData {
-  personal: typeof portfolioConfig.personal
+  personal: SiteConfig
   stats: typeof portfolioConfig.stats
-  projects: typeof portfolioConfig.projects
-  skills: typeof portfolioConfig.skills
-  experiences: typeof portfolioConfig.experiences
+  projects: Project[]
+  skills: Skill[]
+  experiences: Experience[]
   education: typeof portfolioConfig.education
-  socialLinks: typeof portfolioConfig.socialLinks
+  socialLinks: SocialLink[]
   seo: typeof portfolioConfig.seo
 }
 
@@ -36,13 +43,13 @@ interface AdminContextType {
 export type { PortfolioData }
 
 const defaultData: PortfolioData = {
-  personal: portfolioConfig.personal,
+  personal: portfolioConfig.personal as SiteConfig,
   stats: portfolioConfig.stats,
-  projects: portfolioConfig.projects as typeof portfolioConfig.projects,
-  skills: portfolioConfig.skills,
-  experiences: portfolioConfig.experiences,
+  projects: portfolioConfig.projects as Project[],
+  skills: portfolioConfig.skills as Skill[],
+  experiences: portfolioConfig.experiences as Experience[],
   education: portfolioConfig.education,
-  socialLinks: portfolioConfig.socialLinks,
+  socialLinks: portfolioConfig.socialLinks as SocialLink[],
   seo: portfolioConfig.seo,
 }
 

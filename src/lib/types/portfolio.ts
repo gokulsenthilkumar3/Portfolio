@@ -10,10 +10,10 @@ export interface Project {
     demo?: string
   }
   featured: boolean
-  category: 'web' | 'mobile' | '3d' | 'ai' | 'other'
-  tags: string[]
-  date: string
-  status: 'completed' | 'in-progress' | 'planned'
+  category: 'web' | 'mobile' | '3d' | 'ai' | 'fullstack' | 'iot' | 'other'
+  tags?: string[]
+  date?: string
+  status?: 'completed' | 'in-progress' | 'planned'
 }
 
 export interface Skill {
@@ -36,10 +36,10 @@ export interface Experience {
     end?: string
     present?: boolean
   }
-  description: string[]
+  description: string | string[]
   technologies: string[]
   location?: string
-  type: 'full-time' | 'part-time' | 'freelance' | 'internship'
+  type?: 'full-time' | 'part-time' | 'freelance' | 'internship'
 }
 
 export interface SocialLink {
@@ -62,6 +62,10 @@ export interface SiteConfig {
   tagline: string
   resume?: string
   avatar?: string
+  github?: string
+  linkedin?: string
+  twitter?: string
+  website?: string
 }
 
 export interface Testimonial {
