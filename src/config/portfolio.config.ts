@@ -18,6 +18,18 @@ export const portfolioConfig = {
     twitter: "https://x.com/GokulKangeyanS",
     website: "https://portfolio-ten-plum-98.vercel.app"
   },
+  // 📝 WEBSITE CONTENT (ABOUT & CONTACT)
+  about: {
+    title: "About Me",
+    subtitle: "SDET by day, builder by night.",
+    featuredTitle: "Quality Engineering",
+    featuredDesc: "Automated testing, load testing, CI/CD quality gates",
+    featuredLong: "At CloudAssert I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines — making sure software ships without surprises.",
+    secondaryTitle: "Full-Stack Dev",
+    secondarySkills: ["React", "Next.js", "PERN", "Node.js"],
+    contactHeading: "Get In Touch",
+    contactDesc: "Not currently looking for new roles, but I'm always happy to chat about interesting projects, open source, or just tech in general.",
+  },
   // 🎨 THEME & APPEARANCE
   theme: {
     defaultTheme: "dark" as "dark" | "light" | "neon" | "pastel" | "cyberpunk",
@@ -213,4 +225,4 @@ export const portfolioConfig = {
   }
 }
 
-export const { personal, theme, stats, projects, skills, experiences, education, socialLinks, seo } = portfolioConfig
+export const { personal, about, theme, stats, projects, skills, experiences, education, socialLinks, seo } = portfolioConfig

@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save } from 'lucide-react'
-import { useAdmin } from './AdminProvider'
+import { AdminDashboard } from './editors/AdminDashboard'
+import { ContentEditor } from './editors/ContentEditor'
 import { PersonalEditor } from './editors/PersonalEditor'
 import { ProjectEditor } from './editors/ProjectEditor'
 import { SkillEditor } from './editors/SkillEditor'
 import { ResumeEditor } from './editors/ResumeEditor'
-import { AdminDashboard } from './editors/AdminDashboard'
+import { useAdmin } from './AdminProvider'
+import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save, FileText } from 'lucide-react'
 
 interface AdminPanelProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ interface AdminPanelProps {
 const tabs = [
   { id: 'dashboard', label: 'Overview', icon: LayoutDashboard, description: 'Stats & Activity' },
   { id: 'personal', label: 'Personal', icon: User, description: 'Bio, contact, links' },
+  { id: 'content', label: 'Content', icon: FileText, description: 'Landing page text' },
   { id: 'projects', label: 'Projects', icon: FolderGit2, description: 'Add, edit, remove projects' },
   { id: 'skills', label: 'Skills', icon: Wrench, description: 'Tech stack & proficiency' },
   { id: 'resume', label: 'Resume', icon: Briefcase, description: 'Work & Education' },
@@ -121,6 +123,7 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
                 >
                   {activeTab === 'dashboard' && <AdminDashboard />}
                   {activeTab === 'personal' && <PersonalEditor />}
+                  {activeTab === 'content' && <ContentEditor />}
                   {activeTab === 'projects' && <ProjectEditor />}
                   {activeTab === 'skills' && <SkillEditor />}
                   {activeTab === 'resume' && <ResumeEditor />}

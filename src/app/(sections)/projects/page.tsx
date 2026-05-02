@@ -143,8 +143,8 @@ export default function ProjectsPage() {
                       variant="secondary" 
                       className="text-[10px] bg-background/60 backdrop-blur-md border-white/5"
                     >
-                      <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusColor(project.status)}`} />
-                      {getStatusText(project.status)}
+                      <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusColor(project.status || '')}`} />
+                      {getStatusText(project.status || '')}
                     </Badge>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export default function ProjectsPage() {
                   {/* Date */}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    <span>{formatDate(project.date)}</span>
+                    <span>{formatDate(project.date || '')}</span>
                   </div>
                   
                   {/* Action Buttons */}

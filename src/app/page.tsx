@@ -35,6 +35,7 @@ export default function Home() {
     : staticSkills
 
   const currentPersonal = isAdmin ? portfolioData.personal : siteConfig
+  const currentAbout = isAdmin ? portfolioData.about : portfolioConfig.about
 
   const featuredProjects = getFeaturedProjects(currentProjects)
   const topSkills = getTopSkills(currentSkills as any, 8)
@@ -139,8 +140,8 @@ export default function Home() {
       <Section id="about" background="muted">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection animation="slideDown">
-            <h2 className="text-3xl font-bold mb-2 font-display">About Me</h2>
-            <p className="text-muted-foreground mb-10">SDET by day, builder by night.</p>
+            <h2 className="text-3xl font-bold mb-2 font-display">{currentAbout.title}</h2>
+            <p className="text-muted-foreground mb-10">{currentAbout.subtitle}</p>
           </AnimatedSection>
 
           <EditableSection label="About" onEdit={() => openPanel('personal')}>
@@ -150,13 +151,12 @@ export default function Home() {
               <AnimatedSection animation="slideLeft" delay={0.2} className="md:col-span-2">
                 <Card className="h-full">
                   <CardHeader>
-                    <CardTitle className="font-display">Quality Engineering</CardTitle>
-                    <CardDescription>Automated testing, load testing, CI/CD quality gates</CardDescription>
+                    <CardTitle className="font-display">{currentAbout.featuredTitle}</CardTitle>
+                    <CardDescription>{currentAbout.featuredDesc}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm leading-relaxed mb-4">
-                      At CloudAssert I design automated test frameworks, run performance tests with K6, and integrate
-                      quality gates into Azure DevOps pipelines — making sure software ships without surprises.
+                      {currentAbout.featuredLong}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <Badge>K6</Badge>
@@ -173,14 +173,13 @@ export default function Home() {
                 <AnimatedSection animation="slideRight" delay={0.3}>
                   <Card className="h-full">
                     <CardHeader>
-                      <CardTitle className="text-base font-display">Full-Stack Dev</CardTitle>
+                      <CardTitle className="text-base font-display">{currentAbout.secondaryTitle}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-1.5">
-                        <Badge variant="secondary">React</Badge>
-                        <Badge variant="secondary">Next.js</Badge>
-                        <Badge variant="secondary">PERN</Badge>
-                        <Badge variant="secondary">Node.js</Badge>
+                        {currentAbout.secondarySkills.map((skill) => (
+                          <Badge key={skill} variant="secondary">{skill}</Badge>
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
@@ -191,10 +190,14 @@ export default function Home() {
                     <CardHeader>
                       <CardTitle className="text-base font-display">Education</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-xs text-muted-foreground">MS Software Systems</p>
-                      <p className="text-xs font-medium mt-0.5">Kongu Engineering College</p>
-                      <p className="text-xs text-muted-foreground mt-1">2020 – 2025</p>
+                    <CardContent className="space-y-3">
+                      {portfolioData.education.map((edu) => (
+                        <div key={edu.id}>
+                          <p className="text-xs text-muted-foreground">{edu.degree} {edu.field}</p>
+                          <p className="text-xs font-medium mt-0.5">{edu.institution}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{edu.period.start} – {edu.period.end}</p>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 </AnimatedSection>
@@ -350,9 +353,9 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
             <AnimatedSection animation="fadeIn">
-              <h2 className="text-3xl font-bold mb-2 font-display">Get In Touch</h2>
+              <h2 className="text-3xl font-bold mb-2 font-display">{currentAbout.contactHeading}</h2>
               <p className="text-muted-foreground mb-8">
-                Not currently looking for new roles, but I&apos;m always happy to chat about interesting projects, open source, or just tech in general.
+                {currentAbout.contactDesc}
               </p>
             </AnimatedSection>
 

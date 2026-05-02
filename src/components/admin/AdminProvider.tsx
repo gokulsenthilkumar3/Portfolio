@@ -19,6 +19,7 @@ const PIN_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c
 
 interface PortfolioData {
   personal: SiteConfig
+  about: typeof portfolioConfig.about
   stats: typeof portfolioConfig.stats
   projects: Project[]
   skills: Skill[]
@@ -44,12 +45,13 @@ export type { PortfolioData }
 
 const defaultData: PortfolioData = {
   personal: portfolioConfig.personal as SiteConfig,
+  about: portfolioConfig.about,
   stats: portfolioConfig.stats,
   projects: portfolioConfig.projects as Project[],
   skills: portfolioConfig.skills as Skill[],
   experiences: portfolioConfig.experiences as Experience[],
   education: portfolioConfig.education,
-  socialLinks: portfolioConfig.socialLinks as SocialLink[],
+  socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
   seo: portfolioConfig.seo,
 }
 
@@ -139,7 +141,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // Persist data to server (development only)
   const persistData = useCallback(async (): Promise<boolean> => {
     try {
-      const res = await fetch('/api/admin/save', {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+      const apiPath = `${basePath}/api/admin/save`.replace(/\/+/g, '/')
+      
+      console.log('DEBUG: Persisting data to', apiPath)
+      
+      const res = await fetch(apiPath, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(portfolioData),

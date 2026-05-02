@@ -28,8 +28,8 @@ export const searchProjects = (projects: Project[], query: string) => {
   return projects.filter(project =>
     project.title.toLowerCase().includes(lowercaseQuery) ||
     project.description.toLowerCase().includes(lowercaseQuery) ||
-    project.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
-    project.tech.some(t => t.toLowerCase().includes(lowercaseQuery))
+    (project.tags || []).some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
+    (project.tech || []).some(t => t.toLowerCase().includes(lowercaseQuery))
   )
 }
 
