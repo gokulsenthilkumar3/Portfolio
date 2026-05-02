@@ -10,7 +10,7 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { TextReveal } from '@/components/effects/TextReveal'
 import { MagneticButton } from '@/components/effects/MagneticButton'
 import { FloatingModels } from '@/components/3d/FloatingModels'
-import { projects as staticProjects, siteConfig, skills as staticSkills } from '@/lib/data/content'
+import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
 import type { Project } from '@/lib/types/portfolio'
 import Link from 'next/link'
@@ -35,7 +35,7 @@ export default function Home() {
     : staticSkills
 
   const currentPersonal = isAdmin ? portfolioData.personal : siteConfig
-  const currentAbout = isAdmin ? portfolioData.about : portfolioConfig.about
+  const currentAbout = isAdmin ? portfolioData.about : staticAbout
 
   const featuredProjects = getFeaturedProjects(currentProjects)
   const topSkills = getTopSkills(currentSkills as any, 8)
