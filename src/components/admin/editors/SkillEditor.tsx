@@ -4,9 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, GripVertical } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
-import { portfolioConfig } from '@/config/portfolio.config'
-
-type Skill = (typeof portfolioConfig.skills)[0]
+import { Skill } from '@/lib/types/portfolio'
 
 const CATEGORIES = ['frontend', 'backend', 'tools', 'design', 'soft-skills'] as const
 
