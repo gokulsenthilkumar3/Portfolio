@@ -114,3 +114,14 @@ export interface ThemeCustomization {
   highContrast: boolean
   disable3D: boolean
 }
+export interface AboutConfig {
+  title: string
+  subtitle: string
+  featuredTitle: string
+  featuredDesc: string
+  featuredLong: string
+  secondaryTitle: string
+  secondarySkills: string[]
+  contactHeading: string
+  contactDesc: string
+}
