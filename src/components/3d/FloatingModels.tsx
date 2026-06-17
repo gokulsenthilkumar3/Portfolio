@@ -5,18 +5,29 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Float } from '@react-three/drei'
 import * as THREE from 'three'
 
-function FloatingShape({ position, color, geometry }: { 
+function FloatingShape({
+  position,
+  color,
+  geometry,
+}: {
   position: [number, number, number]
   color: string
   geometry: 'box' | 'sphere' | 'torus' | 'cone'
 }) {
   const meshRef = useRef<THREE.Mesh>(null)
 
+  // NOTE: frameloop="always" is required here.
+  // frameloop="demand" only re-renders when React state changes,
+  // but useFrame mutations (rotation, position) are imperative and
+  // never trigger a React re-render — so the animation silently stops
+  // and R3F can throw internally when the render queue stalls.
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.x += 0.001
       meshRef.current.rotation.y += 0.002
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime + position[0]) * 0.1
+      meshRef.current.position.y =
+        position[1] +
+        Math.sin(state.clock.elapsedTime + position[0]) * 0.1
     }
   })
 
@@ -25,11 +36,14 @@ function FloatingShape({ position, color, geometry }: {
       case 'box':
         return <boxGeometry args={[1, 1, 1]} />
       case 'sphere':
-        return <sphereGeometry args={[0.5, 32, 32]} />
+        // Reduced segments: 32,32 → 16,16 (~4x fewer vertices, visually identical)
+        return <sphereGeometry args={[0.5, 16, 16]} />
       case 'torus':
-        return <torusGeometry args={[0.5, 0.2, 16, 32]} />
+        // Reduced segments: 16,32 → 12,16 (~2.5x fewer)
+        return <torusGeometry args={[0.5, 0.2, 12, 16]} />
       case 'cone':
-        return <coneGeometry args={[0.5, 1, 32]} />
+        // Reduced segments: 32 → 12 (~2.5x fewer)
+        return <coneGeometry args={[0.5, 1, 12]} />
       default:
         return <boxGeometry args={[1, 1, 1]} />
     }
@@ -39,8 +53,8 @@ function FloatingShape({ position, color, geometry }: {
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
       <mesh ref={meshRef} position={position}>
         {GeometryComponent}
-        <meshStandardMaterial 
-          color={color} 
+        <meshStandardMaterial
+          color={color}
           metalness={0.4}
           roughness={0.5}
           emissive={color}
@@ -56,16 +70,42 @@ interface FloatingModelsProps {
   theme?: 'dark' | 'light' | 'neon' | 'pastel' | 'cyberpunk'
 }
 
-export function FloatingModels({ className, theme = 'dark' }: FloatingModelsProps) {
-  const shapes = useMemo(() => [
-    { position: [-4, 2, -2] as [number, number, number], color: '#3b82f6', geometry: 'box' as const },
-    { position: [4, -1, -3] as [number, number, number], color: '#8b5cf6', geometry: 'sphere' as const },
-    { position: [0, 3, -1] as [number, number, number], color: '#ec4899', geometry: 'torus' as const },
-    { position: [-2, -2, -2] as [number, number, number], color: '#10b981', geometry: 'cone' as const },
-    { position: [3, 4, -4] as [number, number, number], color: '#f59e0b', geometry: 'box' as const },
-  ], [])
+export function FloatingModels({
+  className,
+  theme = 'dark',
+}: FloatingModelsProps) {
+  const shapes = useMemo(
+    () => [
+      {
+        position: [-4, 2, -2] as [number, number, number],
+        color: '#3b82f6',
+        geometry: 'box' as const,
+      },
+      {
+        position: [4, -1, -3] as [number, number, number],
+        color: '#8b5cf6',
+        geometry: 'sphere' as const,
+      },
+      {
+        position: [0, 3, -1] as [number, number, number],
+        color: '#ec4899',
+        geometry: 'torus' as const,
+      },
+      {
+        position: [-2, -2, -2] as [number, number, number],
+        color: '#10b981',
+        geometry: 'cone' as const,
+      },
+      {
+        position: [3, 4, -4] as [number, number, number],
+        color: '#f59e0b',
+        geometry: 'box' as const,
+      },
+    ],
+    []
+  )
 
-  const getThemeColors = () => {
+  const themeColors = useMemo(() => {
     switch (theme) {
       case 'neon':
         return { fog: '#1a0033', ambient: 0.2 }
@@ -78,22 +118,23 @@ export function FloatingModels({ className, theme = 'dark' }: FloatingModelsProp
       default:
         return { fog: '#0f172a', ambient: 0.4 }
     }
-  }
-
-  const themeColors = getThemeColors()
+  }, [theme])
 
   return (
     <div className={className}>
+      {/* frameloop="always" is required because useFrame mutations
+          are imperative — demand mode never re-renders from them. */}
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{ background: 'transparent' }}
+        frameloop="always"
       >
         <ambientLight intensity={themeColors.ambient} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[-10, -10, -5]} intensity={0.5} />
-        
+
         <fog attach="fog" args={[themeColors.fog, 10, 50]} />
-        
+
         {shapes.map((shape, index) => (
           <FloatingShape
             key={index}
@@ -102,8 +143,8 @@ export function FloatingModels({ className, theme = 'dark' }: FloatingModelsProp
             geometry={shape.geometry}
           />
         ))}
-        
-        <OrbitControls 
+
+        <OrbitControls
           enableZoom={false}
           enablePan={false}
           autoRotate

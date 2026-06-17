@@ -23,13 +23,13 @@
     },
     {
       "label": "Projects Built",
-      "value": 10,
+      "value": 14,
       "suffix": "+",
       "duration": 2200
     },
     {
       "label": "GitHub Repos",
-      "value": 13,
+      "value": 40,
       "suffix": "+",
       "duration": 2400
     },
@@ -42,20 +42,79 @@
   ],
   "projects": [
     {
+      "id": "vaultiq",
+      "title": "VaultIQ",
+      "description": "Centralized office asset management system to track, assign, and manage organizational assets — hardware, software licenses, and equipment — with real-time status updates and audit logs.",
+      "tech": ["TypeScript", "Next.js", "PostgreSQL", "Tailwind CSS"],
+      "category": "fullstack",
+      "featured": true,
+      "images": ["/projects/vaultiq.png"],
+      "date": "2026-05-05",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/VaultIQ",
+        "live": "https://gokulsenthilkumar3.github.io/VaultIQ"
+      }
+    },
+    {
+      "id": "oxfin",
+      "title": "OxFin",
+      "description": "Full-featured personal finance dashboard supporting income tracking, expense categorization, budget planning, and investment insights. Data-first UX philosophy with a clean, distraction-free interface.",
+      "tech": ["TypeScript", "React", "Node.js", "PostgreSQL"],
+      "category": "fullstack",
+      "featured": true,
+      "images": ["/projects/oxfin.png"],
+      "date": "2026-01-31",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/OxFin"
+      }
+    },
+    {
+      "id": "forex-ensemble-prediction",
+      "title": "Forex Ensemble Prediction",
+      "description": "Ensemble machine learning project applying Random Forest, Gradient Boosting, and stacking to forecast Forex currency pair movements. Focused on model interpretability and reproducible pipelines.",
+      "tech": ["Python", "Jupyter Notebook", "Scikit-learn", "Pandas"],
+      "category": "ai",
+      "featured": true,
+      "images": ["/projects/forex-ensemble.png"],
+      "date": "2026-05-02",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/Forex-Ensemble-Prediction"
+      }
+    },
+    {
+      "id": "stackforge",
+      "title": "StackForge",
+      "description": "CLI tool that scaffolds production-ready monorepos in one command — Next.js frontend, NestJS backend, Supabase PostgreSQL, Redis, Docker Compose, and GitHub Actions CI/CD. Opinionated and battle-tested.",
+      "tech": ["TypeScript", "Node.js", "Docker", "GitHub Actions"],
+      "category": "tools",
+      "featured": true,
+      "images": ["/projects/stackforge.png"],
+      "date": "2026-05-15",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/StackForge"
+      }
+    },
+    {
+      "id": "backtestiq",
+      "title": "BacktestIQ",
+      "description": "Options and equity strategy backtester for Indian markets (NSE F&O) — test Iron Condor, Straddle, and momentum strategies against historical data. Python backend with a Next.js results dashboard.",
+      "tech": ["Python", "Jupyter", "Next.js", "TypeScript"],
+      "category": "ai",
+      "featured": false,
+      "images": ["/projects/backtestiq.png"],
+      "date": "2026-05-15",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/BacktestIQ"
+      }
+    },
+    {
       "id": "weaver-book",
       "title": "Weaver Book",
       "description": "Inventory management web app for the weaving sector. Automated vendor sync reduced manual errors by 60%.",
-      "tech": [
-        "PHP",
-        "MySQL",
-        "HTML",
-        "CSS"
-      ],
+      "tech": ["PHP", "MySQL", "HTML", "CSS"],
       "category": "web",
       "featured": true,
-      "images": [
-        "/projects/weaver-book.png"
-      ],
+      "images": ["/projects/weaver-book.png"],
       "date": "2023-01-15",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3"
@@ -65,17 +124,10 @@
       "id": "car-renovation-spa",
       "title": "Car Renovation Spa",
       "description": "Full-stack car service booking platform with real-time renovation progress tracking and appointment management.",
-      "tech": [
-        "React.js",
-        "Node.js",
-        "MongoDB",
-        "Express"
-      ],
+      "tech": ["React.js", "Node.js", "MongoDB", "Express"],
       "category": "fullstack",
       "featured": true,
-      "images": [
-        "/projects/car-spa.png"
-      ],
+      "images": ["/projects/car-spa.png"],
       "date": "2023-05-20",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3"
@@ -85,37 +137,23 @@
       "id": "expense-tracker",
       "title": "Expense Tracker",
       "description": "Daily expense monitor with MongoDB aggregation-powered chart analytics and category-based insights.",
-      "tech": [
-        "React.js",
-        "Node.js",
-        "MongoDB",
-        "Express"
-      ],
+      "tech": ["JavaScript", "Node.js", "MongoDB", "Express"],
       "category": "fullstack",
-      "featured": true,
-      "images": [
-        "/projects/expense-tracker.png"
-      ],
-      "date": "2023-08-10",
+      "featured": false,
+      "images": ["/projects/expense-tracker.png"],
+      "date": "2024-08-15",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
+        "github": "https://github.com/gokulsenthilkumar3/Expense-Tracker"
       }
     },
     {
       "id": "maruti-opticals",
       "title": "Maruti Opticals",
       "description": "E-commerce platform for optical businesses with advanced product filters and optimized MySQL queries.",
-      "tech": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "MySQL"
-      ],
+      "tech": ["HTML", "CSS", "JavaScript", "MySQL"],
       "category": "web",
-      "featured": true,
-      "images": [
-        "/projects/maruti-opticals.png"
-      ],
+      "featured": false,
+      "images": ["/projects/maruti-opticals.png"],
       "date": "2022-12-05",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3"
@@ -125,17 +163,10 @@
       "id": "digital-notice-board",
       "title": "Digital Notice Board",
       "description": "Smart Raspberry Pi notice board with a web-based remote scheduling interface for institutions.",
-      "tech": [
-        "Raspberry Pi",
-        "Python",
-        "HTML",
-        "CSS"
-      ],
+      "tech": ["Raspberry Pi", "Python", "HTML", "CSS"],
       "category": "iot",
-      "featured": true,
-      "images": [
-        "/projects/notice-board.png"
-      ],
+      "featured": false,
+      "images": ["/projects/notice-board.png"],
       "date": "2023-03-25",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3"
@@ -145,57 +176,23 @@
       "id": "forex-prediction",
       "title": "Forex Prediction (IEEE)",
       "description": "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
-      "tech": [
-        "Python",
-        "TensorFlow",
-        "Deep Learning",
-        "GRU"
-      ],
+      "tech": ["Python", "TensorFlow", "Deep Learning", "GRU"],
       "category": "ai",
       "featured": true,
-      "images": [
-        "/projects/forex-prediction.png"
-      ],
+      "images": ["/projects/forex-prediction.png"],
       "date": "2024-02-15",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3"
       }
     },
     {
-      "id": "oxfin",
-      "title": "OxFin",
-      "description": "A professional fintech platform for financial management and analytics, featuring real-time data visualization.",
-      "tech": [
-        "React",
-        "Node.js",
-        "Express",
-        "PostgreSQL"
-      ],
-      "category": "fullstack",
-      "featured": true,
-      "images": [
-        "/projects/oxfin.png"
-      ],
-      "date": "2024-03-15",
-      "links": {
-        "github": "https://github.com/gokulsenthilkumar3/OxFin"
-      }
-    },
-    {
       "id": "yarn-management",
       "title": "Yarn-Management",
       "description": "Industrial-grade inventory system for textile yarn management, optimizing stock tracking and order fulfillment.",
-      "tech": [
-        "React",
-        "PHP",
-        "MySQL",
-        "Tailwind"
-      ],
+      "tech": ["React", "PHP", "MySQL", "Tailwind"],
       "category": "web",
-      "featured": true,
-      "images": [
-        "/projects/yarn-management.png"
-      ],
+      "featured": false,
+      "images": ["/projects/yarn-management.png"],
       "date": "2023-11-20",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/Yarn-Management"
@@ -205,16 +202,10 @@
       "id": "findthemnow",
       "title": "FindThemNow",
       "description": "A real-time search and tracking application for identifying and locating critical assets or personnel.",
-      "tech": [
-        "JavaScript",
-        "Firebase",
-        "Geolocation API"
-      ],
+      "tech": ["JavaScript", "Firebase", "Geolocation API"],
       "category": "other",
-      "featured": true,
-      "images": [
-        "/projects/findthemnow.png"
-      ],
+      "featured": false,
+      "images": ["/projects/findthemnow.png"],
       "date": "2024-01-10",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/FindThemNow"
@@ -319,6 +310,13 @@
       "category": "tools",
       "proficiency": 4,
       "color": "#f05032"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "category": "tools",
+      "proficiency": 3,
+      "color": "#2496ed"
     }
   ],
   "experiences": [

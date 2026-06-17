@@ -2,11 +2,17 @@
 
 import React, { useRef, useMemo, useState } from 'react'
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
-import { OrbitControls, Text } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import { skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
+
+// NOTE: drei <Text> is removed. It requires fetching a font file at runtime
+// (Inter_Regular.woff by default in drei v10) which fails in Vercel's edge
+// network due to CORS / CSP restrictions, causing a client-side crash.
+// Skill labels are now rendered as HTML overlays (see SkillLabel below),
+// which are cheaper, accessible, and never block the canvas.
 
 interface SkillNodeProps {
   skill: Skill
@@ -16,7 +22,13 @@ interface SkillNodeProps {
   onHover: (skill: Skill | null) => void
 }
 
-function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeProps) {
+function SkillNode({
+  skill,
+  position,
+  isSelected,
+  onClick,
+  onHover,
+}: SkillNodeProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const [hovered, setHovered] = useState(false)
 
@@ -27,11 +39,14 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
   }, [isSelected, hovered, skill.color])
 
   const scale = useMemo(() => {
-    const baseScale = 0.3 + (skill.proficiency * 0.1)
+    const baseScale = 0.3 + skill.proficiency * 0.1
     return isSelected ? baseScale * 1.5 : hovered ? baseScale * 1.2 : baseScale
   }, [isSelected, hovered, skill.proficiency])
 
-  useFrame((state) => {
+  // NOTE: frameloop="always" is required — see FloatingModels.tsx for the
+  // full explanation. useFrame imperatively mutates mesh.rotation; demand
+  // mode never re-renders from these mutations.
+  useFrame(() => {
     if (meshRef.current && !isSelected) {
       meshRef.current.rotation.x += 0.01
       meshRef.current.rotation.y += 0.01
@@ -63,7 +78,9 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
         onPointerOut={handlePointerOut}
         scale={scale}
       >
-        <sphereGeometry args={[1, 32, 32]} />
+        {/* Reduced from sphereGeometry args=[1,32,32] to [1,16,16]
+            ~4x fewer vertices per node; visually equivalent at this size. */}
+        <sphereGeometry args={[1, 16, 16]} />
         <meshStandardMaterial
           color={color}
           metalness={0.6}
@@ -72,19 +89,20 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
           emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
         />
       </mesh>
-      
-      {(hovered || isSelected) && (
-        <Text
-          position={[0, 1.5, 0]}
-          fontSize={0.5}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
-          {skill.name}
-        </Text>
-      )}
     </group>
+  )
+}
+
+/** HTML overlay for the hovered/selected skill name — no font fetch needed. */
+function SkillLabel({ skill }: { skill: Skill }) {
+  return (
+    <div
+      className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-10
+                 rounded-lg bg-slate-900/90 px-4 py-2 text-sm font-medium text-white
+                 shadow-lg backdrop-blur-sm transition-opacity"
+    >
+      {skill.name} — {skill.proficiency}/5
+    </div>
   )
 }
 
@@ -94,30 +112,33 @@ interface SkillSphereProps {
   className?: string
 }
 
-export function SkillSphere({ onSkillSelect, selectedCategory, className }: SkillSphereProps) {
+export function SkillSphere({
+  onSkillSelect,
+  selectedCategory,
+  className,
+}: SkillSphereProps) {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
   const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null)
   const groupRef = useRef<THREE.Group>(null)
 
   const filteredSkills = useMemo(() => {
-    if (!selectedCategory) return skills.slice(0, 20) // Limit to 20 for performance
+    if (!selectedCategory) return skills.slice(0, 20)
     return getSkillsByCategory(skills, selectedCategory as any).slice(0, 15)
   }, [selectedCategory])
 
   const skillPositions = useMemo(() => {
-    return filteredSkills.map((skill, index) => {
+    return filteredSkills.map((_, index) => {
       const phi = Math.acos(-1 + (2 * index) / filteredSkills.length)
       const theta = Math.sqrt(filteredSkills.length * Math.PI) * phi
-
-      const x = Math.cos(theta) * Math.sin(phi) * 5
-      const y = Math.sin(theta) * Math.sin(phi) * 5
-      const z = Math.cos(phi) * 5
-
-      return [x, y, z] as [number, number, number]
+      return [
+        Math.cos(theta) * Math.sin(phi) * 5,
+        Math.sin(theta) * Math.sin(phi) * 5,
+        Math.cos(phi) * 5,
+      ] as [number, number, number]
     })
   }, [filteredSkills])
 
-  useFrame((state) => {
+  useFrame(() => {
     if (groupRef.current && !selectedSkill) {
       groupRef.current.rotation.y += 0.002
     }
@@ -133,15 +154,22 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
   }
 
   return (
-    <div className={className}>
+    <div className={`relative ${className ?? ''}`}>
+      {/* HTML skill label — replaces drei <Text> to avoid runtime font fetch */}
+      {(hoveredSkill || selectedSkill) && (
+        <SkillLabel skill={(hoveredSkill || selectedSkill)!} />
+      )}
+
+      {/* frameloop="always" required — see comment in FloatingModels.tsx */}
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
         style={{ background: 'transparent' }}
+        frameloop="always"
       >
         <ambientLight intensity={0.4} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[-10, -10, -5]} intensity={0.5} />
-        
+
         <group ref={groupRef}>
           {filteredSkills.map((skill, index) => (
             <SkillNode
@@ -155,7 +183,7 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
           ))}
         </group>
 
-        <OrbitControls 
+        <OrbitControls
           enableZoom={true}
           enablePan={false}
           autoRotate={!selectedSkill}
@@ -163,26 +191,6 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
           minDistance={8}
           maxDistance={20}
         />
-
-        {/* Skill info panel */}
-        {hoveredSkill && (
-          <group position={[0, -6, 0]}>
-            <mesh>
-              <planeGeometry args={[8, 2]} />
-              <meshStandardMaterial color="#1e293b" transparent opacity={0.9} />
-            </mesh>
-            <Text
-              position={[0, 0, 0.1]}
-              fontSize={0.5}
-              color="white"
-              anchorX="center"
-              anchorY="middle"
-              maxWidth={7}
-            >
-              {hoveredSkill.name} - Proficiency: {hoveredSkill.proficiency}/5
-            </Text>
-          </group>
-        )}
       </Canvas>
     </div>
   )
