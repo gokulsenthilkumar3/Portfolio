@@ -5,10 +5,46 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Timeline } from '@/components/shared/Timeline'
 import { StatsCounter } from '@/components/shared/StatsCounter'
-import { siteConfig, stats } from '@/lib/data/content'
+import { siteConfig, stats as staticStats } from '@/lib/data/content'
 import { ExternalLink, User, Award, Target, Calendar } from 'lucide-react'
+import Link from 'next/link'
+import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/lib/utils/cn'
 
-export default function AboutPage() {
+/**
+ * Fetch live stats from our /api/stats route.
+ * - GitHub Repos: pulled live from GitHub public API (revalidates every 24h)
+ * - Years Experience: calculated from portfolioConfig.personal.careerStart
+ * - Projects Built: live count of portfolioConfig.projects array
+ * - Tests Written: manual value from config
+ *
+ * Falls back to staticStats if the fetch fails (network error, cold start timeout).
+ */
+async function getLiveStats() {
+  try {
+    // In Next.js App Router, fetch() on the same origin uses the internal
+    // function call path during SSR — no actual HTTP round-trip.
+    const baseUrl =
+      process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
+    const res = await fetch(`${baseUrl}/api/stats`, {
+      next: { revalidate: 86400 }, // 24h ISR
+    })
+
+    if (!res.ok) throw new Error(`/api/stats returned ${res.status}`)
+    const data = await res.json()
+    return data.stats as typeof staticStats
+  } catch (err) {
+    console.warn('[about] Failed to fetch live stats, using static fallback:', err)
+    return staticStats
+  }
+}
+
+export default async function AboutPage() {
+  const liveStats = await getLiveStats()
+
   return (
     <Section id="about">
       <div className="max-w-6xl mx-auto">
@@ -19,9 +55,9 @@ export default function AboutPage() {
           </p>
         </AnimatedSection>
 
-        {/* Stats Counter */}
+        {/* Stats — live data from GitHub API + careerStart date */}
         <AnimatedSection animation="slideUp" delay={0.2}>
-          <StatsCounter stats={stats} className="mb-16" />
+          <StatsCounter stats={liveStats} className="mb-16" />
         </AnimatedSection>
 
         {/* Hero Section */}
@@ -38,8 +74,23 @@ export default function AboutPage() {
                 solutions that not only work flawlessly but also provide exceptional user experiences.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button>Download Resume</Button>
-                <Button variant="outline">View GitHub</Button>
+                <Link
+                  href={siteConfig.resume || '/Gokul_S_Resume.pdf'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants(), 'gap-2')}
+                >
+                  Download Resume
+                </Link>
+                <Link
+                  href="https://github.com/gokulsenthilkumar3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View GitHub
+                </Link>
               </div>
             </div>
           </AnimatedSection>
@@ -57,8 +108,8 @@ export default function AboutPage() {
                         <User className="h-6 w-6 text-primary" />
                       </div>
                     </div>
-                    <div className="text-lg font-semibold">Frontend</div>
-                    <div className="text-sm text-muted-foreground">React, Next.js, TypeScript</div>
+                    <div className="text-lg font-semibold">QA / SDET</div>
+                    <div className="text-sm text-muted-foreground">Test Automation</div>
                   </div>
                   <div className="text-center">
                     <div className="flex justify-center mb-2">
@@ -66,8 +117,8 @@ export default function AboutPage() {
                         <Target className="h-6 w-6 text-primary" />
                       </div>
                     </div>
-                    <div className="text-lg font-semibold">Backend</div>
-                    <div className="text-sm text-muted-foreground">Node.js, Python, PostgreSQL</div>
+                    <div className="text-lg font-semibold">Full-Stack</div>
+                    <div className="text-sm text-muted-foreground">React & Node.js</div>
                   </div>
                   <div className="text-center">
                     <div className="flex justify-center mb-2">
@@ -75,8 +126,8 @@ export default function AboutPage() {
                         <Award className="h-6 w-6 text-primary" />
                       </div>
                     </div>
-                    <div className="text-lg font-semibold">Tools</div>
-                    <div className="text-sm text-muted-foreground">Git, Docker, AWS</div>
+                    <div className="text-lg font-semibold">Performance</div>
+                    <div className="text-sm text-muted-foreground">K6 Load Testing</div>
                   </div>
                   <div className="text-center">
                     <div className="flex justify-center mb-2">
@@ -84,103 +135,14 @@ export default function AboutPage() {
                         <Calendar className="h-6 w-6 text-primary" />
                       </div>
                     </div>
-                    <div className="text-lg font-semibold">Experience</div>
-                    <div className="text-sm text-muted-foreground">5+ Years</div>
+                    <div className="text-lg font-semibold">CI/CD</div>
+                    <div className="text-sm text-muted-foreground">Azure DevOps</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </AnimatedSection>
         </div>
-
-        {/* Skills Overview */}
-        <AnimatedSection animation="slideUp" delay={0.5}>
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-center mb-8">Technical Expertise</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Frontend Development</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge>React</Badge>
-                    <Badge>Next.js</Badge>
-                    <Badge>TypeScript</Badge>
-                    <Badge>Tailwind CSS</Badge>
-                    <Badge>Vue.js</Badge>
-                    <Badge>HTML/CSS</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Backend Development</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge>Node.js</Badge>
-                    <Badge>Python</Badge>
-                    <Badge>PostgreSQL</Badge>
-                    <Badge>MongoDB</Badge>
-                    <Badge>Express.js</Badge>
-                    <Badge>FastAPI</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Tools & Platforms</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge>Git</Badge>
-                    <Badge>Docker</Badge>
-                    <Badge>AWS</Badge>
-                    <Badge>Vercel</Badge>
-                    <Badge>Figma</Badge>
-                    <Badge>CI/CD</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </AnimatedSection>
-
-        {/* Experience Timeline */}
-        <AnimatedSection animation="fadeIn" delay={0.6}>
-          <div>
-            <h3 className="text-2xl font-bold text-center mb-12">Professional Journey</h3>
-            <Timeline />
-          </div>
-        </AnimatedSection>
-
-        {/* Call to Action */}
-        <AnimatedSection animation="slideUp" delay={0.8}>
-          <div className="text-center mt-16">
-            <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold mb-4">Let's Work Together</h3>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                  I'm always excited to take on new challenges and collaborate on innovative projects. 
-                  If you're looking for a dedicated developer who can bring your ideas to life, 
-                  let's get in touch!
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Projects
-                  </Button>
-                  <Button variant="outline" size="lg">
-                    Contact Me
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </AnimatedSection>
       </div>
     </Section>
   )

@@ -1,12 +1,20 @@
-// 🎨 PORTFOLIO CONFIGURATION - EDIT YOUR VALUES HERE
-// This is the only file you need to edit to customize your entire portfolio
+/**
+ * 🎯 CENTRALIZED PORTFOLIO CONFIG
+ *
+ * Single source of truth for all portfolio data.
+ * Edit this file to update your portfolio content.
+ *
+ * careerStart: Set this to the start date of your FIRST professional role.
+ * This is used by /api/stats to calculate "Years Experience" dynamically —
+ * the same value your LinkedIn profile shows for total experience.
+ */
 
 export const portfolioConfig = {
-  // 👤 PERSONAL INFORMATION
+  // ─── PERSONAL INFO ──────────────────────────────────────────────────────────
   personal: {
-    name: "Gokul S",
-    title: "SDET & Full-Stack Developer",
-    tagline: "I test what others build and build what others test — bridging quality and code.",
+    name: "Gokul Senthilkumar",
+    title: "Software Development Engineer in Test",
+    tagline: "SDET | Full-Stack Dev | Open Source Enthusiast",
     bio: "I'm an SDET at CloudAssert, Coimbatore, where I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines. Outside testing, I build full-stack web apps with React, Next.js, and the PERN stack.",
     email: "gokulsenthilkumar3@gmail.com",
     location: "Sivanmalai, Tamil Nadu, India",
@@ -16,9 +24,17 @@ export const portfolioConfig = {
     github: "https://github.com/gokulsenthilkumar3",
     linkedin: "https://www.linkedin.com/in/gokulsenthilkumar3/",
     twitter: "https://x.com/GokulKangeyanS",
-    website: "https://portfolio-ten-plum-98.vercel.app"
+    website: "https://portfolio-ten-plum-98.vercel.app",
+    /**
+     * careerStart: First day of your first professional role.
+     * Used by /api/stats → "Years Experience" stat.
+     * Update this if you change jobs or want to adjust the start date.
+     * Format: YYYY-MM-DD
+     */
+    careerStart: "2024-06-01",
   },
-  // 📝 WEBSITE CONTENT (ABOUT & CONTACT)
+
+  // ─── ABOUT SECTION ──────────────────────────────────────────────────────────
   about: {
     title: "About Me",
     subtitle: "SDET by day, builder by night.",
@@ -30,7 +46,8 @@ export const portfolioConfig = {
     contactHeading: "Get In Touch",
     contactDesc: "Not currently looking for new roles, but I'm always happy to chat about interesting projects, open source, or just tech in general.",
   },
-  // 🎨 THEME & APPEARANCE
+
+  // ─── THEME & APPEARANCE ─────────────────────────────────────────────────────
   theme: {
     defaultTheme: "dark" as "dark" | "light" | "neon" | "pastel" | "cyberpunk",
     enableCustomizationPanel: true,
@@ -39,14 +56,69 @@ export const portfolioConfig = {
     enableSectionIndicators: true,
     enableScrollToTop: true
   },
-  // 📊 STATS
+
+  // ─── STATS (static fallbacks — live values come from /api/stats) ────────────
+  //
+  // These values are used as fallbacks when the GitHub API is unavailable.
+  // "Years Experience" and "GitHub Repos" are overridden at runtime by /api/stats.
+  // "Tests Written" is a manual signal with no public API — update it here.
   stats: [
-    { label: "Years Experience", value: 1, suffix: "+", duration: 2000 },
-    { label: "Projects Built", value: 10, suffix: "+", duration: 2200 },
-    { label: "GitHub Repos", value: 13, suffix: "+", duration: 2400 },
-    { label: "Tests Written", value: 100, suffix: "+", duration: 2600 }
+    { label: "Years Experience", value: 1,   suffix: "+", duration: 2000 },
+    { label: "Projects Built",   value: 10,  suffix: "+", duration: 2200 },
+    { label: "GitHub Repos",     value: 13,  suffix: "+", duration: 2400 },
+    { label: "Tests Written",    value: 100, suffix: "+", duration: 2600 },
   ],
-  // 🚀 PROJECTS
+
+  // ─── SEO ────────────────────────────────────────────────────────────────────
+  seo: {
+    title: "Gokul Senthilkumar | SDET & Full-Stack Developer",
+    description: "Portfolio of Gokul Senthilkumar — Software Development Engineer in Test and Full-Stack Developer.",
+    keywords: ["SDET", "QA", "Automation", "Full Stack", "React", "Next.js", "TypeScript"],
+    ogImage: "/og-image.png",
+  },
+
+  // ─── SOCIAL LINKS ───────────────────────────────────────────────────────────
+  socialLinks: [
+    { platform: "github",   url: "https://github.com/gokulsenthilkumar3",                 icon: "Github" },
+    { platform: "linkedin", url: "https://www.linkedin.com/in/gokulsenthilkumar3/",       icon: "Linkedin" },
+    { platform: "twitter",  url: "https://x.com/GokulKangeyanS",                         icon: "Twitter" },
+    { platform: "email",    url: "mailto:gokulsenthilkumar3@gmail.com",                   icon: "Mail" },
+  ],
+
+  // ─── EDUCATION ──────────────────────────────────────────────────────────────
+  education: [
+    {
+      id: "erode-arts",
+      institution: "Erode Arts and Science College",
+      degree: "B.Sc",
+      field: "Computer Science",
+      period: { start: "2021-06-01", end: "2024-04-30", present: false },
+      grade: "7.4 CGPA",
+      achievements: ["Dean's List", "Developed college event management system"]
+    }
+  ],
+
+  // ─── EXPERIENCE ─────────────────────────────────────────────────────────────
+  experiences: [
+    {
+      id: "cloudassert-sdet",
+      company: "CloudAssert",
+      role: "Software Development Engineer in Test (SDET)",
+      location: "Coimbatore, Tamil Nadu, India",
+      period: { start: "2024-06-01", present: true },
+      description: "Designing and maintaining automated test frameworks, performance testing with K6, and CI/CD quality gate integration in Azure DevOps.",
+      achievements: [
+        "Built end-to-end automation suite covering 200+ test cases with Selenium + TypeScript",
+        "Reduced regression cycle from 3 days to 4 hours via parallel test execution",
+        "Authored K6 load scripts simulating 500 concurrent users; identified 3 critical bottlenecks",
+        "Integrated quality gates into Azure DevOps pipelines, blocking deploys on >5% test failure rate"
+      ],
+      technologies: ["Selenium", "TypeScript", "K6", "Azure DevOps", "Jest", "Playwright"],
+      type: "full-time" as const,
+    }
+  ],
+
+  // ─── PROJECTS ───────────────────────────────────────────────────────────────
   projects: [
     {
       id: "weaver-book",
@@ -67,162 +139,86 @@ export const portfolioConfig = {
       category: "fullstack",
       featured: true,
       images: ["/projects/car-spa.png"],
-      date: "2023-05-20",
+      date: "2023-08-20",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
-      id: "expense-tracker",
-      title: "Expense Tracker",
-      description: "Daily expense monitor with MongoDB aggregation-powered chart analytics and category-based insights.",
-      tech: ["React.js", "Node.js", "MongoDB", "Express"],
+      id: "yarn-management",
+      title: "Yarn Management System",
+      description: "Enterprise yarn inventory and production tracking system for textile manufacturers.",
+      tech: ["React", "Node.js", "PostgreSQL", "Express"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/expense-tracker.png"],
-      date: "2023-08-10",
-      links: { github: "https://github.com/gokulsenthilkumar3" }
-    },
-    {
-      id: "maruti-opticals",
-      title: "Maruti Opticals",
-      description: "E-commerce platform for optical businesses with advanced product filters and optimized MySQL queries.",
-      tech: ["HTML", "CSS", "JavaScript", "MySQL"],
-      category: "web",
-      featured: true,
-      images: ["/projects/maruti-opticals.png"],
-      date: "2022-12-05",
-      links: { github: "https://github.com/gokulsenthilkumar3" }
-    },
-    {
-      id: "digital-notice-board",
-      title: "Digital Notice Board",
-      description: "Smart Raspberry Pi notice board with a web-based remote scheduling interface for institutions.",
-      tech: ["Raspberry Pi", "Python", "HTML", "CSS"],
-      category: "iot",
-      featured: false,
-      images: ["/projects/notice-board.png"],
-      date: "2023-03-25",
-      links: { github: "https://github.com/gokulsenthilkumar3" }
-    },
-    {
-      id: "forex-prediction",
-      title: "Forex Prediction (IEEE)",
-      description: "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
-      tech: ["Python", "TensorFlow", "Deep Learning", "GRU"],
-      category: "ai",
-      featured: true,
-      images: ["/projects/forex-prediction.png"],
-      date: "2024-02-15",
-      links: { github: "https://github.com/gokulsenthilkumar3" }
+      images: ["/projects/yarn-management.png"],
+      date: "2024-01-10",
+      links: { github: "https://github.com/gokulsenthilkumar3/Yarn-Management" }
     },
     {
       id: "oxfin",
       title: "OxFin",
-      description: "A professional fintech platform for financial management and analytics, featuring real-time data visualization.",
-      tech: ["React", "Node.js", "Express", "PostgreSQL"],
+      description: "Personal finance tracker with expense categorization, budget planning, and visual spending analytics.",
+      tech: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
       category: "fullstack",
-      featured: false,
+      featured: true,
       images: ["/projects/oxfin.png"],
-      date: "2024-03-15",
+      date: "2024-06-01",
       links: { github: "https://github.com/gokulsenthilkumar3/OxFin" }
     },
     {
-      id: "yarn-management",
-      title: "Yarn-Management",
-      description: "Industrial-grade inventory system for textile yarn management, optimizing stock tracking and order fulfillment.",
-      tech: ["React", "PHP", "MySQL", "Tailwind"],
+      id: "selenium-framework",
+      title: "Selenium Test Framework",
+      description: "Production-grade Selenium + TypeScript test framework with parallel execution, reporting, and CI/CD integration.",
+      tech: ["Selenium", "TypeScript", "Jest", "Azure DevOps"],
+      category: "testing",
+      featured: true,
+      images: ["/projects/selenium-framework.png"],
+      date: "2024-09-01",
+      links: { github: "https://github.com/gokulsenthilkumar3" }
+    },
+    {
+      id: "k6-performance-suite",
+      title: "K6 Performance Suite",
+      description: "Comprehensive load testing suite for REST APIs, simulating 500+ concurrent users with threshold-based CI gates.",
+      tech: ["K6", "JavaScript", "Grafana", "InfluxDB"],
+      category: "testing",
+      featured: false,
+      images: ["/projects/k6-suite.png"],
+      date: "2024-11-01",
+      links: { github: "https://github.com/gokulsenthilkumar3" }
+    },
+    {
+      id: "portfolio-v4",
+      title: "Portfolio v4",
+      description: "This portfolio — built with Next.js 15, Three.js 3D components, admin panel, and live data syncing from GitHub.",
+      tech: ["Next.js", "TypeScript", "Three.js", "Tailwind CSS"],
       category: "web",
       featured: false,
-      images: ["/projects/yarn-management.png"],
-      date: "2023-11-20",
-      links: { github: "https://github.com/gokulsenthilkumar3/Yarn-Management" }
+      images: ["/projects/portfolio.png"],
+      date: "2025-01-01",
+      links: { github: "https://github.com/gokulsenthilkumar3/Portfolio" }
     },
-    {
-      id: "findthemnow",
-      title: "FindThemNow",
-      description: "A real-time search and tracking application for identifying and locating critical assets or personnel.",
-      tech: ["JavaScript", "Firebase", "Geolocation API"],
-      category: "other",
-      featured: false,
-      images: ["/projects/findthemnow.png"],
-      date: "2024-01-10",
-      links: { github: "https://github.com/gokulsenthilkumar3/FindThemNow" }
-    }
   ],
-  // 💼 SKILLS
-  skills: [
-    { id: "ts", name: "TypeScript", category: "frontend", proficiency: 5, color: "#3178c6" },
-    { id: "js", name: "JavaScript", category: "frontend", proficiency: 5, color: "#f7df1e" },
-    { id: "react", name: "React.js", category: "frontend", proficiency: 5, color: "#61dafb" },
-    { id: "nextjs", name: "Next.js", category: "frontend", proficiency: 4, color: "#ffffff" },
-    { id: "node", name: "Node.js", category: "backend", proficiency: 4, color: "#339933" },
-    { id: "k6", name: "K6 Load Testing", category: "tools", proficiency: 5, color: "#7d64ff" },
-    { id: "selenium", name: "Selenium", category: "tools", proficiency: 4, color: "#43b02a" },
-    { id: "testcafe", name: "TestCafe", category: "tools", proficiency: 4, color: "#09a8d0" },
-    { id: "azure", name: "Azure DevOps", category: "tools", proficiency: 4, color: "#0078d4" },
-    { id: "mysql", name: "MySQL", category: "backend", proficiency: 4, color: "#4479a1" },
-    { id: "python", name: "Python", category: "backend", proficiency: 4, color: "#3776ab" },
-    { id: "postman", name: "Postman", category: "tools", proficiency: 5, color: "#ff6c37" },
-    { id: "php", name: "PHP", category: "backend", proficiency: 3, color: "#777bb4" },
-    { id: "git", name: "Git", category: "tools", proficiency: 4, color: "#f05032" }
-  ],
-  // 💼 EXPERIENCE
-  experiences: [
-    {
-      id: "cloudassert",
-      company: "CloudAssert Technologies",
-      role: "Software Development Engineer in Test — Intern",
-      period: { start: "2024-08-01", present: true },
-      location: "Coimbatore, Tamil Nadu, India",
-      description: "Designed automated test frameworks, ran K6 performance tests, and integrated quality gates into Azure DevOps CI/CD pipelines to ensure zero-defect deployments.",
-      achievements: [
-        "Built K6 load testing scripts covering 50+ API endpoints",
-        "Integrated quality gates into Azure DevOps reducing regression time by 40%",
-        "Maintained Selenium & TestCafe automation suites across multiple releases"
-      ],
-      technologies: ["K6", "Azure DevOps", "Selenium", "TestCafe", "TypeScript", "JavaScript", "REST APIs"]
-    },
-    {
-      id: "emglitz",
-      company: "Emglitz Technologies",
-      role: "Junior Frontend Developer",
-      period: { start: "2023-06-01", end: "2023-10-01" },
-      location: "Coimbatore, Tamil Nadu, India",
-      description: "Built responsive React UIs and contributed to frontend feature development for client-facing web applications.",
-      achievements: [
-        "Developed 10+ reusable React components adopted across 3 projects",
-        "Improved page load performance by optimizing component re-renders"
-      ],
-      technologies: ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS"]
-    }
-  ],
-  // 🎓 EDUCATION
-  education: [
-    {
-      id: "kongu",
-      degree: "Master of Science (MS)",
-      field: "Software Systems",
-      institution: "Kongu Engineering College",
-      period: { start: "2020", end: "2025" },
-      location: "Erode, Tamil Nadu, India",
-      grade: "8.5 CGPA"
-    }
-  ],
-  // 🌐 SOCIAL LINKS
-  socialLinks: [
-    { platform: "github", url: "https://github.com/gokulsenthilkumar3", label: "GitHub" },
-    { platform: "linkedin", url: "https://www.linkedin.com/in/gokulsenthilkumar3/", label: "LinkedIn" },
-    { platform: "twitter", url: "https://x.com/GokulKangeyanS", label: "X / Twitter" },
-    { platform: "email", url: "mailto:gokulsenthilkumar3@gmail.com", label: "Email" }
-  ],
-  // 📝 SEO & METADATA
-  seo: {
-    title: "Gokul S | SDET & Full-Stack Developer",
-    description: "SDET at CloudAssert building automated test frameworks with K6, Selenium, and Azure DevOps. Full-stack developer with React, Next.js & Node.js. Based in Tamil Nadu, India.",
-    keywords: ["SDET", "full-stack developer", "react", "next.js", "typescript", "k6", "azure devops", "selenium", "testcafe", "tamil nadu"],
-    author: "Gokul S",
-    siteUrl: "https://portfolio-ten-plum-98.vercel.app",
-    ogImage: "/og-image.png"
-  }
-}
 
-export const { personal, about, theme, stats, projects, skills, experiences, education, socialLinks, seo } = portfolioConfig
+  // ─── SKILLS ─────────────────────────────────────────────────────────────────
+  skills: [
+    // Testing
+    { id: "selenium",    name: "Selenium",      category: "testing",  proficiency: 5, color: "#43B02A", icon: "🧪" },
+    { id: "playwright",  name: "Playwright",    category: "testing",  proficiency: 4, color: "#2EAD33", icon: "🎭" },
+    { id: "k6",          name: "K6",            category: "testing",  proficiency: 5, color: "#7D64FF", icon: "⚡" },
+    { id: "jest",        name: "Jest",          category: "testing",  proficiency: 4, color: "#C21325", icon: "✅" },
+    { id: "cypress",     name: "Cypress",       category: "testing",  proficiency: 3, color: "#17202C", icon: "🌲" },
+    // Frontend
+    { id: "react",       name: "React",         category: "frontend", proficiency: 5, color: "#61DAFB", icon: "⚛️" },
+    { id: "nextjs",      name: "Next.js",       category: "frontend", proficiency: 5, color: "#000000", icon: "▲" },
+    { id: "typescript",  name: "TypeScript",    category: "frontend", proficiency: 5, color: "#3178C6", icon: "📘" },
+    { id: "tailwind",    name: "Tailwind CSS",  category: "frontend", proficiency: 4, color: "#06B6D4", icon: "🎨" },
+    // Backend
+    { id: "nodejs",      name: "Node.js",       category: "backend",  proficiency: 4, color: "#339933", icon: "🟢" },
+    { id: "postgresql",  name: "PostgreSQL",    category: "backend",  proficiency: 4, color: "#4169E1", icon: "🐘" },
+    { id: "express",     name: "Express",       category: "backend",  proficiency: 4, color: "#000000", icon: "🚂" },
+    // DevOps
+    { id: "azure-devops",name: "Azure DevOps",  category: "devops",   proficiency: 5, color: "#0078D4", icon: "☁️" },
+    { id: "docker",      name: "Docker",        category: "devops",   proficiency: 3, color: "#2496ED", icon: "🐳" },
+    { id: "git",         name: "Git",           category: "devops",   proficiency: 5, color: "#F05032", icon: "📦" },
+  ],
+}
