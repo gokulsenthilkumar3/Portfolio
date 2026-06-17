@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Linkedin, ExternalLink, Briefcase, MapPin, Building2, GraduationCap } from 'lucide-react'
-import { experiences, education, personal } from '@/config/portfolio.config'
+import { portfolioConfig } from '@/config/portfolio.config'
+const { experiences, education, personal } = portfolioConfig
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
