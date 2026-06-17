@@ -16,7 +16,13 @@ interface SkillNodeProps {
   onHover: (skill: Skill | null) => void
 }
 
-function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeProps) {
+function SkillNode({
+  skill,
+  position,
+  isSelected,
+  onClick,
+  onHover,
+}: SkillNodeProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const [hovered, setHovered] = useState(false)
 
@@ -27,11 +33,11 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
   }, [isSelected, hovered, skill.color])
 
   const scale = useMemo(() => {
-    const baseScale = 0.3 + (skill.proficiency * 0.1)
+    const baseScale = 0.3 + skill.proficiency * 0.1
     return isSelected ? baseScale * 1.5 : hovered ? baseScale * 1.2 : baseScale
   }, [isSelected, hovered, skill.proficiency])
 
-  useFrame((state) => {
+  useFrame(() => {
     if (meshRef.current && !isSelected) {
       meshRef.current.rotation.x += 0.01
       meshRef.current.rotation.y += 0.01
@@ -56,6 +62,8 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
 
   return (
     <group position={position}>
+      {/* Reduced from sphereGeometry args=[1,32,32] to [1,16,16]
+          ~4x fewer vertices per node; visually equivalent at this size. */}
       <mesh
         ref={meshRef}
         onClick={handleClick}
@@ -63,7 +71,7 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
         onPointerOut={handlePointerOut}
         scale={scale}
       >
-        <sphereGeometry args={[1, 32, 32]} />
+        <sphereGeometry args={[1, 16, 16]} />
         <meshStandardMaterial
           color={color}
           metalness={0.6}
@@ -72,7 +80,7 @@ function SkillNode({ skill, position, isSelected, onClick, onHover }: SkillNodeP
           emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
         />
       </mesh>
-      
+
       {(hovered || isSelected) && (
         <Text
           position={[0, 1.5, 0]}
@@ -94,30 +102,33 @@ interface SkillSphereProps {
   className?: string
 }
 
-export function SkillSphere({ onSkillSelect, selectedCategory, className }: SkillSphereProps) {
+export function SkillSphere({
+  onSkillSelect,
+  selectedCategory,
+  className,
+}: SkillSphereProps) {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
   const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null)
   const groupRef = useRef<THREE.Group>(null)
 
   const filteredSkills = useMemo(() => {
-    if (!selectedCategory) return skills.slice(0, 20) // Limit to 20 for performance
+    if (!selectedCategory) return skills.slice(0, 20)
     return getSkillsByCategory(skills, selectedCategory as any).slice(0, 15)
   }, [selectedCategory])
 
   const skillPositions = useMemo(() => {
-    return filteredSkills.map((skill, index) => {
+    return filteredSkills.map((_, index) => {
       const phi = Math.acos(-1 + (2 * index) / filteredSkills.length)
       const theta = Math.sqrt(filteredSkills.length * Math.PI) * phi
-
-      const x = Math.cos(theta) * Math.sin(phi) * 5
-      const y = Math.sin(theta) * Math.sin(phi) * 5
-      const z = Math.cos(phi) * 5
-
-      return [x, y, z] as [number, number, number]
+      return [
+        Math.cos(theta) * Math.sin(phi) * 5,
+        Math.sin(theta) * Math.sin(phi) * 5,
+        Math.cos(phi) * 5,
+      ] as [number, number, number]
     })
   }, [filteredSkills])
 
-  useFrame((state) => {
+  useFrame(() => {
     if (groupRef.current && !selectedSkill) {
       groupRef.current.rotation.y += 0.002
     }
@@ -134,14 +145,17 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
 
   return (
     <div className={className}>
+      {/* frameloop="demand" stops the render loop when nothing changes,
+          saving GPU cycles on idle/decorative canvases. */}
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
         style={{ background: 'transparent' }}
+        frameloop="demand"
       >
         <ambientLight intensity={0.4} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[-10, -10, -5]} intensity={0.5} />
-        
+
         <group ref={groupRef}>
           {filteredSkills.map((skill, index) => (
             <SkillNode
@@ -155,7 +169,7 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
           ))}
         </group>
 
-        <OrbitControls 
+        <OrbitControls
           enableZoom={true}
           enablePan={false}
           autoRotate={!selectedSkill}
@@ -164,12 +178,15 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
           maxDistance={20}
         />
 
-        {/* Skill info panel */}
         {hoveredSkill && (
           <group position={[0, -6, 0]}>
             <mesh>
               <planeGeometry args={[8, 2]} />
-              <meshStandardMaterial color="#1e293b" transparent opacity={0.9} />
+              <meshStandardMaterial
+                color="#1e293b"
+                transparent
+                opacity={0.9}
+              />
             </mesh>
             <Text
               position={[0, 0, 0.1]}
