@@ -49,47 +49,71 @@ export const portfolioConfig = {
   // 🚀 PROJECTS
   projects: [
     {
+      id: "forex-prediction",
+      title: "Forex Prediction (IEEE)",
+      description: "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit among all tested architectures.",
+      tech: ["Python", "TensorFlow", "GRU", "Deep Learning", "Pandas"],
+      category: "ai",
+      featured: true,
+      highlight: true,
+      images: ["/projects/forex-prediction.png"],
+      date: "2024-02-15",
+      impact: ["IEEE CIFEr Published", "TFT best profit", "3 models benchmarked"],
+      links: {
+        github: "https://github.com/gokulsenthilkumar3",
+        live: "https://ieeexplore.ieee.org"
+      }
+    },
+    {
       id: "weaver-book",
       title: "Weaver Book",
-      description: "Inventory management web app for the weaving sector. Automated vendor sync reduced manual errors by 60%.",
+      description: "Inventory management web app purpose-built for the weaving sector. Automated vendor sync reduced manual data-entry errors by 60%.",
       tech: ["PHP", "MySQL", "HTML", "CSS"],
       category: "web",
       featured: true,
+      highlight: false,
       images: ["/projects/weaver-book.png"],
       date: "2023-01-15",
+      impact: ["60% fewer errors", "Vendor sync automated"],
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
       id: "car-renovation-spa",
       title: "Car Renovation Spa",
-      description: "Full-stack car service booking platform with real-time renovation progress tracking and appointment management.",
+      description: "Full-stack car service booking platform with real-time renovation progress tracking and appointment management for service centres.",
       tech: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
       featured: true,
+      highlight: false,
       images: ["/projects/car-spa.png"],
       date: "2023-05-20",
+      impact: ["Real-time tracking", "Booking + appointments"],
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
       id: "expense-tracker",
       title: "Expense Tracker",
-      description: "Daily expense monitor with MongoDB aggregation-powered chart analytics and category-based insights.",
+      description: "Daily expense monitor with MongoDB aggregation-powered chart analytics and category-based budget insights.",
       tech: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
       featured: true,
+      highlight: false,
       images: ["/projects/expense-tracker.png"],
       date: "2023-08-10",
+      impact: ["Chart analytics", "Category insights"],
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
       id: "maruti-opticals",
       title: "Maruti Opticals",
-      description: "E-commerce platform for optical businesses with advanced product filters and optimized MySQL queries.",
+      description: "E-commerce platform for optical businesses with advanced product filters and optimized MySQL queries for sub-100ms search.",
       tech: ["HTML", "CSS", "JavaScript", "MySQL"],
       category: "web",
       featured: true,
+      highlight: false,
       images: ["/projects/maruti-opticals.png"],
       date: "2022-12-05",
+      impact: ["<100ms search", "Advanced filters"],
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -99,19 +123,10 @@ export const portfolioConfig = {
       tech: ["Raspberry Pi", "Python", "HTML", "CSS"],
       category: "iot",
       featured: false,
+      highlight: false,
       images: ["/projects/notice-board.png"],
       date: "2023-03-25",
-      links: { github: "https://github.com/gokulsenthilkumar3" }
-    },
-    {
-      id: "forex-prediction",
-      title: "Forex Prediction (IEEE)",
-      description: "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
-      tech: ["Python", "TensorFlow", "Deep Learning", "GRU"],
-      category: "ai",
-      featured: true,
-      images: ["/projects/forex-prediction.png"],
-      date: "2024-02-15",
+      impact: [],
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
     {
@@ -121,8 +136,10 @@ export const portfolioConfig = {
       tech: ["React", "Node.js", "Express", "PostgreSQL"],
       category: "fullstack",
       featured: false,
+      highlight: false,
       images: ["/projects/oxfin.png"],
       date: "2024-03-15",
+      impact: [],
       links: { github: "https://github.com/gokulsenthilkumar3/OxFin" }
     },
     {
@@ -132,8 +149,10 @@ export const portfolioConfig = {
       tech: ["React", "PHP", "MySQL", "Tailwind"],
       category: "web",
       featured: false,
+      highlight: false,
       images: ["/projects/yarn-management.png"],
       date: "2023-11-20",
+      impact: [],
       links: { github: "https://github.com/gokulsenthilkumar3/Yarn-Management" }
     },
     {
@@ -143,8 +162,10 @@ export const portfolioConfig = {
       tech: ["JavaScript", "Firebase", "Geolocation API"],
       category: "other",
       featured: false,
+      highlight: false,
       images: ["/projects/findthemnow.png"],
       date: "2024-01-10",
+      impact: [],
       links: { github: "https://github.com/gokulsenthilkumar3/FindThemNow" }
     }
   ],
