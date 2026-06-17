@@ -20,16 +20,11 @@ import { useAdmin } from '@/components/admin/AdminProvider'
 import { EditableSection } from '@/components/admin/EditableSection'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 
-// ─── FIX: Dynamic import with ssr:false is REQUIRED for any component that
-// imports Three.js / @react-three/fiber. Without this, Next.js attempts to
-// render the canvas on the server where WebGL APIs don't exist, throwing:
-//   "Application error: a client-side exception has occurred"
-// The FloatingModelsSection wrapper already handles IntersectionObserver
-// gating and the use3DGate WebGL/reduced-motion check internally.
-const FloatingModelsSection = dynamic(
+// HeroScene: premium 3D background — ssr:false required for WebGL
+const HeroSceneSection = dynamic(
   () =>
-    import('@/components/3d/FloatingModelsSection').then((m) => ({
-      default: m.FloatingModelsSection,
+    import('@/components/3d/HeroSceneSection').then((m) => ({
+      default: m.HeroSceneSection,
     })),
   { ssr: false }
 )
@@ -39,7 +34,6 @@ export default function Home() {
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [adminPanelTab, setAdminPanelTab] = useState('personal')
 
-  // Single source-of-truth hook pattern
   const currentProjects = (isAdmin && portfolioData.projects?.length > 0
     ? portfolioData.projects
     : staticProjects) as Project[]
@@ -61,7 +55,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Admin Panel */}
       {isAdmin && (
         <AdminPanel
           isOpen={adminPanelOpen}
@@ -72,9 +65,9 @@ export default function Home() {
 
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
       <Section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-20">
-        {/* Background 3D elements — rendered client-only via dynamic import */}
-        <div className="absolute inset-0 opacity-30 pointer-events-none">
-          <FloatingModelsSection className="w-full h-full" heightClass="h-full" />
+        {/* Premium 3D hero background — client-only, WebGL + motion gated */}
+        <div className="absolute inset-0 pointer-events-none">
+          <HeroSceneSection className="absolute inset-0 w-full h-full" />
         </div>
 
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full">
@@ -90,14 +83,12 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
-              {/* Decorative rings */}
               <div className="absolute -inset-4 border border-primary/10 rounded-[3.5rem] -z-10 animate-[spin_20s_linear_infinite]" />
               <div className="absolute -inset-8 border border-primary/5 rounded-[4rem] -z-10 animate-[spin_30s_linear_infinite_reverse]" />
             </AnimatedSection>
 
             {/* Right Side: Content */}
             <div className="flex-1 text-center md:text-left">
-              {/* Availability badge */}
               <AnimatedSection animation="fadeIn" delay={0.1}>
                 <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary uppercase tracking-widest">
                   <span className="relative flex h-2 w-2">
@@ -108,7 +99,6 @@ export default function Home() {
                 </div>
               </AnimatedSection>
 
-              {/* Name + Title */}
               <AnimatedSection animation="fadeIn" delay={0.3}>
                 <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 leading-none font-display">
                   {currentPersonal.name.split(' ')[0]} <span className="text-primary">{currentPersonal.name.split(' ')[1]}</span>
@@ -118,14 +108,12 @@ export default function Home() {
                 </p>
               </AnimatedSection>
 
-              {/* Tagline */}
               <AnimatedSection animation="slideUp" delay={0.5}>
                 <p className="text-base md:text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed font-medium">
                   {currentPersonal.bio}
                 </p>
               </AnimatedSection>
 
-              {/* CTAs */}
               <AnimatedSection animation="slideUp" delay={0.7}>
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                   <MagneticButton>
@@ -157,9 +145,7 @@ export default function Home() {
           </AnimatedSection>
 
           <EditableSection label="About" onEdit={() => openPanel('personal')}>
-            {/* Asymmetric layout: large card + two smaller cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              {/* Large featured card */}
               <AnimatedSection animation="slideLeft" delay={0.2} className="md:col-span-2">
                 <Card className="h-full">
                   <CardHeader>
@@ -180,7 +166,6 @@ export default function Home() {
                 </Card>
               </AnimatedSection>
 
-              {/* Two stacked smaller cards */}
               <div className="flex flex-col gap-6">
                 <AnimatedSection animation="slideRight" delay={0.3}>
                   <Card className="h-full">
