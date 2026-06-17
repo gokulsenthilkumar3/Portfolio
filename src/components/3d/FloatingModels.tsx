@@ -16,6 +16,11 @@ function FloatingShape({
 }) {
   const meshRef = useRef<THREE.Mesh>(null)
 
+  // NOTE: frameloop="always" is required here.
+  // frameloop="demand" only re-renders when React state changes,
+  // but useFrame mutations (rotation, position) are imperative and
+  // never trigger a React re-render — so the animation silently stops
+  // and R3F can throw internally when the render queue stalls.
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.x += 0.001
@@ -26,20 +31,18 @@ function FloatingShape({
     }
   })
 
-  // Reduced segment counts: visually identical at this display size
-  // but cuts vertex count significantly.
-  // sphere: 32,32 → 16,16 (~4x fewer verts)
-  // torus:  16,32 → 12,16 (~2.5x fewer)
-  // cone:   32    → 12    (~2.5x fewer)
   const GeometryComponent = useMemo(() => {
     switch (geometry) {
       case 'box':
         return <boxGeometry args={[1, 1, 1]} />
       case 'sphere':
+        // Reduced segments: 32,32 → 16,16 (~4x fewer vertices, visually identical)
         return <sphereGeometry args={[0.5, 16, 16]} />
       case 'torus':
+        // Reduced segments: 16,32 → 12,16 (~2.5x fewer)
         return <torusGeometry args={[0.5, 0.2, 12, 16]} />
       case 'cone':
+        // Reduced segments: 32 → 12 (~2.5x fewer)
         return <coneGeometry args={[0.5, 1, 12]} />
       default:
         return <boxGeometry args={[1, 1, 1]} />
@@ -119,12 +122,12 @@ export function FloatingModels({
 
   return (
     <div className={className}>
-      {/* frameloop="demand" stops the render loop when nothing changes,
-          saving GPU cycles on idle/decorative canvases. */}
+      {/* frameloop="always" is required because useFrame mutations
+          are imperative — demand mode never re-renders from them. */}
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{ background: 'transparent' }}
-        frameloop="demand"
+        frameloop="always"
       >
         <ambientLight intensity={themeColors.ambient} />
         <directionalLight position={[10, 10, 5]} intensity={1} />

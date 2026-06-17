@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { Section } from '@/components/shared/Section'
 import { Button } from '@/components/ui/Button'
@@ -9,7 +10,6 @@ import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { TextReveal } from '@/components/effects/TextReveal'
 import { MagneticButton } from '@/components/effects/MagneticButton'
-import { FloatingModels } from '@/components/3d/FloatingModels'
 import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
 import type { Project } from '@/lib/types/portfolio'
@@ -19,6 +19,20 @@ import { cn } from '@/lib/utils/cn'
 import { useAdmin } from '@/components/admin/AdminProvider'
 import { EditableSection } from '@/components/admin/EditableSection'
 import { AdminPanel } from '@/components/admin/AdminPanel'
+
+// ─── FIX: Dynamic import with ssr:false is REQUIRED for any component that
+// imports Three.js / @react-three/fiber. Without this, Next.js attempts to
+// render the canvas on the server where WebGL APIs don't exist, throwing:
+//   "Application error: a client-side exception has occurred"
+// The FloatingModelsSection wrapper already handles IntersectionObserver
+// gating and the use3DGate WebGL/reduced-motion check internally.
+const FloatingModelsSection = dynamic(
+  () =>
+    import('@/components/3d/FloatingModelsSection').then((m) => ({
+      default: m.FloatingModelsSection,
+    })),
+  { ssr: false }
+)
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
@@ -58,11 +72,9 @@ export default function Home() {
 
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
       <Section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-20">
-        {/* Background 3D elements */}
+        {/* Background 3D elements — rendered client-only via dynamic import */}
         <div className="absolute inset-0 opacity-30 pointer-events-none">
-          <Suspense fallback={null}>
-            <FloatingModels className="w-full h-full" />
-          </Suspense>
+          <FloatingModelsSection className="w-full h-full" heightClass="h-full" />
         </div>
 
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full">
@@ -195,7 +207,6 @@ export default function Home() {
                         <div key={edu.id}>
                           <p className="text-xs text-muted-foreground">{edu.degree} {edu.field}</p>
                           <p className="text-xs font-medium mt-0.5">{edu.institution}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{edu.period.start} – {edu.period.end}</p>
                         </div>
                       ))}
                     </CardContent>
@@ -204,110 +215,50 @@ export default function Home() {
               </div>
             </div>
           </EditableSection>
-
-          <AnimatedSection animation="slideUp" delay={0.6}>
-            <div className="mt-8">
-              <Link href="/about" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-                Learn More About Me
-              </Link>
-            </div>
-          </AnimatedSection>
-        </div>
-      </Section>
-
-      {/* ─── SKILLS ────────────────────────────────────────────────────────────── */}
-      <Section id="skills">
-        <div className="max-w-6xl mx-auto">
-          <AnimatedSection animation="fadeIn">
-            <h2 className="text-3xl font-bold mb-2 font-display">Core Skills</h2>
-            <p className="text-muted-foreground mb-10">Tools and tech I work with every day.</p>
-          </AnimatedSection>
-
-          <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
-            <AnimatedSection animation="slideUp" delay={0.2}>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-8">
-                {topSkills.map((skill) => (
-                  <div
-                    key={skill.id}
-                    className="flex items-center gap-2.5 p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors"
-                  >
-                    <motion.span
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      initial={false}
-                      animate={{ backgroundColor: skill.color || '#6366f1' }}
-                    />
-                    <span className="text-sm font-medium truncate">{skill.name}</span>
-                  </div>
-                ))}
-              </div>
-            </AnimatedSection>
-          </EditableSection>
-
-          <AnimatedSection animation="slideUp" delay={0.4}>
-            <Link href="/skills" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-              View All Skills
-            </Link>
-          </AnimatedSection>
         </div>
       </Section>
 
       {/* ─── PROJECTS ─────────────────────────────────────────────────────────── */}
-      <Section id="projects" background="muted">
+      <Section id="projects">
         <div className="max-w-6xl mx-auto">
-          <AnimatedSection animation="fadeIn">
+          <AnimatedSection animation="slideDown">
             <h2 className="text-3xl font-bold mb-2 font-display">Featured Projects</h2>
-            <p className="text-muted-foreground mb-10">Things I&apos;ve built and shipped.</p>
+            <p className="text-muted-foreground mb-10">A selection of things I&apos;ve built</p>
           </AnimatedSection>
 
           <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProjects.map((project, index) => (
-                <AnimatedSection
-                  key={project.id}
-                  animation="scaleIn"
-                  delay={0.1 * index}
-                >
-                  <Card className="group h-full flex flex-col bg-background/40 backdrop-blur-md border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] overflow-hidden">
-                    <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-                      <div className="relative z-10 p-4 rounded-full bg-background/50 backdrop-blur-xl border border-white/10 shadow-2xl group-hover:rotate-12 transition-transform duration-500">
-                        {getTechIcon(project.tech[0] || 'code', "h-12 w-12")}
-                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
-                      </div>
-                      
-                      <div className="absolute bottom-2 left-2">
-                        <Badge variant="secondary" className="capitalize text-[10px] bg-background/60 backdrop-blur-md border-white/5 opacity-90">
+                <AnimatedSection key={project.id} animation="scaleIn" delay={index * 0.1}>
+                  <Card className="h-full hover:border-primary/30 transition-colors group">
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-lg font-display group-hover:text-primary transition-colors">
+                          {project.title}
+                        </CardTitle>
+                        <Badge variant="secondary" className="text-xs shrink-0">
                           {project.category}
                         </Badge>
                       </div>
-                    </div>
-
-                    <CardHeader>
-                      <CardTitle className="text-lg line-clamp-1 font-display">{project.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4 flex-1 flex flex-col pt-0">
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-auto">
+                      <CardDescription className="text-sm leading-relaxed">
                         {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {project.tech.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-[10px] bg-muted/50">
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {project.tech.slice(0, 4).map((tech) => (
+                          <Badge key={tech} variant="outline" className="text-xs">
                             {tech}
                           </Badge>
                         ))}
-                        {project.tech.length > 3 && (
-                          <Badge variant="secondary" className="text-[10px] bg-muted/50">
-                            +{project.tech.length - 3}
-                          </Badge>
-                        )}
                       </div>
-                      <div className="flex gap-2 pt-2">
+                      <div className="flex gap-2">
                         {project.links?.github && (
                           <Link
                             href={project.links.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), "flex-1")}
+                            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'text-xs')}
                           >
                             GitHub
                           </Link>
@@ -317,17 +268,9 @@ export default function Home() {
                             href={project.links.live}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={cn(buttonVariants({ size: 'sm' }), "flex-1")}
+                            className={cn(buttonVariants({ size: 'sm' }), 'text-xs')}
                           >
                             Live Demo
-                          </Link>
-                        )}
-                        {!project.links?.live && !project.links?.github && (
-                          <Link
-                            href={`/projects#${project.id}`}
-                            className={cn(buttonVariants({ size: 'sm' }), "flex-1")}
-                          >
-                            Details
                           </Link>
                         )}
                       </div>
@@ -337,35 +280,98 @@ export default function Home() {
               ))}
             </div>
           </EditableSection>
+        </div>
+      </Section>
 
-          <AnimatedSection animation="slideUp" delay={0.8}>
-            <div className="mt-8">
-              <Link href="/projects" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-                View All Projects
-              </Link>
-            </div>
+      {/* ─── SKILLS ───────────────────────────────────────────────────────────── */}
+      <Section id="skills" background="muted">
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection animation="slideDown">
+            <h2 className="text-3xl font-bold mb-2 font-display">Skills</h2>
+            <p className="text-muted-foreground mb-10">Technologies I work with</p>
           </AnimatedSection>
+          <div className="flex flex-wrap gap-3">
+            {topSkills.map((skill, index) => (
+              <AnimatedSection key={(skill as any).id || index} animation="scaleIn" delay={index * 0.05}>
+                <Badge variant="secondary" className="px-4 py-2 text-sm">
+                  {(skill as any).name || skill}
+                </Badge>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ─── EXPERIENCE ───────────────────────────────────────────────────────── */}
+      <Section id="experience">
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection animation="slideDown">
+            <h2 className="text-3xl font-bold mb-2 font-display">Experience</h2>
+            <p className="text-muted-foreground mb-10">Where I&apos;ve worked</p>
+          </AnimatedSection>
+
+          <EditableSection label="Experience" onEdit={() => openPanel('experience')}>
+            <div className="space-y-6">
+              {portfolioData.experiences.map((exp, index) => (
+                <AnimatedSection key={exp.id} animation="slideLeft" delay={index * 0.15}>
+                  <Card>
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                        <CardTitle className="font-display">{exp.role}</CardTitle>
+                        <span className="text-xs text-muted-foreground">
+                          {exp.period.start.slice(0, 7)} – {exp.period.present ? 'Present' : exp.period.end?.slice(0, 7)}
+                        </span>
+                      </div>
+                      <CardDescription>{exp.company} · {exp.location}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm mb-3 leading-relaxed">{exp.description}</p>
+                      <ul className="text-sm space-y-1 mb-4">
+                        {exp.achievements.map((a, i) => (
+                          <li key={i} className="flex gap-2 text-muted-foreground">
+                            <span className="text-primary mt-0.5">▸</span>{a}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map((t) => (
+                          <Badge key={t} variant="outline" className="text-xs">{t}</Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </AnimatedSection>
+              ))}
+            </div>
+          </EditableSection>
         </div>
       </Section>
 
       {/* ─── CONTACT ──────────────────────────────────────────────────────────── */}
-      <Section id="contact">
-        <div className="max-w-2xl mx-auto">
-          <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
-            <AnimatedSection animation="fadeIn">
-              <h2 className="text-3xl font-bold mb-2 font-display">{currentAbout.contactHeading}</h2>
-              <p className="text-muted-foreground mb-8">
-                {currentAbout.contactDesc}
-              </p>
-            </AnimatedSection>
-
-            <AnimatedSection animation="slideUp" delay={0.3}>
-              {/* Single primary action */}
-              <Link href="/contact" className={cn(buttonVariants({ size: 'lg' }), "w-full sm:w-auto")}>
-                Send Me a Message
+      <Section id="contact" background="muted">
+        <div className="max-w-2xl mx-auto text-center">
+          <AnimatedSection animation="slideDown">
+            <h2 className="text-3xl font-bold mb-2 font-display">Get In Touch</h2>
+            <p className="text-muted-foreground mb-8">Open to interesting conversations and opportunities</p>
+          </AnimatedSection>
+          <AnimatedSection animation="scaleIn" delay={0.2}>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href={`mailto:${currentPersonal.email}`}
+                className={cn(buttonVariants({ size: 'lg' }), 'px-8 h-12 rounded-xl')}
+              >
+                Send Email
               </Link>
-            </AnimatedSection>
-          </EditableSection>
+              <Link
+                href={currentPersonal.linkedin || 'https://www.linkedin.com/in/gokulsenthilkumar3/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'px-8 h-12 rounded-xl border-white/10 bg-white/5')}
+              >
+                LinkedIn
+              </Link>
+            </div>
+          </AnimatedSection>
         </div>
       </Section>
     </>

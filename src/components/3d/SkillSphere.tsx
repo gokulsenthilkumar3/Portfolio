@@ -2,11 +2,17 @@
 
 import React, { useRef, useMemo, useState } from 'react'
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
-import { OrbitControls, Text } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import { skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
+
+// NOTE: drei <Text> is removed. It requires fetching a font file at runtime
+// (Inter_Regular.woff by default in drei v10) which fails in Vercel's edge
+// network due to CORS / CSP restrictions, causing a client-side crash.
+// Skill labels are now rendered as HTML overlays (see SkillLabel below),
+// which are cheaper, accessible, and never block the canvas.
 
 interface SkillNodeProps {
   skill: Skill
@@ -37,6 +43,9 @@ function SkillNode({
     return isSelected ? baseScale * 1.5 : hovered ? baseScale * 1.2 : baseScale
   }, [isSelected, hovered, skill.proficiency])
 
+  // NOTE: frameloop="always" is required — see FloatingModels.tsx for the
+  // full explanation. useFrame imperatively mutates mesh.rotation; demand
+  // mode never re-renders from these mutations.
   useFrame(() => {
     if (meshRef.current && !isSelected) {
       meshRef.current.rotation.x += 0.01
@@ -62,8 +71,6 @@ function SkillNode({
 
   return (
     <group position={position}>
-      {/* Reduced from sphereGeometry args=[1,32,32] to [1,16,16]
-          ~4x fewer vertices per node; visually equivalent at this size. */}
       <mesh
         ref={meshRef}
         onClick={handleClick}
@@ -71,6 +78,8 @@ function SkillNode({
         onPointerOut={handlePointerOut}
         scale={scale}
       >
+        {/* Reduced from sphereGeometry args=[1,32,32] to [1,16,16]
+            ~4x fewer vertices per node; visually equivalent at this size. */}
         <sphereGeometry args={[1, 16, 16]} />
         <meshStandardMaterial
           color={color}
@@ -80,19 +89,20 @@ function SkillNode({
           emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
         />
       </mesh>
-
-      {(hovered || isSelected) && (
-        <Text
-          position={[0, 1.5, 0]}
-          fontSize={0.5}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
-          {skill.name}
-        </Text>
-      )}
     </group>
+  )
+}
+
+/** HTML overlay for the hovered/selected skill name — no font fetch needed. */
+function SkillLabel({ skill }: { skill: Skill }) {
+  return (
+    <div
+      className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-10
+                 rounded-lg bg-slate-900/90 px-4 py-2 text-sm font-medium text-white
+                 shadow-lg backdrop-blur-sm transition-opacity"
+    >
+      {skill.name} — {skill.proficiency}/5
+    </div>
   )
 }
 
@@ -144,13 +154,17 @@ export function SkillSphere({
   }
 
   return (
-    <div className={className}>
-      {/* frameloop="demand" stops the render loop when nothing changes,
-          saving GPU cycles on idle/decorative canvases. */}
+    <div className={`relative ${className ?? ''}`}>
+      {/* HTML skill label — replaces drei <Text> to avoid runtime font fetch */}
+      {(hoveredSkill || selectedSkill) && (
+        <SkillLabel skill={(hoveredSkill || selectedSkill)!} />
+      )}
+
+      {/* frameloop="always" required — see comment in FloatingModels.tsx */}
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
         style={{ background: 'transparent' }}
-        frameloop="demand"
+        frameloop="always"
       >
         <ambientLight intensity={0.4} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -177,29 +191,6 @@ export function SkillSphere({
           minDistance={8}
           maxDistance={20}
         />
-
-        {hoveredSkill && (
-          <group position={[0, -6, 0]}>
-            <mesh>
-              <planeGeometry args={[8, 2]} />
-              <meshStandardMaterial
-                color="#1e293b"
-                transparent
-                opacity={0.9}
-              />
-            </mesh>
-            <Text
-              position={[0, 0, 0.1]}
-              fontSize={0.5}
-              color="white"
-              anchorX="center"
-              anchorY="middle"
-              maxWidth={7}
-            >
-              {hoveredSkill.name} - Proficiency: {hoveredSkill.proficiency}/5
-            </Text>
-          </group>
-        )}
       </Canvas>
     </div>
   )
