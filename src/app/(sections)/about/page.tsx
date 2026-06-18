@@ -10,6 +10,8 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/Button'
 import { cn } from '@/lib/utils/cn'
 
+export const dynamic = 'force-dynamic'
+
 async function getLiveStats() {
   try {
     const baseUrl =
