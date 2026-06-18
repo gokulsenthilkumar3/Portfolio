@@ -40,172 +40,162 @@ export default async function AboutPage() {
         {/* Header */}
         <AnimatedSection animation="fadeIn">
           <h2 className="text-4xl font-bold text-center mb-4">About Me</h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            SDET & Full-Stack Developer based in Erode, Tamil Nadu — building reliable software with clean code and a test-first mindset.
+          <p className="text-center text-muted-foreground mb-8">
+            SDET &amp; Full-Stack Developer based in {siteConfig.location} &mdash; building reliable software with clean code and a test-first mindset.
           </p>
         </AnimatedSection>
 
         {/* Live Stats */}
-        <AnimatedSection animation="slideUp" delay={0.2}>
-          <StatsCounter stats={liveStats} className="mb-16" />
-        </AnimatedSection>
+        <StatsCounter stats={liveStats} />
 
         {/* Bio + Core Competencies */}
-        <div className="grid lg:grid-cols-2 gap-12 mb-16">
-          <AnimatedSection animation="slideRight" delay={0.3}>
-            <div className="space-y-6">
-              <h3 className="text-2xl font-semibold">{siteConfig.tagline}</h3>
-              <p className="text-muted-foreground leading-relaxed">{siteConfig.bio}</p>
-              <p className="text-muted-foreground leading-relaxed">
-                I specialize in end-to-end test automation (Playwright, Selenium, K6) and modern
-                full-stack development with React, Next.js, and Node.js. Every project I ship is
-                backed by robust automated test coverage.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href={siteConfig.resume || '/Gokul_S_Resume.pdf'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(buttonVariants(), 'gap-2')}
-                >
-                  Download Resume
-                </Link>
-                <Link
-                  href="https://github.com/gokulsenthilkumar3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  View GitHub
-                </Link>
-              </div>
+        <AnimatedSection animation="slideUp" className="grid md:grid-cols-2 gap-8 mt-10">
+          <div>
+            <h3 className="text-2xl font-semibold mb-3">{siteConfig.tagline}</h3>
+            <p className="text-muted-foreground mb-4">{siteConfig.bio}</p>
+            <p className="text-muted-foreground mb-6">
+              I specialize in end-to-end test automation (Playwright, Selenium, K6) and modern full-stack development with React, Next.js, and Node.js. Every project I ship is backed by robust automated test coverage.
+            </p>
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                href={siteConfig.resume}
+                target="_blank"
+                className={cn(buttonVariants({ variant: 'default' }))}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" /> Download Resume
+              </Link>
+              <Link
+                href={siteConfig.github}
+                target="_blank"
+                className={cn(buttonVariants({ variant: 'outline' }))}
+              >
+                View GitHub
+              </Link>
             </div>
-          </AnimatedSection>
+          </div>
 
-          <AnimatedSection animation="slideLeft" delay={0.4}>
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle>Core Competencies</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-6">
-                  {[
-                    { icon: User, title: 'QA / SDET', sub: 'Test Automation' },
-                    { icon: Target, title: 'Full-Stack', sub: 'React & Node.js' },
-                    { icon: Award, title: 'Performance', sub: 'K6 Load Testing' },
-                    { icon: Calendar, title: 'CI/CD', sub: 'Azure DevOps' },
-                  ].map(({ icon: Icon, title, sub }) => (
-                    <div key={title} className="text-center">
-                      <div className="flex justify-center mb-2">
-                        <div className="p-3 bg-primary/10 rounded-lg">
-                          <Icon className="h-6 w-6 text-primary" />
-                        </div>
-                      </div>
-                      <div className="text-lg font-semibold">{title}</div>
-                      <div className="text-sm text-muted-foreground">{sub}</div>
-                    </div>
-                  ))}
+          <Card>
+            <CardHeader>
+              <CardTitle>Core Competencies</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              {[
+                { icon: User, title: 'QA / SDET', sub: 'Test Automation' },
+                { icon: Target, title: 'Full-Stack', sub: 'React & Node.js' },
+                { icon: Award, title: 'Performance', sub: 'K6 Load Testing' },
+                { icon: Calendar, title: 'CI/CD', sub: 'Azure DevOps' },
+              ].map(({ icon: Icon, title, sub }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <Icon className="w-5 h-5 mt-0.5 text-primary shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm">{title}</p>
+                    <p className="text-xs text-muted-foreground">{sub}</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </AnimatedSection>
-        </div>
+              ))}
+            </CardContent>
+          </Card>
+        </AnimatedSection>
 
         {/* Education */}
-        <AnimatedSection animation="slideUp" delay={0.5}>
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 bg-indigo-500/10 rounded-lg">
-                <GraduationCap className="h-6 w-6 text-indigo-400" />
-              </div>
-              <h3 className="text-2xl font-bold">Education</h3>
-            </div>
-            <div className="space-y-4">
-              {(education as any[]).map((edu: any, i: number) => (
-                <Card key={i} className="border-l-4 border-l-indigo-500 bg-gradient-to-r from-indigo-500/5 to-transparent">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="space-y-1">
-                        <h4 className="text-lg font-bold">{edu.institution}</h4>
-                        <p className="text-primary font-medium">{edu.degree}</p>
-                        {edu.gpa && (
-                          <Badge variant="secondary" className="text-xs w-fit">
-                            {edu.gpa}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground flex-shrink-0">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span>{formatDate(edu.startDate)} – {edu.endDate ? formatDate(edu.endDate) : 'Present'}</span>
-                      </div>
+        <AnimatedSection animation="slideUp" className="mt-12">
+          <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+            <GraduationCap className="w-6 h-6 text-primary" /> Education
+          </h3>
+          <div className="space-y-4">
+            {(education as any[]).map((edu: any, i: number) => (
+              <Card key={edu.id ?? i}>
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                      <CardTitle className="text-lg">{edu.institution}</CardTitle>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
+                      </p>
                     </div>
-                    {edu.achievements && edu.achievements.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Achievements</p>
-                        <ul className="space-y-1">
-                          {edu.achievements.map((ach: string, j: number) => (
-                            <li key={j} className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <CheckCircle2 className="h-3.5 w-3.5 text-indigo-400 flex-shrink-0" />
-                              {ach}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div className="text-right shrink-0">
+                      {edu.grade && (
+                        <Badge variant="secondary" className="mb-1">{edu.grade}</Badge>
+                      )}
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(edu.period?.start)} &ndash; {edu.period?.present ? 'Present' : edu.period?.end ? formatDate(edu.period.end) : ''}
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+                {edu.achievements && edu.achievements.length > 0 && (
+                  <CardContent>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Achievements</p>
+                    <ul className="space-y-1">
+                      {edu.achievements.map((ach: string, j: number) => (
+                        <li key={j} className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                          {ach}
+                        </li>
+                      ))}
+                    </ul>
                   </CardContent>
-                </Card>
-              ))}
-            </div>
+                )}
+              </Card>
+            ))}
           </div>
         </AnimatedSection>
 
         {/* Experience */}
-        <AnimatedSection animation="slideUp" delay={0.6}>
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 bg-violet-500/10 rounded-lg">
-                <Briefcase className="h-6 w-6 text-violet-400" />
-              </div>
-              <h3 className="text-2xl font-bold">Experience</h3>
-            </div>
-            <div className="space-y-4">
-              {(experiences as any[]).map((exp: any, i: number) => (
-                <Card key={i} className="border-l-4 border-l-violet-500 bg-gradient-to-r from-violet-500/5 to-transparent">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="space-y-1">
-                        <h4 className="text-lg font-bold">{exp.position ?? exp.title}</h4>
-                        <p className="text-primary font-medium flex items-center gap-1.5">
-                          <Briefcase className="h-3.5 w-3.5" />
-                          {exp.company}
+        <AnimatedSection animation="slideUp" className="mt-12">
+          <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+            <Briefcase className="w-6 h-6 text-primary" /> Experience
+          </h3>
+          <div className="space-y-4">
+            {(experiences as any[]).map((exp: any, i: number) => (
+              <Card key={exp.id ?? i}>
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                      <CardTitle className="text-lg">{exp.role ?? exp.position ?? exp.title}</CardTitle>
+                      <p className="text-muted-foreground text-sm font-medium mt-1">{exp.company}</p>
+                      {exp.location && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3" />{exp.location}
                         </p>
-                        {exp.location && (
-                          <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {exp.location}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground flex-shrink-0">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span>{formatDate(exp.startDate)} – {exp.endDate ? formatDate(exp.endDate) : 'Present'}</span>
-                      </div>
+                      )}
                     </div>
-                    {exp.description && (
-                      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{exp.description}</p>
-                    )}
-                    {exp.technologies && exp.technologies.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {exp.technologies.map((tech: string) => (
-                          <Badge key={tech} variant="outline" className="text-xs px-2 py-0">{tech}</Badge>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div className="text-right shrink-0">
+                      {exp.type && (
+                        <Badge variant="outline" className="mb-1 capitalize">{exp.type.replace('-', ' ')}</Badge>
+                      )}
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(exp.period?.start)} &ndash; {exp.period?.present ? 'Present' : exp.period?.end ? formatDate(exp.period.end) : ''}
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {exp.description && (
+                    <p className="text-sm text-muted-foreground mb-4">{exp.description}</p>
+                  )}
+                  {exp.achievements && exp.achievements.length > 0 && (
+                    <ul className="space-y-2 mb-4">
+                      {exp.achievements.map((ach: string, j: number) => (
+                        <li key={j} className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                          {ach}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {exp.technologies && exp.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {exp.technologies.map((tech: string) => (
+                        <Badge key={tech} variant="secondary" className="text-xs">{tech}</Badge>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </AnimatedSection>
 
