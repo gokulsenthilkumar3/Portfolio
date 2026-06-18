@@ -1,166 +1,208 @@
 'use client'
-
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Section } from '@/components/shared/Section'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-// SkillSphereSection uses dynamic(..., { ssr: false }) internally so Three.js
-// is never executed on the server. Importing SkillSphere directly bypasses
-// that guard and causes a client-side exception during hydration.
 import { SkillSphereSection } from '@/components/3d/SkillSphereSection'
 import { skills } from '@/lib/data/content'
-import { getTopSkills } from '@/lib/utils/content-helpers'
+import { getTopSkills, getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
-import { filterProjects } from '@/lib/utils/content-helpers'
+
+// Real categories from portfolio.config.ts skills data
+const CATEGORIES = ['all', 'testing', 'frontend', 'backend', 'devops'] as const
+type Category = typeof CATEGORIES[number]
+
+const CATEGORY_LABELS: Record<Category, string> = {
+  all: 'All Skills',
+  testing: 'Testing',
+  frontend: 'Frontend',
+  backend: 'Backend',
+  devops: 'DevOps',
+}
+
+const CATEGORY_COLORS: Record<Category, string> = {
+  all: 'from-violet-500/20 to-indigo-500/20 border-violet-500/30',
+  testing: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
+  frontend: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30',
+  backend: 'from-orange-500/20 to-amber-500/20 border-orange-500/30',
+  devops: 'from-rose-500/20 to-pink-500/20 border-rose-500/30',
+}
+
+function getProficiencyLabel(p: number) {
+  return ['', 'Beginner', 'Elementary', 'Intermediate', 'Advanced', 'Expert'][p] ?? ''
+}
+
+function getProficiencyColor(p: number) {
+  return [
+    'bg-gray-500',
+    'bg-red-500',
+    'bg-orange-500',
+    'bg-yellow-500',
+    'bg-blue-500',
+    'bg-green-500',
+  ][p] ?? 'bg-gray-500'
+}
 
 export default function SkillsPage() {
   const [viewMode, setViewMode] = useState<'3d' | '2d'>('2d')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedCategory, setSelectedCategory] = useState<Category>('all')
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
 
-  const handleSkillSelect = (skill: Skill) => {
-    setSelectedSkill(skill)
-  }
+  const filteredSkills = useMemo<Skill[]>(() => {
+    if (selectedCategory === 'all') return skills as Skill[]
+    // Use the correct helper that filters by skill.category
+    return getSkillsByCategory(skills as Skill[], selectedCategory) as Skill[]
+  }, [selectedCategory])
 
-  const categories = ['all', 'frontend', 'backend', 'tools', 'soft-skills', 'design']
-  const filteredSkills = selectedCategory === 'all'
-    ? skills as Skill[]
-    : filterProjects(skills as any, selectedCategory)
+  const topSkills = getTopSkills(skills as Skill[], 8)
 
-  const topSkills = getTopSkills(skills, 8)
-
-  const getProficiencyColor = (proficiency: number) => {
-    switch (proficiency) {
-      case 5: return 'bg-green-500'
-      case 4: return 'bg-blue-500'
-      case 3: return 'bg-yellow-500'
-      case 2: return 'bg-orange-500'
-      case 1: return 'bg-red-500'
-      default: return 'bg-gray-500'
-    }
-  }
+  const handleSkillSelect = (skill: Skill) => setSelectedSkill(skill)
 
   return (
     <Section id="skills" className="py-20">
       <div className="max-w-6xl mx-auto">
+
+        {/* Header */}
         <AnimatedSection animation="fadeIn">
-          <h2 className="text-4xl font-bold text-center mb-4">Skills & Expertise</h2>
-          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A comprehensive overview of my technical skills and proficiency levels across different domains.
-          </p>
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold mb-4">Skills & Expertise</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Technical proficiency across testing, frontend, backend, and DevOps — built through real projects at CloudAssert and open-source work.
+            </p>
+          </div>
         </AnimatedSection>
 
-        {/* View Mode Toggle */}
-        <AnimatedSection animation="slideUp" delay={0.2}>
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-lg border p-1">
+        {/* View Toggle */}
+        <AnimatedSection animation="slideUp" delay={0.15}>
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1 gap-1">
               <Button
                 variant={viewMode === '2d' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('2d')}
+                className="min-w-[90px]"
               >
-                2D View
+                Grid View
               </Button>
               <Button
                 variant={viewMode === '3d' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('3d')}
+                className="min-w-[90px]"
               >
-                3D View
+                3D Sphere
               </Button>
             </div>
           </div>
         </AnimatedSection>
 
-        {/* Category Filter — visible in both modes */}
-        <AnimatedSection animation="slideUp" delay={0.3}>
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
-            {categories.map((category) => (
+        {/* Category Filter */}
+        <AnimatedSection animation="slideUp" delay={0.25}>
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {CATEGORIES.map((cat) => (
               <Button
-                key={category}
-                variant={selectedCategory === category ? 'default' : 'outline'}
+                key={cat}
+                variant={selectedCategory === cat ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(cat)}
                 className="capitalize"
               >
-                {category.replace('-', ' ')}
+                {CATEGORY_LABELS[cat]}
+                {cat !== 'all' && (
+                  <span className="ml-1.5 text-xs opacity-60">
+                    ({getSkillsByCategory(skills as Skill[], cat).length})
+                  </span>
+                )}
               </Button>
             ))}
           </div>
         </AnimatedSection>
 
-        {/* Skills Display */}
-        {viewMode === '3d' ? (
-          <AnimatedSection animation="scaleIn" delay={0.4}>
-            {/* SkillSphereSection handles:
-                1. dynamic import with ssr:false (no SSR crash)
-                2. IntersectionObserver (canvas mounts only near viewport)
-                3. use3DGate (skips canvas for reduced-motion / no-WebGL)
-                4. Suspense skeleton (prevents layout shift while chunk loads) */}
-            <SkillSphereSection
-              onSkillSelect={handleSkillSelect}
-              selectedCategory={selectedCategory === 'all' ? undefined : selectedCategory}
-              heightClass="h-[500px]"
-              className="rounded-lg overflow-hidden bg-muted/20"
-            />
-
-            {/* Selected skill info badge */}
+        {/* 3D View */}
+        {viewMode === '3d' && (
+          <AnimatedSection animation="scaleIn" delay={0.3}>
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 to-blue-950/40 overflow-hidden">
+              <SkillSphereSection
+                onSkillSelect={handleSkillSelect}
+                selectedCategory={selectedCategory === 'all' ? undefined : selectedCategory}
+                heightClass="h-[520px]"
+                className="w-full"
+              />
+            </div>
             {selectedSkill && (
               <div className="mt-4 flex justify-center">
-                <Badge
-                  variant="outline"
-                  className="text-sm py-2 px-4"
-                  style={{
-                    borderColor: selectedSkill.color || '#3b82f6',
-                    color: selectedSkill.color || '#3b82f6',
-                  }}
+                <div
+                  className="flex items-center gap-3 rounded-xl border bg-card px-5 py-3 shadow-lg"
+                  style={{ borderColor: selectedSkill.color ?? '#3b82f6' }}
                 >
-                  {selectedSkill.name} — {selectedSkill.proficiency}/5
-                </Badge>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ background: selectedSkill.color ?? '#3b82f6' }}
+                  />
+                  <span className="font-semibold">{selectedSkill.name}</span>
+                  <span className="text-muted-foreground text-sm">—</span>
+                  <span className="text-sm" style={{ color: selectedSkill.color ?? '#3b82f6' }}>
+                    {getProficiencyLabel(selectedSkill.proficiency)} ({selectedSkill.proficiency}/5)
+                  </span>
+                </div>
               </div>
             )}
+            <p className="text-center text-xs text-muted-foreground mt-3">
+              Click a node to inspect · Drag to rotate · Scroll to zoom
+            </p>
           </AnimatedSection>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        )}
+
+        {/* 2D Grid View */}
+        {viewMode === '2d' && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredSkills.map((skill, index) => (
               <AnimatedSection
                 key={skill.id}
                 animation="scaleIn"
-                delay={0.1 * (index % 9)}
+                delay={0.05 * (index % 12)}
               >
-                <Card className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="pb-3">
+                <Card
+                  className={`hover:shadow-xl transition-all duration-300 cursor-pointer bg-gradient-to-br ${
+                    CATEGORY_COLORS[skill.category as Category] ?? CATEGORY_COLORS.all
+                  } border`}
+                  onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
+                >
+                  <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{skill.name}</CardTitle>
-                      <Badge variant="secondary" className="capitalize">
-                        {skill.category.replace('-', ' ')}
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ background: skill.color ?? '#3b82f6' }}
+                        />
+                        {skill.name}
+                      </CardTitle>
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] capitalize px-2 py-0"
+                      >
+                        {skill.category}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {/* Proficiency Bar */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Proficiency</span>
-                          <span>{skill.proficiency}/5</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-500 ${getProficiencyColor(skill.proficiency)}`}
-                            style={{ width: `${(skill.proficiency / 5) * 100}%` }}
-                          />
-                        </div>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{getProficiencyLabel(skill.proficiency)}</span>
+                        <span>{skill.proficiency}/5</span>
                       </div>
-
-                      {/* Years of Experience */}
+                      <div className="w-full bg-black/20 rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full transition-all duration-700 ${getProficiencyColor(skill.proficiency)}`}
+                          style={{ width: `${(skill.proficiency / 5) * 100}%` }}
+                        />
+                      </div>
                       {skill.yearsOfExperience && (
-                        <div className="text-sm text-muted-foreground">
-                          {skill.yearsOfExperience}{' '}
-                          {skill.yearsOfExperience === 1 ? 'year' : 'years'} experience
-                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'yr' : 'yrs'} experience
+                        </p>
                       )}
                     </div>
                   </CardContent>
@@ -170,19 +212,19 @@ export default function SkillsPage() {
           </div>
         )}
 
-        {/* Top Skills Summary */}
-        <AnimatedSection animation="slideUp" delay={0.8}>
-          <div className="mt-16">
-            <h3 className="text-2xl font-bold text-center mb-8">Core Competencies</h3>
+        {/* Core Competencies */}
+        <AnimatedSection animation="slideUp" delay={0.6}>
+          <div className="mt-16 text-center">
+            <h3 className="text-2xl font-bold mb-6">Core Competencies</h3>
             <div className="flex flex-wrap justify-center gap-3">
               {topSkills.map((skill) => (
                 <Badge
                   key={skill.id}
                   variant="outline"
-                  className="text-sm py-2 px-4 capitalize"
+                  className="text-sm py-2 px-4 capitalize font-medium"
                   style={{
-                    borderColor: skill.color || '#3b82f6',
-                    color: skill.color || '#3b82f6',
+                    borderColor: skill.color ?? '#3b82f6',
+                    color: skill.color ?? '#3b82f6',
                   }}
                 >
                   {skill.name}
@@ -191,6 +233,7 @@ export default function SkillsPage() {
             </div>
           </div>
         </AnimatedSection>
+
       </div>
     </Section>
   )
