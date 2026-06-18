@@ -1,9 +1,10 @@
-﻿'use client'
+'use client'
 
 import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, MeshDistortMaterial, Sparkles, Stars } from '@react-three/drei'
 import * as THREE from 'three'
+import { ThreeGate } from './ThreeGate'
 
 function DNAStrand() {
   const groupRef = useRef<THREE.Group>(null)
@@ -215,7 +216,7 @@ export interface HeroSceneProps {
 
 export function HeroScene({ className }: HeroSceneProps) {
   return (
-    <div className={className}>
+    <ThreeGate className={className}>
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         style={{ background: 'transparent' }}
@@ -235,6 +236,6 @@ export function HeroScene({ className }: HeroSceneProps) {
         <Sparkles count={120} scale={12} size={1.5} speed={0.3} color="#a78bfa" opacity={0.6} />
         <Sparkles count={60} scale={8} size={2} speed={0.5} color="#ec4899" opacity={0.4} />
       </Canvas>
-    </div>
+    </ThreeGate>
   )
 }

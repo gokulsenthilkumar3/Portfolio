@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const GITHUB_USERNAME = 'gokulsenthilkumar3'
 const GITHUB_API = 'https://api.github.com'
@@ -32,10 +32,9 @@ export async function GET() {
       fetchGitHub(`/users/${GITHUB_USERNAME}/events/public?per_page=100`),
     ])
 
-    // Top repos by stars
-    const topRepos = [...repos]
+    // All repos by stars
+    const allRepos = [...repos]
       .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
-      .slice(0, 6)
       .map((r: any) => ({
         id: r.id,
         name: r.name,
@@ -89,7 +88,7 @@ export async function GET() {
         totalForks: repos.reduce((a: number, r: any) => a + r.forks_count, 0),
         followers: user.followers,
       },
-      topRepos,
+      allRepos,
       languages,
       contributions: contributionMap,
     }

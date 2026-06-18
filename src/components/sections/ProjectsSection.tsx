@@ -8,8 +8,9 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils/cn'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/Button'
-import { Github, ExternalLink, ArrowRight } from 'lucide-react'
+import { Github, ExternalLink, ArrowRight, ArrowUp } from 'lucide-react'
 import type { Project } from '@/lib/types/portfolio'
+import { useState, useEffect } from 'react'
 
 // Color accent per project category — no filter chips, just visual labelling
 const CATEGORY_COLORS: Record<string, string> = {
@@ -116,11 +117,36 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 }
 
 export function ProjectsSection({ projects }: Props) {
-  // Only featured projects on home — sorted newest first
-  const featured = useMemo(
-    () => projects.filter((p) => p.featured).slice(0, 6),
-    [projects]
-  )
+  const [githubProjects, setGithubProjects] = useState<Project[]>([])
+  const [showAll, setShowAll] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/github')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.allRepos) {
+          const mapped = data.allRepos.map((repo: any) => ({
+            id: repo.id.toString(),
+            title: repo.name,
+            description: repo.description || 'GitHub Repository',
+            technologies: [repo.language, ...(repo.topics || [])].filter(Boolean),
+            category: 'other',
+            links: { github: repo.url },
+            featured: false,
+            date: repo.updatedAt
+          }))
+          setGithubProjects(mapped)
+        }
+      })
+      .catch(console.error)
+  }, [])
+
+  const displayProjects = useMemo(() => {
+    const staticUrls = new Set(projects.map(p => p.links?.github).filter(Boolean))
+    const uniqueGithub = githubProjects.filter(p => !staticUrls.has(p.links?.github))
+    const combined = [...projects, ...uniqueGithub]
+    return showAll ? combined : combined.slice(0, 9)
+  }, [projects, githubProjects, showAll])
 
   return (
     <section id="projects" className="py-20">
@@ -134,15 +160,15 @@ export function ProjectsSection({ projects }: Props) {
                 A selection of projects I've built — from full-stack apps to test automation frameworks.
               </p>
             </div>
-            <Link
-              href="/projects"
+            <button
+              onClick={() => setShowAll(!showAll)}
               className={cn(
                 buttonVariants({ variant: 'ghost', size: 'sm' }),
-                'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground'
+                'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer'
               )}
             >
-              View all <ArrowRight className="h-4 w-4" />
-            </Link>
+              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
+            </button>
           </div>
         </AnimatedSection>
 
@@ -152,21 +178,33 @@ export function ProjectsSection({ projects }: Props) {
             key="grid"
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {featured.map((project, i) => (
+            {displayProjects.map((project, i) => (
               <ProjectCard key={project.id} project={project} index={i} />
             ))}
           </motion.div>
         </AnimatePresence>
 
+        {/* Bottom CTA for large screens */}
+        <AnimatedSection animation="fadeIn" delay={0.2}>
+          <div className="mt-8 hidden sm:flex justify-center">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className={cn(buttonVariants({ variant: 'outline' }), 'gap-2 cursor-pointer')}
+            >
+              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
+            </button>
+          </div>
+        </AnimatedSection>
+
         {/* Mobile CTA */}
         <AnimatedSection animation="slideUp" delay={0.4}>
           <div className="mt-10 flex justify-center sm:hidden">
-            <Link
-              href="/projects"
+            <button
+              onClick={() => setShowAll(!showAll)}
               className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
             >
-              View All Projects <ArrowRight className="h-4 w-4" />
-            </Link>
+              {showAll ? 'Show Less' : 'View All Projects'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
+            </button>
           </div>
         </AnimatedSection>
       </div>

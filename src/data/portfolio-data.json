@@ -322,65 +322,92 @@
   ],
   "experiences": [
     {
-      "id": "cloudassert",
-      "company": "CloudAssert Technologies",
-      "role": "Software Development Engineer in Test — Intern",
+      "id": "cloudassert-fte",
+      "company": "Cloud Assert",
+      "role": "Software Development Engineer in Test",
       "period": {
-        "start": "2024-08-01",
+        "start": "2025-08",
         "present": true
       },
       "location": "Coimbatore, Tamil Nadu, India",
-      "description": "Designed automated test frameworks, ran K6 performance tests, and integrated quality gates into Azure DevOps CI/CD pipelines to ensure zero-defect deployments.",
-      "achievements": [
-        "Built K6 load testing scripts covering 50+ API endpoints",
-        "Integrated quality gates into Azure DevOps reducing regression time by 40%",
-        "Maintained Selenium & TestCafe automation suites across multiple releases"
-      ],
-      "technologies": [
-        "K6",
-        "Azure DevOps",
-        "Selenium",
-        "TestCafe",
-        "TypeScript",
-        "JavaScript",
-        "REST APIs"
-      ]
+      "description": "Full-time SDET ensuring robust quality gates and test automation frameworks.",
+      "technologies": ["K6", "Azure DevOps", "Selenium", "TestCafe"]
+    },
+    {
+      "id": "cloudassert-intern",
+      "company": "Cloud Assert",
+      "role": "Software Development Engineer in Test (Internship)",
+      "period": {
+        "start": "2024-08",
+        "end": "2025-07"
+      },
+      "location": "Coimbatore, Tamil Nadu, India",
+      "description": "Designed automated test frameworks, ran K6 performance tests, and integrated quality gates into Azure DevOps CI/CD pipelines.",
+      "technologies": ["K6", "Azure DevOps", "Selenium"]
     },
     {
       "id": "emglitz",
       "company": "Emglitz Technologies",
-      "role": "Junior Frontend Developer",
+      "role": "Junior Frontend Developer (Internship)",
       "period": {
-        "start": "2023-06-01",
-        "end": "2023-10-01"
+        "start": "2023-06",
+        "end": "2023-10"
       },
       "location": "Coimbatore, Tamil Nadu, India",
       "description": "Built responsive React UIs and contributed to frontend feature development for client-facing web applications.",
-      "achievements": [
-        "Developed 10+ reusable React components adopted across 3 projects",
-        "Improved page load performance by optimizing component re-renders"
-      ],
-      "technologies": [
-        "React.js",
-        "JavaScript",
-        "HTML",
-        "CSS",
-        "Tailwind CSS"
-      ]
+      "technologies": ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS"]
     }
   ],
   "education": [
     {
       "id": "kongu",
-      "degree": "Master of Science (MS)",
+      "degree": "Master of Science - MS",
       "field": "Software Systems",
       "institution": "Kongu Engineering College",
       "period": {
-        "start": "2020",
-        "end": "2025"
+        "start": "2020-09",
+        "end": "2025-05"
       },
-      "location": "Erode, Tamil Nadu, India",
-      "grade": "8.5 CGPA"
+      "grade": "5th year"
+    },
+    {
+      "id": "hsc",
+      "degree": "HSC (Tamil Nadu State Board)",
+      "field": "12th Grade",
+      "institution": "Vivekananda Vidyalaya Matriculation Higher Secondary School, Muthur",
+      "period": {
+        "start": "2019-06",
+        "end": "2020-04"
+      },
+      "grade": "12th"
+    },
+    {
+      "id": "sslc",
+      "degree": "SSLC (Tamil Nadu State Board)",
+      "field": "10th Grade",
+      "institution": "Vivekananda Vidyalaya Matriculation Higher Secondary School, Muthur",
+      "period": {
+        "start": "2017-06",
+        "end": "2018-05"
+      },
+      "grade": "10th"
+    }
+  ],
+  "certifications": [
+    {
+      "id": "azure-data",
+      "name": "Microsoft Certified: Azure Data Scientist Associate",
+      "issuer": "Microsoft",
+      "issued": "2025-10",
+      "expires": "2026-10",
+      "credentialId": "CF46B47AB0825559"
+    },
+    {
+      "id": "python-basics",
+      "name": "Python Basics",
+      "issuer": "Skillsoft",
+      "issued": "2022-11",
+      "credentialId": "61920547"
     }
   ],
   "socialLinks": [

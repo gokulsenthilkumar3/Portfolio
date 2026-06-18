@@ -4,6 +4,7 @@ import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Float } from '@react-three/drei'
 import * as THREE from 'three'
+import { ThreeGate } from './ThreeGate'
 
 function FloatingShape({
   position,
@@ -121,7 +122,7 @@ export function FloatingModels({
   }, [theme])
 
   return (
-    <div className={className}>
+    <ThreeGate className={className}>
       {/* frameloop="always" is required because useFrame mutations
           are imperative — demand mode never re-renders from them. */}
       <Canvas
@@ -153,6 +154,6 @@ export function FloatingModels({
           minPolarAngle={Math.PI / 3}
         />
       </Canvas>
-    </div>
+    </ThreeGate>
   )
 }

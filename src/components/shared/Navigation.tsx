@@ -20,8 +20,9 @@ export function Navigation() {
   const navItems = [
     { label: 'Home', href: '/#home', id: 'home' },
     { label: 'About', href: '/#about', id: 'about' },
-    { label: 'Projects', href: '/#projects', id: 'projects' },
     { label: 'Skills', href: '/#skills', id: 'skills' },
+    { label: 'Projects', href: '/#projects', id: 'projects' },
+    { label: 'Insights', href: '/#insights', id: 'insights' },
     { label: 'Contact', href: '/#contact', id: 'contact' },
   ]
 
@@ -43,15 +44,20 @@ export function Navigation() {
   }, [])
 
   const scrollToSection = (href: string, id: string) => {
-    const isHome = pathname === '/' || pathname === (process.env.NEXT_PUBLIC_BASE_PATH || '') + '/'
-    if (!isHome) {
+    if (href.startsWith('/#')) {
+      const isHome = pathname === '/' || pathname === (process.env.NEXT_PUBLIC_BASE_PATH || '') + '/'
+      if (!isHome) {
+        router.push(href)
+        return
+      }
+      const element = document.getElementById(id)
+      element?.scrollIntoView({ behavior: 'smooth' })
+      setActiveSection(id)
+      setIsOpen(false)
+    } else {
       router.push(href)
-      return
+      setIsOpen(false)
     }
-    const element = document.getElementById(id)
-    element?.scrollIntoView({ behavior: 'smooth' })
-    setActiveSection(id)
-    setIsOpen(false)
   }
 
   return (

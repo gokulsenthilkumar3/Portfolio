@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -23,7 +23,7 @@ interface GitHubData {
     totalForks: number
     followers: number
   }
-  topRepos: Array<{
+  allRepos: Array<{
     id: number
     name: string
     description: string
@@ -252,8 +252,16 @@ export function GitHubSection() {
           <h4 className="font-semibold text-sm">Top Repositories</h4>
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
-          {data.topRepos.map((repo, i) => {
-            const color = LANG_COLORS[repo.language] || '#6366f1'
+          {(() => {
+            const snakeRepo = data.allRepos.find(r => r.name.toLowerCase().includes('snake'))
+            const otherRepos = data.allRepos.filter(r => r.id !== snakeRepo?.id)
+            const reposToShow = [
+              ...(snakeRepo ? [snakeRepo] : []),
+              ...otherRepos
+            ].slice(0, 8)
+            
+            return reposToShow.map((repo, i) => {
+              const color = LANG_COLORS[repo.language] || '#6366f1'
             return (
               <motion.a
                 key={repo.id}
@@ -292,7 +300,7 @@ export function GitHubSection() {
                 </div>
               </motion.a>
             )
-          })}
+          })})()}
         </div>
       </div>
     </div>

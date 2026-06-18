@@ -15,7 +15,11 @@ export const siteConfig = {
   bio: portfolioConfig.personal.bio,
   tagline: portfolioConfig.personal.tagline,
   resume: portfolioConfig.personal.resume,
-  avatar: portfolioConfig.personal.avatar
+  avatar: portfolioConfig.personal.avatar,
+  emailZoho: (portfolioConfig.personal as any).emailZoho,
+  linkedin: portfolioConfig.personal.linkedin,
+  github: portfolioConfig.personal.github,
+  twitter: portfolioConfig.personal.twitter
 }
 
 export const projects = portfolioConfig.projects
@@ -28,3 +32,6 @@ export const seo = portfolioConfig.seo
 export const personal = portfolioConfig.personal
 export const about = portfolioConfig.about
 export const education = portfolioConfig.education
+export const certifications = portfolioConfig.certifications
+export const languages = portfolioConfig.languages
+export const blog = portfolioConfig.blog

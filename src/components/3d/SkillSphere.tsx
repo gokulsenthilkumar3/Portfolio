@@ -2,17 +2,12 @@
 
 import React, { useRef, useMemo, useState } from 'react'
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
-
-// NOTE: drei <Text> is removed. It requires fetching a font file at runtime
-// (Inter_Regular.woff by default in drei v10) which fails in Vercel's edge
-// network due to CORS / CSP restrictions, causing a client-side crash.
-// Skill labels are now rendered as HTML overlays (see SkillLabel below),
-// which are cheaper, accessible, and never block the canvas.
+import { ThreeGate } from './ThreeGate'
 
 interface SkillNodeProps {
   skill: Skill
@@ -78,33 +73,34 @@ function SkillNode({
         onPointerOut={handlePointerOut}
         scale={scale}
       >
-        {/* Reduced from sphereGeometry args=[1,32,32] to [1,16,16]
-            ~4x fewer vertices per node; visually equivalent at this size. */}
-        <sphereGeometry args={[1, 16, 16]} />
+        <sphereGeometry args={[0.3, 32, 32]} />
         <meshStandardMaterial
           color={color}
-          metalness={0.6}
-          roughness={0.3}
+          metalness={0.9}
+          roughness={0.1}
           emissive={color}
-          emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
+          emissiveIntensity={hovered || isSelected ? 0.8 : 0.2}
         />
       </mesh>
+      
+      <Html center className="pointer-events-none" zIndexRange={[100, 0]}>
+        <div 
+          className="whitespace-nowrap font-display font-medium tracking-wide transition-all duration-300 bg-slate-900/60 px-2 py-1 rounded backdrop-blur-sm border border-white/10"
+          style={{ 
+            color: isSelected ? '#ffffff' : (skill.color || '#ffffff'),
+            fontSize: isSelected ? '1.25rem' : hovered ? '1.1rem' : '0.85rem',
+            opacity: isSelected || hovered ? 1 : 0.7,
+            transform: `translate3d(-50%, ${isSelected || hovered ? '-30px' : '-20px'}, 0)`
+          }}
+        >
+          {skill.name}
+        </div>
+      </Html>
     </group>
   )
 }
 
-/** HTML overlay for the hovered/selected skill name — no font fetch needed. */
-function SkillLabel({ skill }: { skill: Skill }) {
-  return (
-    <div
-      className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-10
-                 rounded-lg bg-slate-900/90 px-4 py-2 text-sm font-medium text-white
-                 shadow-lg backdrop-blur-sm transition-opacity"
-    >
-      {skill.name} — {skill.proficiency}/5
-    </div>
-  )
-}
+
 
 interface SkillSphereProps {
   onSkillSelect?: (skill: Skill) => void
@@ -119,7 +115,6 @@ export function SkillSphere({
 }: SkillSphereProps) {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
   const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null)
-  const groupRef = useRef<THREE.Group>(null)
 
   const filteredSkills = useMemo(() => {
     if (!selectedCategory) return skills.slice(0, 20)
@@ -127,22 +122,18 @@ export function SkillSphere({
   }, [selectedCategory])
 
   const skillPositions = useMemo(() => {
+    // Increase radius from 5 to 8 for better spacing
+    const radius = 8
     return filteredSkills.map((_, index) => {
       const phi = Math.acos(-1 + (2 * index) / filteredSkills.length)
       const theta = Math.sqrt(filteredSkills.length * Math.PI) * phi
       return [
-        Math.cos(theta) * Math.sin(phi) * 5,
-        Math.sin(theta) * Math.sin(phi) * 5,
-        Math.cos(phi) * 5,
+        Math.cos(theta) * Math.sin(phi) * radius,
+        Math.sin(theta) * Math.sin(phi) * radius,
+        Math.cos(phi) * radius,
       ] as [number, number, number]
     })
   }, [filteredSkills])
-
-  useFrame(() => {
-    if (groupRef.current && !selectedSkill) {
-      groupRef.current.rotation.y += 0.002
-    }
-  })
 
   const handleSkillClick = (skill: Skill) => {
     setSelectedSkill(skill)
@@ -154,11 +145,7 @@ export function SkillSphere({
   }
 
   return (
-    <div className={`relative ${className ?? ''}`}>
-      {/* HTML skill label — replaces drei <Text> to avoid runtime font fetch */}
-      {(hoveredSkill || selectedSkill) && (
-        <SkillLabel skill={(hoveredSkill || selectedSkill)!} />
-      )}
+    <ThreeGate className={`relative ${className ?? ''}`}>
 
       {/* frameloop="always" required — see comment in FloatingModels.tsx */}
       <Canvas
@@ -166,11 +153,11 @@ export function SkillSphere({
         style={{ background: 'transparent' }}
         frameloop="always"
       >
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -5]} intensity={0.5} />
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[10, 10, 5]} intensity={1.5} />
+        <pointLight position={[-10, -10, -5]} intensity={1} />
 
-        <group ref={groupRef}>
+        <group>
           {filteredSkills.map((skill, index) => (
             <SkillNode
               key={skill.id}
@@ -192,6 +179,6 @@ export function SkillSphere({
           maxDistance={20}
         />
       </Canvas>
-    </div>
+    </ThreeGate>
   )
 }

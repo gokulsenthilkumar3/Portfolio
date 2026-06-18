@@ -18,7 +18,9 @@ const HeroScene = dynamic(() => import('@/components/3d/HeroScene').then(mod => 
 
 import { GitHubSection } from '@/components/shared/GitHubSection'
 import { LinkedInSection } from '@/components/shared/LinkedInSection'
-import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout } from '@/lib/data/content'
+import { CertificationsSection } from '@/components/shared/CertificationsSection'
+import { LanguagesSection } from '@/components/shared/LanguagesSection'
+import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout, blog as staticBlog } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
 import type { Project } from '@/lib/types/portfolio'
 import Link from 'next/link'
@@ -30,12 +32,16 @@ import { AdminPanel } from '@/components/admin/AdminPanel'
 import { ProjectsSection } from '@/components/sections/ProjectsSection'
 import { SkillsSection } from '@/components/sections/SkillsSection'
 import { ContactSection } from '@/components/sections/ContactSection'
+import { BlogSection } from '@/components/sections/BlogSection'
+import { TerminalModal } from '@/components/effects/TerminalModal'
+import { Terminal } from 'lucide-react'
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [adminPanelTab, setAdminPanelTab] = useState('personal')
   const [isClient, setIsClient] = useState(false)
+  const [terminalOpen, setTerminalOpen] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
@@ -121,10 +127,21 @@ export default function Home() {
               <div className="flex flex-wrap justify-center gap-4">
                 <MagneticButton>
                   <Link
-                    href="#projects"
+                    href="#contact"
                     className={cn(
                       buttonVariants({ size: 'lg' }),
                       'px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none text-white'
+                    )}
+                  >
+                    Get In Touch
+                  </Link>
+                </MagneticButton>
+                <MagneticButton>
+                  <Link
+                    href="#projects"
+                    className={cn(
+                      buttonVariants({ variant: 'outline', size: 'lg' }),
+                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
                     )}
                   >
                     Explore Projects
@@ -137,20 +154,35 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className={cn(
                       buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1'
+                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
                     )}
                   >
                     Download CV
                   </Link>
                 </MagneticButton>
+                <MagneticButton>
+                  <button
+                    onClick={() => setTerminalOpen(true)}
+                    className={cn(
+                      buttonVariants({ variant: 'outline', size: 'lg' }),
+                      'px-6 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm group'
+                    )}
+                    title="Open Developer Terminal"
+                  >
+                    <Terminal className="w-5 h-5 group-hover:text-primary transition-colors" />
+                  </button>
+                </MagneticButton>
               </div>
             </AnimatedSection>
           </div>
         </EditableSection>
+        
+        {/* Terminal Modal */}
+        <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
       </Section>
 
       {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
-      <Section id="live-data" background="muted" className="relative z-10 overflow-hidden">
+      <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
@@ -167,6 +199,12 @@ export default function Home() {
               </AnimatedSection>
               <AnimatedSection animation="slideRight" delay={0.2}>
                 <GitHubSection />
+              </AnimatedSection>
+              <AnimatedSection animation="slideRight" delay={0.3}>
+                <CertificationsSection />
+              </AnimatedSection>
+              <AnimatedSection animation="slideRight" delay={0.4}>
+                <LanguagesSection />
               </AnimatedSection>
             </div>
 
@@ -202,8 +240,13 @@ export default function Home() {
         </EditableSection>
       </Section>
 
+      {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
+      <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
+        <BlogSection posts={isAdmin && portfolioData?.blog?.length > 0 ? portfolioData.blog : staticBlog || []} />
+      </EditableSection>
+
       {/* ─── CONTACT ─────────────────────────────────────────────────────────── */}
-      <Section id="contact">
+      <Section id="contact" background="muted">
         <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
           <ContactSection
             heading={currentAbout.contactHeading}

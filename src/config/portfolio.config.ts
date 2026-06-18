@@ -90,33 +90,74 @@ export const portfolioConfig = {
   // ─── EDUCATION ──────────────────────────────────────────────────────────────
   education: [
     {
-      id: "erode-arts",
-      institution: "Erode Arts and Science College",
-      degree: "B.Sc",
-      field: "Computer Science",
-      period: { start: "2021-06-01", end: "2024-04-30", present: false },
-      grade: "7.4 CGPA",
-      achievements: ["Dean's List", "Developed college event management system"]
+      id: "kongu",
+      institution: "Kongu Engineering College",
+      degree: "Master of Science - MS",
+      field: "Software Systems",
+      period: { start: "2020-09-01", end: "2025-05-31", present: false },
+      grade: "5th year",
+      achievements: []
+    },
+    {
+      id: "hsc",
+      institution: "Vivekananda Vidyalaya Matriculation Higher Secondary School, Muthur",
+      degree: "HSC (Tamil Nadu State Board)",
+      field: "12th Grade",
+      period: { start: "2019-06-01", end: "2020-04-30", present: false },
+      grade: "12th",
+      achievements: []
+    },
+    {
+      id: "sslc",
+      institution: "Vivekananda Vidyalaya Matriculation Higher Secondary School, Muthur",
+      degree: "SSLC (Tamil Nadu State Board)",
+      field: "10th Grade",
+      period: { start: "2017-06-01", end: "2018-05-31", present: false },
+      grade: "10th",
+      achievements: []
     }
   ],
 
   // ─── EXPERIENCE ─────────────────────────────────────────────────────────────
   experiences: [
     {
-      id: "cloudassert-sdet",
-      company: "CloudAssert",
-      role: "Software Development Engineer in Test (SDET)",
+      id: "cloudassert-fte",
+      company: "Cloud Assert",
+      role: "Software Development Engineer in Test",
       location: "Coimbatore, Tamil Nadu, India",
-      period: { start: "2024-06-01", present: true },
-      description: "Designing and maintaining automated test frameworks, performance testing with K6, and CI/CD quality gate integration in Azure DevOps.",
+      period: { start: "2025-08-01", present: true },
+      description: "Full-time SDET ensuring robust quality gates and test automation frameworks.",
       achievements: [
         "Built end-to-end automation suite covering 200+ test cases with Selenium + TypeScript",
-        "Reduced regression cycle from 3 days to 4 hours via parallel test execution",
+        "Reduced regression cycle from 3 days to 4 hours via parallel test execution"
+      ],
+      technologies: ["K6", "Azure DevOps", "Selenium", "TestCafe"],
+      type: "full-time" as const,
+    },
+    {
+      id: "cloudassert-intern",
+      company: "Cloud Assert",
+      role: "Software Development Engineer in Test (Internship)",
+      location: "Coimbatore, Tamil Nadu, India",
+      period: { start: "2024-08-01", end: "2025-07-31", present: false },
+      description: "Designed automated test frameworks, ran K6 performance tests, and integrated quality gates into Azure DevOps CI/CD pipelines.",
+      achievements: [
         "Authored K6 load scripts simulating 500 concurrent users; identified 3 critical bottlenecks",
         "Integrated quality gates into Azure DevOps pipelines, blocking deploys on >5% test failure rate"
       ],
-      technologies: ["Selenium", "TypeScript", "K6", "Azure DevOps", "Jest", "Playwright"],
-      type: "full-time" as const,
+      technologies: ["K6", "Azure DevOps", "Selenium"],
+      type: "internship" as const,
+    },
+    {
+      id: "emglitz",
+      company: "Emglitz Technologies",
+      role: "Junior Frontend Developer (Internship)",
+      location: "Coimbatore, Tamil Nadu, India",
+      period: { start: "2023-06-01", end: "2023-10-31", present: false },
+      description: "Built responsive React UIs and contributed to frontend feature development for client-facing web applications.",
+      achievements: [],
+      technologies: ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
+      type: "internship" as const,
     }
   ],
 
@@ -222,5 +263,55 @@ export const portfolioConfig = {
     { id: "azure-devops",name: "Azure DevOps",  category: "devops",   proficiency: 5, color: "#0078D4", icon: "☁️"  },
     { id: "git",         name: "Git",           category: "devops",   proficiency: 5, color: "#F05032", icon: "🔀" },
     { id: "docker",      name: "Docker",        category: "devops",   proficiency: 3, color: "#2496ED", icon: "🐳" },
+  ],
+
+  // ─── CERTIFICATIONS ───────────────────────────────────────────────────────
+  certifications: [
+    {
+      id: "azure-data-scientist",
+      name: "Microsoft Certified: Azure Data Scientist Associate",
+      issuer: "Microsoft",
+      issued: "Oct 2025",
+      expires: "Oct 2026",
+      credentialId: "CF46B47AB0825559",
+      url: "https://learn.microsoft.com/en-in/users/gokulkangeyans-3703/credentials/cf46b47ab0825559"
+    },
+    {
+      id: "python-basics",
+      name: "Python Basics",
+      issuer: "Skillsoft",
+      issued: "Nov 2022",
+      credentialId: "61920547"
+    }
+  ],
+
+  // ─── LANGUAGES ────────────────────────────────────────────────────────────
+  languages: [
+    { id: "tamil", name: "Tamil", proficiency: "Native / Mother tongue" },
+    { id: "english", name: "English", proficiency: "Professional working proficiency" },
+    { id: "japanese", name: "Japanese", proficiency: "Elementary proficiency", info: "Duolingo Score 10 - Mar 2026" },
+    { id: "spanish", name: "Spanish", proficiency: "Elementary proficiency", info: "Duolingo Score 10 - Mar 2026" }
+  ],
+
+  // ─── BLOG / INSIGHTS ─────────
+  blog: [
+    {
+      id: "k6-regression",
+      title: "How I reduced regression testing cycle to 4 hours with K6",
+      date: "May 24, 2026",
+      readTime: "5 min read",
+      category: "Performance Testing",
+      excerpt: "A deep dive into migrating from a bulky legacy testing framework to K6, achieving massive parallelization and cutting down our regression suite execution time by 60%.",
+      content: "### The Problem\nOur legacy end-to-end testing suite was taking over 10 hours to complete. This created a massive bottleneck in our CI/CD pipeline, forcing developers to wait overnight to get feedback on their PRs.\n\n### Why K6?\nWe evaluated several tools including JMeter and Gatling, but K6 stood out for its developer experience. Being able to write performance scripts in JavaScript meant our frontend and backend teams could easily contribute.\n\n### The Migration\n1. **Identified critical paths**: We started by migrating the top 20% of tests that covered 80% of our user traffic.\n2. **Modularized data generation**: We built a custom data seeder that fed directly into K6's Virtual Users.\n3. **Parallel Execution**: By leveraging K6's execution scenarios, we ran completely isolated tests in parallel across 10 CI runners.\n\n### The Results\nWe brought the 10-hour regression suite down to just under 4 hours, significantly improving developer velocity and reducing our infrastructure costs by avoiding idle compute time."
+    },
+    {
+      id: "cypress-flakiness",
+      title: "Eliminating Flakiness in Cypress UI Automation",
+      date: "April 12, 2026",
+      readTime: "4 min read",
+      category: "UI Automation",
+      excerpt: "Flaky tests destroy developer trust. Here are 5 battle-tested strategies I implemented to ensure 99.9% reliability in our Cypress test suites.",
+      content: "### The Cost of Flaky Tests\nWhen tests fail randomly, developers stop looking at the results. They just hit \"re-run\" and hope for the best. This completely defeats the purpose of automated testing.\n\n### Strategies to fix it\n\n#### 1. Never rely on arbitrary waits\nUsing `cy.wait(5000)` is the biggest anti-pattern in Cypress. Always wait for specific network aliases (`cy.wait('@getUsers')`) or UI state changes.\n\n#### 2. Seed database state per test\nUI tests should never depend on each other. If test A creates a user, test B should not assume that user exists. Use `cy.task()` to seed the database fresh before every spec.\n\n#### 3. Stub 3rd-party services\nIf your test relies on Stripe, PayPal, or an external API, stub it! `cy.intercept()` is your best friend. Only test your integration points in higher-level E2E tests, not in everyday functional UI tests."
+    }
   ],
 }

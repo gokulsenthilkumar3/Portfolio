@@ -51,6 +51,16 @@ export interface SocialLink {
   username?: string
 }
 
+export interface BlogPost {
+  id: string
+  title: string
+  date: string
+  readTime: string
+  category: string
+  excerpt: string
+  content: string
+}
+
 export interface SiteConfig {
   name: string
   title: string
