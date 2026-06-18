@@ -12,6 +12,7 @@ import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(seo.siteUrl || 'http://localhost:3000'),
   title: seo.title,
   description: seo.description,
   keywords: seo.keywords,

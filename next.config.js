@@ -7,7 +7,12 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion']
   },
   images: {
-    domains: ['picsum.photos'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+    ],
     formats: ['image/webp', 'image/avif'],
     unoptimized: true // Often needed for static exports/subpaths
   },
