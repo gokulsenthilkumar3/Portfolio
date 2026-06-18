@@ -44,8 +44,8 @@ export function LinkedInSection() {
             <p className="text-lg text-foreground/90 font-medium mb-3 max-w-2xl">{personal.title}</p>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
               <span className="flex items-center gap-1.5"><MapPin size={14} /> {personal.location}</span>
-              <span className="flex items-center gap-1.5"><Building2 size={14} /> CloudAssert Technologies</span>
-              <span className="flex items-center gap-1.5"><GraduationCap size={14} /> Kongu Engineering College</span>
+              <span className="flex items-center gap-1.5">{experiences[0] && <><Building2 size={14} /> {experiences[0].company}</>}</span>
+              <span className="flex items-center gap-1.5">{education[0] && <><GraduationCap size={14} /> {education[0].institution}</>}</span>
             </div>
             <Link 
               href={personal.linkedin} 
@@ -69,11 +69,9 @@ export function LinkedInSection() {
           {experiences.map((exp, index) => (
             <AnimatedSection key={exp.id} animation="slideUp" delay={0.1 * index}>
               <div className="relative pl-8 md:pl-0">
-                {/* Timeline line - hidden on very small screens, visible on md+ */}
                 <div className="hidden md:block absolute left-[8.5rem] top-2 bottom-[-24px] w-px bg-white/10 last:hidden"></div>
                 
                 <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                  {/* Date - Left side on desktop */}
                   <div className="md:w-32 shrink-0 md:text-right pt-1 hidden md:block">
                     <p className="text-sm font-medium text-muted-foreground">
                       {formatDate(exp.period.start)} - 
@@ -81,10 +79,8 @@ export function LinkedInSection() {
                     </p>
                   </div>
                   
-                  {/* Timeline node */}
                   <div className="absolute left-0 md:static mt-1 md:mt-0 z-10 w-4 h-4 rounded-full bg-[#0a66c2] border-4 border-background flex items-center justify-center shadow-[0_0_10px_rgba(10,102,194,0.5)] shrink-0" />
                   
-                  {/* Content card */}
                   <Card className="flex-1 border-white/8 bg-white/3 backdrop-blur-sm hover:border-[#0a66c2]/30 transition-colors">
                     <CardContent className="p-5">
                       <div className="md:hidden text-xs text-muted-foreground mb-2">
@@ -138,7 +134,7 @@ export function LinkedInSection() {
                 <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                   <div className="md:w-32 shrink-0 md:text-right pt-1 hidden md:block">
                     <p className="text-sm font-medium text-muted-foreground">
-                      {edu.period.start} - {edu.period.end}
+                      {formatDate(edu.period.start)} – {edu.period.present ? 'Present' : formatDate(edu.period.end ?? '')}
                     </p>
                   </div>
                   
@@ -147,11 +143,21 @@ export function LinkedInSection() {
                   <Card className="flex-1 border-white/8 bg-white/3 backdrop-blur-sm">
                     <CardContent className="p-5">
                       <div className="md:hidden text-xs text-muted-foreground mb-2">
-                        {edu.period.start} - {edu.period.end}
+                        {formatDate(edu.period.start)} – {edu.period.present ? 'Present' : formatDate(edu.period.end ?? '')}
                       </div>
                       <h5 className="text-lg font-bold">{edu.degree} in {edu.field}</h5>
                       <p className="text-foreground/80 font-medium text-sm mb-2">{edu.institution}</p>
                       {edu.grade && <Badge variant="outline" className="text-xs">{edu.grade}</Badge>}
+                      {edu.achievements && edu.achievements.length > 0 && (
+                        <ul className="mt-3 space-y-1">
+                          {edu.achievements.map((ach, i) => (
+                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                              <span className="text-muted-foreground/60 mt-0.5">•</span>
+                              {ach}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
