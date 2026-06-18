@@ -27,3 +27,4 @@ export const theme = portfolioConfig.theme
 export const seo = portfolioConfig.seo
 export const personal = portfolioConfig.personal
 export const about = portfolioConfig.about
+export const education = portfolioConfig.education
