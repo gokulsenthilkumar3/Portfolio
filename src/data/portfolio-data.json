@@ -5,6 +5,7 @@
     "tagline": "I test what others build and build what others test — bridging quality and code.",
     "bio": "I'm an SDET at CloudAssert, Coimbatore, where I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines. Outside testing, I build full-stack web apps with React, Next.js, and the PERN stack.",
     "email": "gokulsenthilkumar3@gmail.com",
+    "emailZoho": "gokulsenthilkumar3@zohomail.in",
     "location": "Sivanmalai, Tamil Nadu, India",
     "availability": "busy",
     "avatar": "/gokul-photo.jpg",
@@ -401,7 +402,12 @@
     {
       "platform": "email",
       "url": "mailto:gokulsenthilkumar3@gmail.com",
-      "label": "Email"
+      "label": "Gmail"
+    },
+    {
+      "platform": "email",
+      "url": "mailto:gokulsenthilkumar3@zohomail.in",
+      "label": "Zoho Mail"
     }
   ],
   "seo": {
