@@ -17,6 +17,7 @@ export const portfolioConfig = {
     tagline: "SDET | Full-Stack Dev | Open Source Enthusiast",
     bio: "I'm an SDET at CloudAssert, Coimbatore, where I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines. Outside testing, I build full-stack web apps with React, Next.js, and the PERN stack.",
     email: "gokulsenthilkumar3@gmail.com",
+    emailZoho: "gokulsenthilkumar3@zohomail.in",
     location: "Sivanmalai, Tamil Nadu, India",
     availability: "busy" as "available" | "busy" | "open-to-offers",
     avatar: "/gokul-photo.jpg",
@@ -79,10 +80,11 @@ export const portfolioConfig = {
 
   // ─── SOCIAL LINKS ───────────────────────────────────────────────────────────
   socialLinks: [
-    { platform: "github",   url: "https://github.com/gokulsenthilkumar3",                 icon: "Github" },
-    { platform: "linkedin", url: "https://www.linkedin.com/in/gokulsenthilkumar3/",       icon: "Linkedin" },
-    { platform: "twitter",  url: "https://x.com/GokulKangeyanS",                         icon: "Twitter" },
-    { platform: "email",    url: "mailto:gokulsenthilkumar3@gmail.com",                   icon: "Mail" },
+    { platform: "github",    url: "https://github.com/gokulsenthilkumar3",                 icon: "Github"   },
+    { platform: "linkedin",  url: "https://www.linkedin.com/in/gokulsenthilkumar3/",       icon: "Linkedin" },
+    { platform: "twitter",   url: "https://x.com/GokulKangeyanS",                         icon: "Twitter"  },
+    { platform: "email",     url: "mailto:gokulsenthilkumar3@gmail.com",                   icon: "Mail"     },
+    { platform: "zohomail",  url: "mailto:gokulsenthilkumar3@zohomail.in",                 icon: "Mail"     },
   ],
 
   // ─── EDUCATION ──────────────────────────────────────────────────────────────
@@ -208,17 +210,17 @@ export const portfolioConfig = {
     { id: "jest",        name: "Jest",          category: "testing",  proficiency: 4, color: "#C21325", icon: "✅" },
     { id: "cypress",     name: "Cypress",       category: "testing",  proficiency: 3, color: "#17202C", icon: "🌲" },
     // Frontend
-    { id: "react",       name: "React",         category: "frontend", proficiency: 5, color: "#61DAFB", icon: "⚛️" },
-    { id: "nextjs",      name: "Next.js",       category: "frontend", proficiency: 5, color: "#000000", icon: "▲" },
-    { id: "typescript",  name: "TypeScript",    category: "frontend", proficiency: 5, color: "#3178C6", icon: "📘" },
-    { id: "tailwind",    name: "Tailwind CSS",  category: "frontend", proficiency: 4, color: "#06B6D4", icon: "🎨" },
+    { id: "react",       name: "React",         category: "frontend", proficiency: 4, color: "#61DAFB", icon: "⚛️"  },
+    { id: "nextjs",      name: "Next.js",       category: "frontend", proficiency: 4, color: "#000000", icon: "▲"  },
+    { id: "typescript",  name: "TypeScript",    category: "frontend", proficiency: 4, color: "#3178C6", icon: "🔷" },
+    { id: "tailwind",    name: "Tailwind CSS",  category: "frontend", proficiency: 4, color: "#06B6D4", icon: "💨" },
     // Backend
     { id: "nodejs",      name: "Node.js",       category: "backend",  proficiency: 4, color: "#339933", icon: "🟢" },
-    { id: "postgresql",  name: "PostgreSQL",    category: "backend",  proficiency: 4, color: "#4169E1", icon: "🐘" },
-    { id: "express",     name: "Express",       category: "backend",  proficiency: 4, color: "#000000", icon: "🚂" },
+    { id: "postgresql",  name: "PostgreSQL",    category: "backend",  proficiency: 3, color: "#4169E1", icon: "🐘" },
+    { id: "mongodb",     name: "MongoDB",       category: "backend",  proficiency: 3, color: "#47A248", icon: "🍃" },
     // DevOps
-    { id: "azure-devops",name: "Azure DevOps",  category: "devops",   proficiency: 5, color: "#0078D4", icon: "☁️" },
+    { id: "azure-devops",name: "Azure DevOps",  category: "devops",   proficiency: 5, color: "#0078D4", icon: "☁️"  },
+    { id: "git",         name: "Git",           category: "devops",   proficiency: 5, color: "#F05032", icon: "🔀" },
     { id: "docker",      name: "Docker",        category: "devops",   proficiency: 3, color: "#2496ED", icon: "🐳" },
-    { id: "git",         name: "Git",           category: "devops",   proficiency: 5, color: "#F05032", icon: "📦" },
   ],
 }
