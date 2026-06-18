@@ -73,13 +73,14 @@ export default function Home() {
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
       <Section id="home" className="min-h-screen flex items-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/50 z-10" />
+          {/* Overlay adapts: semi-transparent in dark, lighter in light mode */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/70 z-10" />
           <HeroScene className="w-full h-full" />
         </div>
 
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full pt-20">
           <div className="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
-            
+
             <AnimatedSection animation="fadeIn" delay={0.1}>
               <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-md text-primary uppercase tracking-widest">
                 <span className="relative flex h-2 w-2">
@@ -91,16 +92,27 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection animation="slideUp" delay={0.3}>
-              <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50">
-                {currentPersonal.name.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-indigo-500 to-pink-500">{currentPersonal.name.split(' ').slice(1).join(' ')}</span>
+              {/* First name: theme-aware foreground; last name: gradient accent */}
+              <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display">
+                <span className="text-foreground">
+                  {currentPersonal.name.split(' ')[0]}
+                </span>
+                {' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-indigo-500 to-pink-500">
+                  {currentPersonal.name.split(' ').slice(1).join(' ')}
+                </span>
               </h1>
             </AnimatedSection>
 
             <AnimatedSection animation="slideUp" delay={0.5}>
-              <p className="text-xl md:text-3xl font-medium text-white/80 mb-6 tracking-tight max-w-3xl mx-auto drop-shadow-lg">
+              {/* Title: theme-aware muted foreground */}
+              <p className="text-xl md:text-3xl font-medium text-foreground/80 mb-6 tracking-tight max-w-3xl mx-auto">
                 {currentPersonal.title}
               </p>
-              <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed backdrop-blur-sm p-4 rounded-2xl bg-white/5 border border-white/10">
+              {/* Bio: card-style box that adapts in both modes */}
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed
+                            backdrop-blur-sm p-4 rounded-2xl
+                            bg-muted/40 border border-border/50">
                 {currentPersonal.bio}
               </p>
             </AnimatedSection>
@@ -108,16 +120,25 @@ export default function Home() {
             <AnimatedSection animation="slideUp" delay={0.7}>
               <div className="flex flex-wrap justify-center gap-4">
                 <MagneticButton>
-                  <Link href="#projects" className={cn(buttonVariants({ size: 'lg' }), "px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none")}>
+                  <Link
+                    href="#projects"
+                    className={cn(
+                      buttonVariants({ size: 'lg' }),
+                      'px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none text-white'
+                    )}
+                  >
                     Explore Projects
                   </Link>
                 </MagneticButton>
                 <MagneticButton>
                   <Link
-                    href={currentPersonal.resume || "/Gokul_S_Resume.pdf"}
+                    href={currentPersonal.resume || '/Gokul_S_Resume.pdf'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), "px-10 h-14 text-base font-bold rounded-2xl border-white/20 bg-white/5 backdrop-blur-md transition-all hover:bg-white/10 hover:-translate-y-1")}
+                    className={cn(
+                      buttonVariants({ variant: 'outline', size: 'lg' }),
+                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1'
+                    )}
                   >
                     Download CV
                   </Link>
@@ -131,7 +152,7 @@ export default function Home() {
       {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
       <Section id="live-data" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-        
+
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8">
             <div className="space-y-6">
