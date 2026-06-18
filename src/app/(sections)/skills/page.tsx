@@ -6,7 +6,10 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { SkillSphere } from '@/components/3d/SkillSphere'
+// SkillSphereSection uses dynamic(..., { ssr: false }) internally so Three.js
+// is never executed on the server. Importing SkillSphere directly bypasses
+// that guard and causes a client-side exception during hydration.
+import { SkillSphereSection } from '@/components/3d/SkillSphereSection'
 import { skills } from '@/lib/data/content'
 import { getTopSkills } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
@@ -15,16 +18,17 @@ import { filterProjects } from '@/lib/utils/content-helpers'
 export default function SkillsPage() {
   const [viewMode, setViewMode] = useState<'3d' | '2d'>('2d')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
 
   const handleSkillSelect = (skill: Skill) => {
-    console.log('Selected skill:', skill)
+    setSelectedSkill(skill)
   }
 
   const categories = ['all', 'frontend', 'backend', 'tools', 'soft-skills', 'design']
-  const filteredSkills = selectedCategory === 'all' 
+  const filteredSkills = selectedCategory === 'all'
     ? skills as Skill[]
     : filterProjects(skills as any, selectedCategory)
-  
+
   const topSkills = getTopSkills(skills, 8)
 
   const getProficiencyColor = (proficiency: number) => {
@@ -70,42 +74,60 @@ export default function SkillsPage() {
           </div>
         </AnimatedSection>
 
-        {/* Category Filter */}
-        {viewMode === '2d' && (
-          <AnimatedSection animation="slideUp" delay={0.3}>
-            <div className="flex flex-wrap justify-center gap-2 mb-12">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="capitalize"
-                >
-                  {category.replace('-', ' ')}
-                </Button>
-              ))}
-            </div>
-          </AnimatedSection>
-        )}
+        {/* Category Filter — visible in both modes */}
+        <AnimatedSection animation="slideUp" delay={0.3}>
+          <div className="flex flex-wrap justify-center gap-2 mb-12">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="capitalize"
+              >
+                {category.replace('-', ' ')}
+              </Button>
+            ))}
+          </div>
+        </AnimatedSection>
 
         {/* Skills Display */}
         {viewMode === '3d' ? (
           <AnimatedSection animation="scaleIn" delay={0.4}>
-            <div className="h-96 md:h-[500px] bg-muted/20 rounded-lg overflow-hidden">
-              <SkillSphere 
-                onSkillSelect={handleSkillSelect}
-                selectedCategory={selectedCategory === 'all' ? undefined : selectedCategory}
-                className="w-full h-full"
-              />
-            </div>
+            {/* SkillSphereSection handles:
+                1. dynamic import with ssr:false (no SSR crash)
+                2. IntersectionObserver (canvas mounts only near viewport)
+                3. use3DGate (skips canvas for reduced-motion / no-WebGL)
+                4. Suspense skeleton (prevents layout shift while chunk loads) */}
+            <SkillSphereSection
+              onSkillSelect={handleSkillSelect}
+              selectedCategory={selectedCategory === 'all' ? undefined : selectedCategory}
+              heightClass="h-[500px]"
+              className="rounded-lg overflow-hidden bg-muted/20"
+            />
+
+            {/* Selected skill info badge */}
+            {selectedSkill && (
+              <div className="mt-4 flex justify-center">
+                <Badge
+                  variant="outline"
+                  className="text-sm py-2 px-4"
+                  style={{
+                    borderColor: selectedSkill.color || '#3b82f6',
+                    color: selectedSkill.color || '#3b82f6',
+                  }}
+                >
+                  {selectedSkill.name} — {selectedSkill.proficiency}/5
+                </Badge>
+              </div>
+            )}
           </AnimatedSection>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSkills.map((skill, index) => (
-              <AnimatedSection 
-                key={skill.id} 
-                animation="scaleIn" 
+              <AnimatedSection
+                key={skill.id}
+                animation="scaleIn"
                 delay={0.1 * (index % 9)}
               >
                 <Card className="hover:shadow-lg transition-all duration-300">
@@ -126,17 +148,18 @@ export default function SkillsPage() {
                           <span>{skill.proficiency}/5</span>
                         </div>
                         <div className="w-full bg-muted rounded-full h-2">
-                          <div 
+                          <div
                             className={`h-2 rounded-full transition-all duration-500 ${getProficiencyColor(skill.proficiency)}`}
                             style={{ width: `${(skill.proficiency / 5) * 100}%` }}
                           />
                         </div>
                       </div>
-                      
+
                       {/* Years of Experience */}
                       {skill.yearsOfExperience && (
                         <div className="text-sm text-muted-foreground">
-                          {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'year' : 'years'} experience
+                          {skill.yearsOfExperience}{' '}
+                          {skill.yearsOfExperience === 1 ? 'year' : 'years'} experience
                         </div>
                       )}
                     </div>
@@ -153,13 +176,13 @@ export default function SkillsPage() {
             <h3 className="text-2xl font-bold text-center mb-8">Core Competencies</h3>
             <div className="flex flex-wrap justify-center gap-3">
               {topSkills.map((skill) => (
-                <Badge 
-                  key={skill.id} 
-                  variant="outline" 
+                <Badge
+                  key={skill.id}
+                  variant="outline"
                   className="text-sm py-2 px-4 capitalize"
-                  style={{ 
+                  style={{
                     borderColor: skill.color || '#3b82f6',
-                    color: skill.color || '#3b82f6'
+                    color: skill.color || '#3b82f6',
                   }}
                 >
                   {skill.name}
