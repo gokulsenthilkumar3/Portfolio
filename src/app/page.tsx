@@ -27,6 +27,9 @@ import { cn } from '@/lib/utils/cn'
 import { useAdmin } from '@/components/admin/AdminProvider'
 import { EditableSection } from '@/components/admin/EditableSection'
 import { AdminPanel } from '@/components/admin/AdminPanel'
+import { ProjectsSection } from '@/components/sections/ProjectsSection'
+import { SkillsSection } from '@/components/sections/SkillsSection'
+import { ContactSection } from '@/components/sections/ContactSection'
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
@@ -38,7 +41,6 @@ export default function Home() {
     setIsClient(true)
   }, [])
 
-  // Single source-of-truth hook pattern
   const currentProjects = (isAdmin && portfolioData.projects?.length > 0
     ? portfolioData.projects
     : staticProjects) as Project[]
@@ -60,7 +62,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Admin Panel */}
       {isAdmin && (
         <AdminPanel
           isOpen={adminPanelOpen}
@@ -71,7 +72,6 @@ export default function Home() {
 
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
       <Section id="home" className="min-h-screen flex items-center relative overflow-hidden">
-        {/* Spectacular 3D Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/50 z-10" />
           <HeroScene className="w-full h-full" />
@@ -80,7 +80,6 @@ export default function Home() {
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full pt-20">
           <div className="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
             
-            {/* Availability badge */}
             <AnimatedSection animation="fadeIn" delay={0.1}>
               <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-md text-primary uppercase tracking-widest">
                 <span className="relative flex h-2 w-2">
@@ -91,14 +90,12 @@ export default function Home() {
               </div>
             </AnimatedSection>
 
-            {/* Name + Title */}
             <AnimatedSection animation="slideUp" delay={0.3}>
               <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50">
                 {currentPersonal.name.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-indigo-500 to-pink-500">{currentPersonal.name.split(' ').slice(1).join(' ')}</span>
               </h1>
             </AnimatedSection>
 
-            {/* Bio */}
             <AnimatedSection animation="slideUp" delay={0.5}>
               <p className="text-xl md:text-3xl font-medium text-white/80 mb-6 tracking-tight max-w-3xl mx-auto drop-shadow-lg">
                 {currentPersonal.title}
@@ -108,7 +105,6 @@ export default function Home() {
               </p>
             </AnimatedSection>
 
-            {/* CTAs */}
             <AnimatedSection animation="slideUp" delay={0.7}>
               <div className="flex flex-wrap justify-center gap-4">
                 <MagneticButton>
@@ -132,15 +128,12 @@ export default function Home() {
         </EditableSection>
       </Section>
 
-      {/* ─── LIVE DATA: GITHUB & LINKEDIN ────────────────────────────────────── */}
+      {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
       <Section id="live-data" background="muted" className="relative z-10 overflow-hidden">
-        {/* Glow effect */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8">
-            
-            {/* GitHub Stats */}
             <div className="space-y-6">
               <AnimatedSection animation="fadeIn">
                 <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
@@ -151,13 +144,11 @@ export default function Home() {
                 </h2>
                 <p className="text-muted-foreground">Real-time open source contributions & stats.</p>
               </AnimatedSection>
-              
               <AnimatedSection animation="slideRight" delay={0.2}>
                 <GitHubSection />
               </AnimatedSection>
             </div>
 
-            {/* LinkedIn & Professional */}
             <div className="space-y-6">
               <AnimatedSection animation="fadeIn" delay={0.2}>
                 <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
@@ -168,167 +159,41 @@ export default function Home() {
                 </h2>
                 <p className="text-muted-foreground">Experience & education timeline.</p>
               </AnimatedSection>
-              
               <AnimatedSection animation="slideLeft" delay={0.4}>
                 <LinkedInSection />
               </AnimatedSection>
             </div>
-
           </div>
         </div>
       </Section>
 
       {/* ─── SKILLS ────────────────────────────────────────────────────────────── */}
       <Section id="skills">
-        <div className="max-w-6xl mx-auto">
-          <AnimatedSection animation="fadeIn">
-            <h2 className="text-3xl font-bold mb-2 font-display">Core Skills</h2>
-            <p className="text-muted-foreground mb-10">Tools and tech I work with every day.</p>
-          </AnimatedSection>
-
-          <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
-            <AnimatedSection animation="slideUp" delay={0.2}>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
-                {topSkills.map((skill) => (
-                  <div
-                    key={skill.id}
-                    className="flex items-center gap-2.5 p-3 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-primary/50 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 cursor-default"
-                  >
-                    <motion.span
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      initial={false}
-                      animate={{ backgroundColor: skill.color || '#6366f1' }}
-                    />
-                    <span className="text-sm font-medium truncate">{skill.name}</span>
-                  </div>
-                ))}
-              </div>
-            </AnimatedSection>
-          </EditableSection>
-
-          <AnimatedSection animation="slideUp" delay={0.4}>
-            <Link href="/skills" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-              View All Skills
-            </Link>
-          </AnimatedSection>
-        </div>
+        <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
+          <SkillsSection skills={currentSkills as any} />
+        </EditableSection>
       </Section>
 
       {/* ─── PROJECTS ─────────────────────────────────────────────────────────── */}
       <Section id="projects" background="muted">
-        <div className="max-w-6xl mx-auto">
-          <AnimatedSection animation="fadeIn">
-            <h2 className="text-3xl font-bold mb-2 font-display">Featured Projects</h2>
-            <p className="text-muted-foreground mb-10">Things I've built and shipped.</p>
-          </AnimatedSection>
-
-          <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProjects.map((project, index) => (
-                <AnimatedSection
-                  key={project.id}
-                  animation="scaleIn"
-                  delay={0.1 * index}
-                >
-                  <Card className="group h-full flex flex-col bg-background/40 backdrop-blur-md border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] overflow-hidden">
-                    <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-                      <div className="relative z-10 p-4 rounded-full bg-background/50 backdrop-blur-xl border border-white/10 shadow-2xl group-hover:rotate-12 transition-transform duration-500">
-                        {getTechIcon(project.tech[0] || 'code', "h-12 w-12")}
-                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
-                      </div>
-                      
-                      <div className="absolute bottom-2 left-2">
-                        <Badge variant="secondary" className="capitalize text-[10px] bg-background/60 backdrop-blur-md border-white/5 opacity-90">
-                          {project.category}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <CardHeader>
-                      <CardTitle className="text-lg line-clamp-1 font-display">{project.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4 flex-1 flex flex-col pt-0">
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-auto">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {project.tech.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-[10px] bg-muted/50">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.tech.length > 3 && (
-                          <Badge variant="secondary" className="text-[10px] bg-muted/50">
-                            +{project.tech.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex gap-2 pt-2">
-                        {project.links?.github && (
-                          <Link
-                            href={project.links.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), "flex-1")}
-                          >
-                            GitHub
-                          </Link>
-                        )}
-                        {project.links?.live && (
-                          <Link
-                            href={project.links.live}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={cn(buttonVariants({ size: 'sm' }), "flex-1")}
-                          >
-                            Live Demo
-                          </Link>
-                        )}
-                        {!project.links?.live && !project.links?.github && (
-                          <Link
-                            href={`/projects#${project.id}`}
-                            className={cn(buttonVariants({ size: 'sm' }), "flex-1")}
-                          >
-                            Details
-                          </Link>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </AnimatedSection>
-              ))}
-            </div>
-          </EditableSection>
-
-          <AnimatedSection animation="slideUp" delay={0.8}>
-            <div className="mt-8">
-               <Link href="/projects" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-                View All Projects
-              </Link>
-            </div>
-          </AnimatedSection>
-        </div>
+        <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
+          <ProjectsSection projects={currentProjects} />
+        </EditableSection>
       </Section>
 
-      {/* ─── CONTACT ──────────────────────────────────────────────────────────── */}
+      {/* ─── CONTACT ─────────────────────────────────────────────────────────── */}
       <Section id="contact">
-        <div className="max-w-2xl mx-auto">
-          <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
-            <AnimatedSection animation="fadeIn">
-              <h2 className="text-3xl font-bold mb-2 font-display">{currentAbout.contactHeading}</h2>
-              <p className="text-muted-foreground mb-8">
-                {currentAbout.contactDesc}
-              </p>
-            </AnimatedSection>
-
-            <AnimatedSection animation="slideUp" delay={0.3}>
-              <Link href="/contact" className={cn(buttonVariants({ size: 'lg' }), "w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20")}>
-                Send Me a Message
-              </Link>
-            </AnimatedSection>
-          </EditableSection>
-        </div>
+        <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
+          <ContactSection
+            heading={currentAbout.contactHeading}
+            desc={currentAbout.contactDesc}
+            email={currentPersonal.email}
+            emailZoho={(currentPersonal as any).emailZoho}
+            linkedin={currentPersonal.linkedin}
+            github={currentPersonal.github}
+            twitter={currentPersonal.twitter}
+          />
+        </EditableSection>
       </Section>
     </>
   )
