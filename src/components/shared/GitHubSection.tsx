@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Github, Star, GitFork, Users, BookOpen, Code2, Activity, ExternalLink, TrendingUp, Gamepad2, X } from 'lucide-react'
+import { SnakeHeatmap } from './SnakeHeatmap'
 
 interface GitHubData {
   profile: {
@@ -740,7 +741,22 @@ export function GitHubSection() {
               <Gamepad2 size={12} />
               GTA MODE
             </motion.button>
-          </div>
+                {/* GTA How To Play - collapsible details */}
+                <details className="text-[10px] text-[#e94560]/70 cursor-pointer">
+                  <summary className="flex items-center gap-1 px-2 py-1 rounded border border-[#e94560]/20 hover:border-[#e94560]/50 hover:text-[#e94560] transition-all list-none">
+                    ❓ How to Play
+                  </summary>
+                  <div className="mt-2 p-3 rounded-lg bg-black/60 border border-[#e94560]/30 text-left space-y-1">
+                    <p className="font-bold text-[#e94560] text-[11px] mb-2">🎮 GTA: Dev City - Controls</p>
+                    <p>🔼 <span className="text-white">WASD / Arrow Keys</span> — Move your car</p>
+                    <p>💥 <span className="text-white">Space / F</span> — Shoot</p>
+                    <p>⭐ <span className="text-white">Eliminate enemies</span> to gain score</p>
+                    <p>❤️ <span className="text-white">Red pickups</span> restore health</p>
+                    <p>🔫 <span className="text-white">Yellow pickups</span> give ammo</p>
+                    <p>🌊 <span className="text-white">Survive waves</span> to level up</p>
+                    <p>💀 <span className="text-white">HP hits 0</span> — WASTED!</p>
+                  </div>
+                </details>          </div>
           <ContributionHeatmap
             contributions={data.contributions}
             createdAt={data.profile.created_at}
