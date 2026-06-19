@@ -1,194 +1,228 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Menu, X, Moon, Sun, Code2, Download } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { ThemeSelector } from '@/components/shared/ThemeSelector'
-import { useThemeStore } from '@/lib/hooks/use-theme'
-import { cn } from '@/lib/utils/cn'
+import { useState, useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, Code2, Github, Sun, Moon, ExternalLink } from 'lucide-react'
+import { portfolioConfig } from '@/config/portfolio.config'
+
+const { personal } = portfolioConfig
+
+const NAV_LINKS = [
+  { label: 'Home',         href: '/#home'     },
+  { label: 'About',        href: '/#about'    },
+  { label: 'Skills',       href: '/#skills'   },
+  { label: 'Projects',     href: '/#projects' },
+  { label: 'GitHub',       href: '/#github'   },
+  { label: 'Insights',     href: '/#insights' },
+  { label: 'Contact',      href: '/contact'   },
+]
 
 export function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [activeSection, setActiveSection] = useState('home')
-  const { theme, toggleTheme } = useThemeStore()
   const pathname = usePathname()
-  const router = useRouter()
-
-  const navItems = [
-    { label: 'Home', href: '/#home', id: 'home' },
-    { label: 'About', href: '/#about', id: 'about' },
-    { label: 'Skills', href: '/#skills', id: 'skills' },
-    { label: 'Projects', href: '/#projects', id: 'projects' },
-    { label: 'Insights', href: '/#insights', id: 'insights' },
-    { label: 'Contact', href: '/#contact', id: 'contact' },
-  ]
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-      // Update active section based on scroll position
-      const sections = navItems.map((item) => item.id)
-      for (const id of sections.reverse()) {
-        const el = document.getElementById(id)
-        if (el && window.scrollY >= el.offsetTop - 120) {
-          setActiveSection(id)
-          break
-        }
-      }
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    const saved = typeof window !== 'undefined'
+      ? (document.documentElement.dataset.theme as 'light' | 'dark' | undefined)
+      : 'dark'
+    setTheme((saved as 'light' | 'dark') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
   }, [])
 
-  const scrollToSection = (href: string, id: string) => {
-    if (href.startsWith('/#')) {
-      const isHome = pathname === '/' || pathname === (process.env.NEXT_PUBLIC_BASE_PATH || '') + '/'
-      if (!isHome) {
-        router.push(href)
-        return
-      }
-      const element = document.getElementById(id)
-      element?.scrollIntoView({ behavior: 'smooth' })
-      setActiveSection(id)
-      setIsOpen(false)
-    } else {
-      router.push(href)
-      setIsOpen(false)
-    }
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Active section tracking via IntersectionObserver
+  useEffect(() => {
+    const sections = NAV_LINKS.map(l => l.href.split('#')[1]).filter(Boolean)
+    const observers: IntersectionObserver[] = []
+    sections.forEach(id => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
+        { threshold: 0.3 }
+      )
+      obs.observe(el)
+      observers.push(obs)
+    })
+    return () => observers.forEach(o => o.disconnect())
+  }, [])
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    document.documentElement.setAttribute('data-theme', next)
+  }
+
+  const isActive = (href: string) => {
+    const section = href.split('#')[1]
+    return section ? activeSection === section : pathname === href
   }
 
   return (
-    <nav
-      className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300',
-        scrolled
-          ? 'border-b border-border/50 bg-background/90 backdrop-blur-md shadow-sm'
-          : 'bg-transparent'
-      )}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-
+    <>
+      <header
+        ref={navRef}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? 'bg-background/85 backdrop-blur-xl border-b border-border/50 shadow-sm'
+            : 'bg-transparent'
+        }`}
+      >
+        <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link
-            href="/#home"
-            onClick={(e) => {
-              if (pathname === '/') {
-                e.preventDefault()
-                scrollToSection('/#home', 'home')
-              }
-            }}
-            className="flex items-center gap-2 group"
-            aria-label="Go to top"
-          >
-            <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <motion.div
+              whileHover={{ rotate: 15 }}
+              className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center"
+            >
               <Code2 className="h-4 w-4 text-primary" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-bold text-base font-display">Gokul S</span>
-              <span className="text-[10px] text-muted-foreground font-mono tracking-wider">SDET & Dev</span>
-            </div>
+            </motion.div>
+            <span className="font-bold text-base font-display tracking-tight">
+              Gokul<span className="text-primary">.</span>dev
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => scrollToSection(item.href, item.id)}
-                className={cn(
-                  'relative px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                  activeSection === item.id
-                    ? 'text-primary'
+            {NAV_LINKS.map(link => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={`relative px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                  isActive(link.href)
+                    ? 'text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
-                )}
+                }`}
               >
-                {item.label}
-                {activeSection === item.id && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 bg-primary rounded-full" />
+                {isActive(link.href) && (
+                  <motion.div
+                    layoutId="nav-pill"
+                    className="absolute inset-0 bg-white/8 rounded-full border border-border/60"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
                 )}
-              </button>
+                <span className="relative z-10">{link.label}</span>
+              </Link>
             ))}
           </div>
 
-          {/* Right Side Controls */}
-          <div className="flex items-center gap-1.5">
-            {/* Download Resume */}
+          {/* Right actions */}
+          <div className="flex items-center gap-2">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="w-9 h-9 rounded-lg border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-border transition-all"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
+            {/* GitHub CTA */}
             <a
-              href="/Gokul_S_Resume.pdf"
+              href={personal.github || 'https://github.com/gokulsenthilkumar3'}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all"
             >
-              <Download className="h-3.5 w-3.5" />
-              Resume
+              <Github className="h-3.5 w-3.5" />
+              GitHub
             </a>
 
-            {/* Theme Selector */}
-            <ThemeSelector />
-
-            {/* Dark/Light Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="h-9 w-9"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4 text-yellow-400" />
-              ) : (
-                <Moon className="h-4 w-4 text-blue-500" />
-              )}
-            </Button>
-
-            {/* Mobile Menu Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden h-9 w-9"
-              onClick={() => setIsOpen(!isOpen)}
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
+              className="md:hidden w-9 h-9 rounded-lg border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all"
             >
-              {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden border-t border-border/50 pb-4 pt-2">
-            <div className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => scrollToSection(item.href, item.id)}
-                  className={cn(
-                    'text-sm font-medium px-3 py-2.5 rounded-md text-left transition-colors',
-                    activeSection === item.id
-                      ? 'text-primary bg-primary/5'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  )}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={open ? 'x' : 'menu'}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  {item.label}
-                </button>
-              ))}
-              <a
-                href="/Gokul_S_Resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm font-medium px-3 py-2.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors mt-1 border-t border-border/30 pt-3"
-              >
-                <Download className="h-4 w-4" />
-                Download Resume
-              </a>
-            </div>
+                  {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </motion.span>
+              </AnimatePresence>
+            </button>
           </div>
+        </nav>
+      </header>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed right-0 top-0 bottom-0 z-50 w-72 bg-background/95 backdrop-blur-xl border-l border-border/60 md:hidden flex flex-col"
+            >
+              <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+                <span className="font-bold font-display">Gokul<span className="text-primary">.</span>dev</span>
+                <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-lg border border-border/50 flex items-center justify-center text-muted-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                {NAV_LINKS.map((link, i) => (
+                  <motion.div
+                    key={link.label}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        isActive(link.href)
+                          ? 'bg-primary/15 text-primary border border-primary/25'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${isActive(link.href) ? 'bg-primary' : 'bg-muted-foreground/40'}`} />
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+              <div className="px-4 pb-6 border-t border-border/40 pt-4">
+                <a
+                  href={personal.github || 'https://github.com/gokulsenthilkumar3'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm font-semibold"
+                >
+                  <Github className="h-4 w-4" />
+                  View on GitHub
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </motion.div>
+          </>
         )}
-      </div>
-    </nav>
+      </AnimatePresence>
+    </>
   )
 }

@@ -1,101 +1,64 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import { cn } from '@/lib/utils/cn'
+import { ExternalLink, Github, ArrowRight, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
+import { AnimatedSection } from '@/components/shared/AnimatedSection'
+import { Card, CardContent } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
 import { buttonVariants } from '@/components/ui/Button'
-import { Github, ExternalLink, ArrowRight, ArrowUp } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import type { Project } from '@/lib/types/portfolio'
-import { useState, useEffect } from 'react'
-
-// Color accent per project category — no filter chips, just visual labelling
-const CATEGORY_COLORS: Record<string, string> = {
-  fullstack: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
-  web:       'bg-blue-500/15   text-blue-400   border-blue-500/30',
-  testing:   'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  ai:        'bg-amber-500/15  text-amber-400  border-amber-500/30',
-  iot:       'bg-rose-500/15   text-rose-400   border-rose-500/30',
-  other:     'bg-gray-500/15   text-gray-400   border-gray-500/30',
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  fullstack: 'Full-Stack',
-  web:       'Web',
-  testing:   'Testing',
-  ai:        'AI / ML',
-  iot:       'IoT',
-  other:     'Other',
-}
 
 interface Props {
   projects: Project[]
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const accentClass = CATEGORY_COLORS[project.category] ?? CATEGORY_COLORS.other
-  const categoryLabel = CATEGORY_LABELS[project.category] ?? project.category
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.3, delay: index * 0.06 }}
-      className="h-full"
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ delay: (index % 9) * 0.05, duration: 0.4 }}
+      layout
     >
-      <Card className="h-full flex flex-col hover:shadow-xl transition-all duration-300 group border-border/60 hover:border-primary/30">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-2">
-            <CardTitle className="text-base leading-tight group-hover:text-primary transition-colors">
-              {project.title}
-            </CardTitle>
-            <Badge
-              variant="outline"
-              className={cn('text-[10px] px-2 py-0 flex-shrink-0 capitalize', accentClass)}
-            >
-              {categoryLabel}
-            </Badge>
-          </div>
-          {project.featured && (
-            <Badge variant="secondary" className="w-fit text-[10px] px-2 py-0 mt-1">
-              ★ Featured
-            </Badge>
-          )}
-        </CardHeader>
-        <CardContent className="flex flex-col flex-1 pt-0">
-          <CardDescription className="text-sm leading-relaxed mb-4 flex-1">
-            {project.description}
-          </CardDescription>
-          {/* Tech stack */}
-          {project.technologies && project.technologies.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {project.technologies.slice(0, 4).map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-[10px] px-2 py-0">
-                  {tech}
-                </Badge>
-              ))}
-              {project.technologies.length > 4 && (
-                <Badge variant="outline" className="text-[10px] px-2 py-0">
-                  +{project.technologies.length - 4}
-                </Badge>
+      <Card className="h-full flex flex-col group hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+        <CardContent className="flex flex-col h-full pt-5">
+          <div className="flex-1 space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                {project.title}
+              </h3>
+              {project.featured && (
+                <Badge variant="secondary" className="text-[10px] shrink-0">Featured</Badge>
               )}
             </div>
-          )}
-          {/* Links */}
-          <div className="flex gap-2 mt-auto">
+            {project.description && (
+              <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
+            )}
+            {project.technologies && project.technologies.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {project.technologies.slice(0, 4).map(tech => (
+                  <Badge key={tech} variant="outline" className="text-[10px] py-0">{tech}</Badge>
+                ))}
+                {project.technologies.length > 4 && (
+                  <Badge variant="outline" className="text-[10px] py-0">+{project.technologies.length - 4}</Badge>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2 mt-4 pt-3 border-t border-border/40">
             {project.links?.github && (
               <Link
                 href={project.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'gap-1.5 text-xs flex-1 justify-center')}
+                className={cn(buttonVariants({ size: 'sm' }), 'gap-1.5 text-xs flex-1 justify-center')}
               >
                 <Github className="h-3.5 w-3.5" />
-                GitHub
+                Code
               </Link>
             )}
             {project.links?.live && (
@@ -119,6 +82,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function ProjectsSection({ projects }: Props) {
   const [githubProjects, setGithubProjects] = useState<Project[]>([])
   const [showAll, setShowAll] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+  const showLessRef = useRef<HTMLDivElement>(null)
+  const [showStickyBtn, setShowStickyBtn] = useState(false)
 
   useEffect(() => {
     fetch('/api/github')
@@ -141,6 +107,17 @@ export function ProjectsSection({ projects }: Props) {
       .catch(console.error)
   }, [])
 
+  // Show sticky 'Show Less' button when user has scrolled past the bottom button
+  useEffect(() => {
+    if (!showAll) { setShowStickyBtn(false); return }
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBtn(!entry.isIntersecting),
+      { threshold: 0.5 }
+    )
+    if (showLessRef.current) observer.observe(showLessRef.current)
+    return () => observer.disconnect()
+  }, [showAll])
+
   const displayProjects = useMemo(() => {
     const staticUrls = new Set(projects.map(p => p.links?.github).filter(Boolean))
     const uniqueGithub = githubProjects.filter(p => !staticUrls.has(p.links?.github))
@@ -148,8 +125,14 @@ export function ProjectsSection({ projects }: Props) {
     return showAll ? combined : combined.slice(0, 9)
   }, [projects, githubProjects, showAll])
 
+  const handleShowLess = () => {
+    setShowAll(false)
+    setShowStickyBtn(false)
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
-    <section id="projects" className="py-20">
+    <section id="projects" ref={sectionRef} className="py-20">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <AnimatedSection animation="fadeIn">
@@ -167,12 +150,12 @@ export function ProjectsSection({ projects }: Props) {
                 'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer'
               )}
             >
-              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
+              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
             </button>
           </div>
         </AnimatedSection>
 
-        {/* Project Grid — no filter chips */}
+        {/* Project Grid */}
         <AnimatePresence mode="wait">
           <motion.div
             key="grid"
@@ -184,30 +167,52 @@ export function ProjectsSection({ projects }: Props) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Bottom CTA for large screens */}
-        <AnimatedSection animation="fadeIn" delay={0.2}>
-          <div className="mt-8 hidden sm:flex justify-center">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className={cn(buttonVariants({ variant: 'outline' }), 'gap-2 cursor-pointer')}
-            >
-              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
-            </button>
-          </div>
-        </AnimatedSection>
+        {/* Bottom CTA — this is the ref target for intersection observer */}
+        <div ref={showLessRef}>
+          <AnimatedSection animation="fadeIn" delay={0.2}>
+            <div className="mt-8 hidden sm:flex justify-center">
+              <button
+                onClick={showAll ? handleShowLess : () => setShowAll(true)}
+                className={cn(buttonVariants({ variant: 'outline' }), 'gap-2 cursor-pointer')}
+              >
+                {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
+              </button>
+            </div>
+          </AnimatedSection>
 
-        {/* Mobile CTA */}
-        <AnimatedSection animation="slideUp" delay={0.4}>
-          <div className="mt-10 flex justify-center sm:hidden">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
-            >
-              {showAll ? 'Show Less' : 'View All Projects'} <ArrowRight className={cn("h-4 w-4 transition-transform", showAll && "-rotate-90")} />
-            </button>
-          </div>
-        </AnimatedSection>
+          {/* Mobile CTA */}
+          <AnimatedSection animation="slideUp" delay={0.4}>
+            <div className="mt-10 flex justify-center sm:hidden">
+              <button
+                onClick={showAll ? handleShowLess : () => setShowAll(true)}
+                className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
+              >
+                {showAll ? 'Show Less' : 'View All Projects'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
+              </button>
+            </div>
+          </AnimatedSection>
+        </div>
       </div>
+
+      {/* Sticky 'Show Less' — appears when bottom btn is off-screen while viewing expanded list */}
+      <AnimatePresence>
+        {showStickyBtn && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 right-6 z-50"
+          >
+            <button
+              onClick={handleShowLess}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-xl text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              <ChevronUp className="h-4 w-4" />
+              Show Less
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
