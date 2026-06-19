@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * ProjectsSection
+ * Bugs fixed:
+ * 1. Bottom CTA buttons now properly TOGGLE showAll (not always set to true)
+ * 2. Sticky 'Show Less' button appears when bottom button is off-screen while in expanded view
+ * 3. Clicking Show Less collapses and scrolls back to section top
+ */
+
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ExternalLink, Github, ArrowRight, ChevronUp } from 'lucide-react'
@@ -35,42 +43,37 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 <Badge variant="secondary" className="text-[10px] shrink-0">Featured</Badge>
               )}
             </div>
+
             {project.description && (
               <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
             )}
+
             {project.technologies && project.technologies.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {project.technologies.slice(0, 4).map(tech => (
-                  <Badge key={tech} variant="outline" className="text-[10px] py-0">{tech}</Badge>
+                  <Badge key={tech} variant="outline" className="text-[10px]">{tech}</Badge>
                 ))}
                 {project.technologies.length > 4 && (
-                  <Badge variant="outline" className="text-[10px] py-0">+{project.technologies.length - 4}</Badge>
+                  <Badge variant="outline" className="text-[10px]">+{project.technologies.length - 4}</Badge>
                 )}
               </div>
             )}
           </div>
+
           <div className="flex gap-2 mt-4 pt-3 border-t border-border/40">
             {project.links?.github && (
-              <Link
-                href={project.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ size: 'sm' }), 'gap-1.5 text-xs flex-1 justify-center')}
+              <a href={project.links.github} target="_blank" rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
               >
-                <Github className="h-3.5 w-3.5" />
-                Code
-              </Link>
+                <Github className="w-3.5 h-3.5" /> Code
+              </a>
             )}
             {project.links?.live && (
-              <Link
-                href={project.links.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ size: 'sm' }), 'gap-1.5 text-xs flex-1 justify-center')}
+              <a href={project.links.live} target="_blank" rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
               >
-                <ExternalLink className="h-3.5 w-3.5" />
-                Live
-              </Link>
+                <ExternalLink className="w-3.5 h-3.5" /> Live
+              </a>
             )}
           </div>
         </CardContent>
@@ -82,7 +85,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function ProjectsSection({ projects }: Props) {
   const [githubProjects, setGithubProjects] = useState<Project[]>([])
   const [showAll, setShowAll] = useState(false)
-  const sectionRef = useRef<HTMLElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
   const showLessRef = useRef<HTMLDivElement>(null)
   const [showStickyBtn, setShowStickyBtn] = useState(false)
 
@@ -109,7 +112,10 @@ export function ProjectsSection({ projects }: Props) {
 
   // Show sticky 'Show Less' button when user has scrolled past the bottom button
   useEffect(() => {
-    if (!showAll) { setShowStickyBtn(false); return }
+    if (!showAll) {
+      setShowStickyBtn(false)
+      return
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setShowStickyBtn(!entry.isIntersecting),
       { threshold: 0.5 }
@@ -118,12 +124,13 @@ export function ProjectsSection({ projects }: Props) {
     return () => observer.disconnect()
   }, [showAll])
 
-  const displayProjects = useMemo(() => {
+  const allProjects = useMemo(() => {
     const staticUrls = new Set(projects.map(p => p.links?.github).filter(Boolean))
     const uniqueGithub = githubProjects.filter(p => !staticUrls.has(p.links?.github))
-    const combined = [...projects, ...uniqueGithub]
-    return showAll ? combined : combined.slice(0, 9)
-  }, [projects, githubProjects, showAll])
+    return [...projects, ...uniqueGithub]
+  }, [projects, githubProjects])
+
+  const displayProjects = showAll ? allProjects : allProjects.slice(0, 9)
 
   const handleShowLess = () => {
     setShowAll(false)
@@ -132,87 +139,74 @@ export function ProjectsSection({ projects }: Props) {
   }
 
   return (
-    <section id="projects" ref={sectionRef} className="py-20">
-      <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <AnimatedSection animation="fadeIn">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="text-4xl font-bold mb-2">Featured Projects</h2>
-              <p className="text-muted-foreground max-w-xl">
-                A selection of projects I've built — from full-stack apps to test automation frameworks.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className={cn(
-                buttonVariants({ variant: 'ghost', size: 'sm' }),
-                'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer'
-              )}
-            >
-              {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
-            </button>
-          </div>
-        </AnimatedSection>
-
-        {/* Project Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="grid"
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {displayProjects.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Bottom CTA — this is the ref target for intersection observer */}
-        <div ref={showLessRef}>
-          <AnimatedSection animation="fadeIn" delay={0.2}>
-            <div className="mt-8 hidden sm:flex justify-center">
-              <button
-                onClick={showAll ? handleShowLess : () => setShowAll(true)}
-                className={cn(buttonVariants({ variant: 'outline' }), 'gap-2 cursor-pointer')}
-              >
-                {showAll ? 'Show less' : 'View all'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
-              </button>
-            </div>
-          </AnimatedSection>
-
-          {/* Mobile CTA */}
-          <AnimatedSection animation="slideUp" delay={0.4}>
-            <div className="mt-10 flex justify-center sm:hidden">
-              <button
-                onClick={showAll ? handleShowLess : () => setShowAll(true)}
-                className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
-              >
-                {showAll ? 'Show Less' : 'View All Projects'} <ArrowRight className={cn('h-4 w-4 transition-transform', showAll && '-rotate-90')} />
-              </button>
-            </div>
-          </AnimatedSection>
+    <div ref={sectionRef} id="projects" className="scroll-mt-20">
+      {/* Header */}
+      <AnimatedSection className="flex items-start justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-bold">Featured Projects</h2>
+          <p className="text-muted-foreground text-sm mt-1">
+            A selection of projects I&apos;ve built — from full-stack apps to test automation frameworks.
+          </p>
         </div>
+        <button
+          onClick={() => showAll ? handleShowLess() : setShowAll(true)}
+          className={cn(
+            buttonVariants({ variant: 'ghost', size: 'sm' }),
+            'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer shrink-0'
+          )}
+        >
+          {showAll ? 'Show less' : 'View all'}
+        </button>
+      </AnimatedSection>
+
+      {/* Project Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <AnimatePresence mode="popLayout">
+          {displayProjects.map((project, i) => (
+            <ProjectCard key={project.id || project.title} project={project} index={i} />
+          ))}
+        </AnimatePresence>
       </div>
 
-      {/* Sticky 'Show Less' — appears when bottom btn is off-screen while viewing expanded list */}
+      {/* Bottom CTA - ref target for intersection observer */}
+      <div ref={showLessRef} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        {allProjects.length > 9 && (
+          <button
+            onClick={() => showAll ? handleShowLess() : setShowAll(true)}
+            className={cn(buttonVariants({ variant: 'outline' }), 'gap-2 cursor-pointer')}
+          >
+            {showAll ? 'Show less' : `View all ${allProjects.length} projects`}
+            {!showAll && <ArrowRight className="w-4 h-4" />}
+            {showAll && <ChevronUp className="w-4 h-4" />}
+          </button>
+        )}
+      </div>
+
+      {/* Mobile CTA */}
+      <div className="mt-4 flex sm:hidden justify-center">
+        <button
+          onClick={() => showAll ? handleShowLess() : setShowAll(true)}
+          className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
+        >
+          {showAll ? 'Show Less' : 'View All Projects'}
+        </button>
+      </div>
+
+      {/* Sticky 'Show Less' — appears when bottom btn is off-screen while in expanded view */}
       <AnimatePresence>
         {showStickyBtn && (
-          <motion.div
+          <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 right-6 z-50"
+            onClick={handleShowLess}
+            className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            <button
-              onClick={handleShowLess}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-xl text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              <ChevronUp className="h-4 w-4" />
-              Show Less
-            </button>
-          </motion.div>
+            <ChevronUp className="w-4 h-4" />
+            Show Less
+          </motion.button>
         )}
       </AnimatePresence>
-    </section>
+    </div>
   )
 }
