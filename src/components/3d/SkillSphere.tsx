@@ -9,7 +9,7 @@ import { getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
 import { ThreeGate } from './ThreeGate'
 
-// ─── Neon Ring ──────────────────────────────────────────────────────
+// ─── Neon Ring ────────────────────────────────────────────────────
 function NeonRing({ radius, color, tiltX = 0, tiltZ = 0, speed = 0.3 }: {
   radius: number; color: string; tiltX?: number; tiltZ?: number; speed?: number
 }) {
@@ -25,7 +25,6 @@ function NeonRing({ radius, color, tiltX = 0, tiltZ = 0, speed = 0.3 }: {
     }
     return pts
   }, [radius])
-
   return (
     <group ref={groupRef} rotation={[tiltX, 0, tiltZ]}>
       <Line points={pts} color={color} lineWidth={1.5} transparent opacity={0.35} />
@@ -33,7 +32,7 @@ function NeonRing({ radius, color, tiltX = 0, tiltZ = 0, speed = 0.3 }: {
   )
 }
 
-// ─── Core Sphere ────────────────────────────────────────────────
+// ─── Core Sphere ──────────────────────────────────────────────────
 function CoreSphere() {
   const meshRef = useRef<THREE.Mesh>(null)
   useFrame(({ clock }) => {
@@ -44,23 +43,21 @@ function CoreSphere() {
   })
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[2.4, 32, 32]} />
+      <sphereGeometry args={[2.6, 48, 48]} />
       <meshStandardMaterial
-        color="#6366f1"
-        metalness={0.9}
-        roughness={0.1}
-        emissive="#3730a3"
-        emissiveIntensity={0.6}
+        color="#1e40af"
+        metalness={0.6}
+        roughness={0.2}
         wireframe
+        transparent
+        opacity={0.55}
       />
     </mesh>
   )
 }
 
-// ─── Skill Node ────────────────────────────────────────────────
-function SkillNode({
-  skill, position, isSelected, isHovered, onClick, onHover
-}: {
+// ─── Skill Node ──────────────────────────────────────────────────
+function SkillNode({ skill, position, isSelected, isHovered, onClick, onHover }: {
   skill: Skill
   position: [number, number, number]
   isSelected: boolean
@@ -70,7 +67,7 @@ function SkillNode({
 }) {
   const meshRef = useRef<THREE.Mesh>(null)
   const glowRef = useRef<THREE.Mesh>(null)
-
+  const pointerDownPos = useRef<{ x: number; y: number } | null>(null)
   const baseSize = 0.22 + skill.proficiency * 0.08
   const nodeColor = skill.color || '#6366f1'
 
@@ -92,56 +89,62 @@ function SkillNode({
   return (
     <group position={position}>
       {/* Glow halo */}
-      <mesh ref={glowRef} scale={baseSize * 2.2}>
-        <sphereGeometry args={[1, 8, 8]} />
-        <meshBasicMaterial color={nodeColor} transparent opacity={isHovered || isSelected ? 0.18 : 0.07} />
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[1, 16, 16]} />
+        <meshBasicMaterial color={nodeColor} transparent opacity={isSelected ? 0.18 : isHovered ? 0.14 : 0.07} />
       </mesh>
-
       {/* Main geometry */}
       <mesh
         ref={meshRef}
-        scale={baseSize}
-        onClick={e => { e.stopPropagation(); onClick(skill) }}
+        onPointerDown={e => {
+          e.stopPropagation()
+          pointerDownPos.current = { x: e.clientX, y: e.clientY }
+        }}
+        onPointerUp={e => {
+          e.stopPropagation()
+          if (pointerDownPos.current) {
+            const dx = e.clientX - pointerDownPos.current.x
+            const dy = e.clientY - pointerDownPos.current.y
+            const dist = Math.sqrt(dx * dx + dy * dy)
+            if (dist < 5) {
+              onClick(skill)
+            }
+          }
+          pointerDownPos.current = null
+        }}
         onPointerOver={e => { e.stopPropagation(); onHover(skill) }}
         onPointerOut={() => onHover(null)}
       >
-        <icosahedronGeometry args={[1, 1]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshStandardMaterial
-          color={isSelected ? '#ffffff' : nodeColor}
+          color={nodeColor}
+          metalness={isSelected ? 0.9 : 0.5}
+          roughness={isSelected ? 0.1 : 0.3}
           emissive={nodeColor}
-          emissiveIntensity={isHovered || isSelected ? 1.2 : 0.4}
-          metalness={0.85}
-          roughness={0.15}
+          emissiveIntensity={isSelected ? 0.4 : isHovered ? 0.25 : 0.08}
         />
       </mesh>
-
       {/* Label */}
-      <Html center zIndexRange={[100, 0]} className="pointer-events-none">
-        <div
-          style={{
-            color: isSelected ? '#fff' : nodeColor,
-            fontSize: isSelected ? '13px' : isHovered ? '11px' : '9px',
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-            textShadow: `0 0 12px ${nodeColor}`,
-            opacity: isSelected || isHovered ? 1 : 0.65,
-            transform: `translate(-50%, ${isSelected || isHovered ? '-26px' : '-18px'})`,
-            letterSpacing: '0.04em',
-            transition: 'all 0.3s ease',
-            fontFamily: 'var(--font-display, sans-serif)',
-          }}
-        >
-          {skill.name}
-        </div>
-      </Html>
+      <Text
+        position={[0, baseSize * 8 + 0.3, 0]}
+        fontSize={0.55}
+        color="#e2e8f0"
+        anchorX="center"
+        anchorY="bottom"
+        renderOrder={1}
+        outlineColor="#0f172a"
+        outlineWidth={0.06}
+      >
+        {skill.name}
+      </Text>
+      {/* Tooltip on select */}
+      {isSelected && <SkillTooltip skill={skill} position={[0, baseSize * 8 + 1.2, 0]} />}
     </group>
   )
 }
 
-// ─── Constellation lines ─────────────────────────────────────────
-function ConstellationLines({
-  positions, hoveredIndex, selectedIndex
-}: {
+// ─── Constellation lines ───────────────────────────────────────────
+function ConstellationLines({ positions, hoveredIndex, selectedIndex }: {
   positions: [number, number, number][]
   hoveredIndex: number | null
   selectedIndex: number | null
@@ -160,55 +163,45 @@ function ConstellationLines({
   }, [positions])
 
   return (
-    <group>
+    <>
       {lines.map((line, idx) => {
-        const hi = line.start === hoveredIndex || line.end === hoveredIndex || line.start === selectedIndex || line.end === selectedIndex
+        const hi = line.start === hoveredIndex || line.end === hoveredIndex ||
+                   line.start === selectedIndex || line.end === selectedIndex
         return (
           <Line
             key={idx}
             points={[positions[line.start], positions[line.end]]}
-            color={hi ? '#a5b4fc' : '#4338ca'}
-            lineWidth={hi ? 1.5 : 0.4}
+            color={hi ? '#818cf8' : '#334155'}
+            lineWidth={hi ? 1.2 : 0.4}
             transparent
-            opacity={hi ? 0.7 : 0.12}
+            opacity={hi ? 0.7 : 0.2}
           />
         )
       })}
-    </group>
+    </>
   )
 }
 
-// ─── Selected skill tooltip ───────────────────────────────────────
+// ─── Selected skill tooltip ────────────────────────────────────────
 function SkillTooltip({ skill, position }: { skill: Skill; position: [number, number, number] }) {
   const LEVELS = ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced', 'Expert']
   return (
-    <Html position={position} center zIndexRange={[200, 100]}>
-      <div style={{
-        background: 'rgba(10,10,20,0.92)',
-        border: `1px solid ${skill.color}60`,
-        borderRadius: '10px',
-        padding: '10px 14px',
-        width: '140px',
-        boxShadow: `0 0 20px ${skill.color}40`,
-        backdropFilter: 'blur(12px)',
-        color: '#fff',
-        pointerEvents: 'none',
-        transform: 'translate(-50%, -70px)',
-      }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, color: skill.color, marginBottom: '4px' }}>{skill.name}</div>
-        <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '6px' }}>{skill.category}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+    <Html position={position} center distanceFactor={10}>
+      <div className="bg-card/90 border border-border rounded-lg px-3 py-2 text-xs shadow-xl min-w-[120px] text-center pointer-events-none">
+        <div className="font-semibold text-foreground">{skill.name}</div>
+        <div className="text-muted-foreground mt-0.5">{skill.category}</div>
+        <div className="flex justify-center gap-0.5 mt-1">
           {[1,2,3,4,5].map(n => (
-            <div key={n} style={{ width: '16px', height: '4px', borderRadius: '2px', background: n <= skill.proficiency ? skill.color : '#374151' }} />
+            <span key={n} className={`w-2 h-2 rounded-full ${n <= skill.proficiency ? 'bg-primary' : 'bg-muted'}`} />
           ))}
         </div>
-        <div style={{ fontSize: '9px', color: '#6b7280', marginTop: '4px' }}>{LEVELS[skill.proficiency]}</div>
+        <div className="text-primary/80 mt-0.5">{LEVELS[skill.proficiency]}</div>
       </div>
     </Html>
   )
 }
 
-// ─── Main export ───────────────────────────────────────────────
+// ─── Main export ──────────────────────────────────────────────────
 interface SkillSphereProps {
   onSkillSelect?: (skill: Skill) => void
   selectedCategory?: string
@@ -241,39 +234,31 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
   const selectedIndex = selectedSkill ? filteredSkills.findIndex(s => s.id === selectedSkill.id) : null
 
   return (
-    <ThreeGate className={`relative ${className ?? ''}`}>
+    <ThreeGate>
       <Canvas
         camera={{ position: [0, 0, 22], fov: 55 }}
-        style={{ background: 'transparent' }}
-        frameloop="always"
+        className={className}
+        style={{ cursor: hoveredSkill ? 'pointer' : 'grab' }}
         gl={{ antialias: true, alpha: true }}
       >
-        {/* Lighting — cinematic neon */}
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[10, 10, 5]} intensity={1.5} color="#ffffff" />
-        <pointLight position={[-12, -8, -6]} intensity={3} color="#ec4899" />
-        <pointLight position={[12, -8, 6]} intensity={3} color="#6366f1" />
-        <pointLight position={[0, 14, 0]} intensity={2} color="#22d3ee" />
+        <color attach="background" args={['transparent']} />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[10, 10, 10]} intensity={1.2} color="#818cf8" />
+        <pointLight position={[-10, -5, -10]} intensity={0.5} color="#34d399" />
+        <Sparkles count={60} scale={22} size={1.2} speed={0.3} opacity={0.4} color="#818cf8" />
 
-        {/* Sparkle field */}
-        <Sparkles count={90} scale={30} size={1.5} speed={0.3} opacity={0.5} color="#a5b4fc" />
-
-        {/* Decorative rings */}
-        <NeonRing radius={11.5} color="#6366f1" tiltX={0.3} speed={0.2} />
-        <NeonRing radius={12.5} color="#22d3ee" tiltX={-0.5} tiltZ={0.4} speed={-0.15} />
-        <NeonRing radius={10.5} color="#ec4899" tiltX={1.0} tiltZ={-0.3} speed={0.25} />
-
-        {/* Core */}
         <CoreSphere />
 
-        {/* Constellation */}
+        <NeonRing radius={11} color="#818cf8" tiltX={0.3} speed={0.08} />
+        <NeonRing radius={9.5} color="#34d399" tiltX={-0.5} tiltZ={0.4} speed={-0.06} />
+        <NeonRing radius={10.5} color="#f472b6" tiltX={0.7} tiltZ={-0.3} speed={0.05} />
+
         <ConstellationLines
           positions={skillPositions}
           hoveredIndex={hoveredIndex}
           selectedIndex={selectedIndex}
         />
 
-        {/* Skill nodes */}
         {filteredSkills.map((skill, i) => (
           <SkillNode
             key={skill.id}
@@ -281,15 +266,13 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
             position={skillPositions[i]}
             isSelected={selectedSkill?.id === skill.id}
             isHovered={hoveredSkill?.id === skill.id}
-            onClick={s => { setSelectedSkill(prev => prev?.id === s.id ? null : s); onSkillSelect?.(s) }}
+            onClick={s => {
+              setSelectedSkill(prev => prev?.id === s.id ? null : s)
+              onSkillSelect?.(s)
+            }}
             onHover={setHoveredSkill}
           />
         ))}
-
-        {/* Tooltip on selected */}
-        {selectedSkill && selectedIndex !== null && (
-          <SkillTooltip skill={selectedSkill} position={skillPositions[selectedIndex]} />
-        )}
 
         <OrbitControls
           enableZoom
