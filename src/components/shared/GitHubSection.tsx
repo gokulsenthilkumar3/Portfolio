@@ -561,6 +561,16 @@ function ContributionHeatmap({ contributions, createdAt }: { contributions: Reco
             </div>
           ))}
         </div>
+                    {/* Snake animation - slithers across contribution grid */}
+            {viewMode === '12weeks' && (
+              <SnakeHeatmap
+                contributions={contributions}
+                cols={weeks.length}
+                rows={7}
+                cellSize={12}
+                gap={3}
+              />
+            )}
 
         {/* Snake hover overlay (12 weeks mode only) */}
         {viewMode === '12weeks' && (
