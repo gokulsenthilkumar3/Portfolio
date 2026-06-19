@@ -48,9 +48,11 @@ export const metadata: Metadata = {
 const sections = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
-  { id: 'projects', label: 'Projects' },
   { id: 'skills', label: 'Skills' },
-  { id: 'contact', label: 'Contact' }
+    { id: 'projects', label: 'Projects' },
+    { id: 'github', label: 'GitHub' },
+    { id: 'insights', label: 'Insights' },
+    { id: 'contact', label: 'Contact' }
 ]
 
 export default function RootLayout({
