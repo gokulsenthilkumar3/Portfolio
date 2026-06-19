@@ -80,7 +80,7 @@ export default function Home() {
       <Section id="home" className="min-h-screen flex items-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           {/* Overlay adapts: semi-transparent in dark, lighter in light mode */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/70 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/20 z-10 pointer-events-none" />
           <HeroScene className="w-full h-full" />
         </div>
 
@@ -99,7 +99,7 @@ export default function Home() {
 
             <AnimatedSection animation="slideUp" delay={0.3}>
               {/* First name: theme-aware foreground; last name: gradient accent */}
-              <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display">
                 <span className="text-foreground">
                   {currentPersonal.name.split(' ')[0]}
                 </span>
@@ -124,13 +124,13 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection animation="slideUp" delay={0.7}>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 w-full sm:w-auto">
                 <MagneticButton>
                   <Link
                     href="#contact"
                     className={cn(
                       buttonVariants({ size: 'lg' }),
-                      'px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none text-white'
+                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none text-white'
                     )}
                   >
                     Get In Touch
@@ -141,7 +141,7 @@ export default function Home() {
                     href="#projects"
                     className={cn(
                       buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
+                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
                     )}
                   >
                     Explore Projects
@@ -154,7 +154,7 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className={cn(
                       buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
+                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
                     )}
                   >
                     Download CV
@@ -165,7 +165,7 @@ export default function Home() {
                     onClick={() => setTerminalOpen(true)}
                     className={cn(
                       buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'px-6 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm group'
+                      'w-full sm:w-auto px-6 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm group flex items-center justify-center'
                     )}
                     title="Open Developer Terminal"
                   >
@@ -185,30 +185,8 @@ export default function Home() {
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8">
-            <div className="space-y-6">
-              <AnimatedSection animation="fadeIn">
-                <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
-                  </div>
-                  GitHub Activity
-                </h2>
-                <p className="text-muted-foreground">Real-time open source contributions & stats.</p>
-              </AnimatedSection>
-              <AnimatedSection animation="slideRight" delay={0.2}>
-                <GitHubSection />
-              </AnimatedSection>
-              <AnimatedSection animation="slideRight" delay={0.3}>
-                <CertificationsSection />
-              </AnimatedSection>
-              <AnimatedSection animation="slideRight" delay={0.4}>
-                <LanguagesSection />
-              </AnimatedSection>
-            </div>
-
-            <div className="space-y-6">
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="space-y-6">
               <AnimatedSection animation="fadeIn" delay={0.2}>
                 <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
                   <div className="p-2 rounded-xl bg-[#0a66c2]/10 text-[#0a66c2] border border-[#0a66c2]/20">
@@ -221,9 +199,14 @@ export default function Home() {
               <AnimatedSection animation="slideLeft" delay={0.4}>
                 <LinkedInSection />
               </AnimatedSection>
+              <AnimatedSection animation="slideLeft" delay={0.5}>
+                <CertificationsSection />
+              </AnimatedSection>
+              <AnimatedSection animation="slideLeft" delay={0.6}>
+                <LanguagesSection />
+              </AnimatedSection>
             </div>
           </div>
-        </div>
       </Section>
 
       {/* ─── SKILLS ────────────────────────────────────────────────────────────── */}
@@ -233,12 +216,29 @@ export default function Home() {
         </EditableSection>
       </Section>
 
-      {/* ─── PROJECTS ─────────────────────────────────────────────────────────── */}
+      {/* ─── PROJECTS & GITHUB ACTIVITY ───────────────────────────────────────── */}
       <Section id="projects" background="muted">
         <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
           <ProjectsSection projects={currentProjects} />
         </EditableSection>
+        
+        <div className="max-w-6xl mx-auto px-4 pb-12 mt-20">
+          <AnimatedSection animation="fadeIn" delay={0.2}>
+            <div className="w-full h-px bg-border/50 mb-20" />
+            <h2 className="text-3xl font-bold mb-8 font-display flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+              </div>
+              GitHub Activity
+            </h2>
+          </AnimatedSection>
+          <AnimatedSection animation="slideUp" delay={0.3}>
+            <GitHubSection />
+          </AnimatedSection>
+        </div>
       </Section>
+
+
 
       {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
       <EditableSection label="Blog" onEdit={() => openPanel('blog')}>

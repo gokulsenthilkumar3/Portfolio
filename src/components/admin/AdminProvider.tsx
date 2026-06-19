@@ -27,6 +27,7 @@ interface PortfolioData {
   education: typeof portfolioConfig.education
   socialLinks: SocialLink[]
   seo: typeof portfolioConfig.seo
+  blog: typeof portfolioConfig.blog
 }
 
 interface AdminContextType {
@@ -53,6 +54,7 @@ const defaultData: PortfolioData = {
   education: portfolioConfig.education,
   socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
   seo: portfolioConfig.seo,
+  blog: portfolioConfig.blog,
 }
 
 async function sha256(message: string): Promise<string> {

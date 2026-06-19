@@ -8,8 +8,9 @@ import { PersonalEditor } from './editors/PersonalEditor'
 import { ProjectEditor } from './editors/ProjectEditor'
 import { SkillEditor } from './editors/SkillEditor'
 import { ResumeEditor } from './editors/ResumeEditor'
+import { BlogEditor } from './editors/BlogEditor'
 import { useAdmin } from './AdminProvider'
-import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save, FileText } from 'lucide-react'
+import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save, FileText, BookOpen } from 'lucide-react'
 
 interface AdminPanelProps {
   isOpen: boolean
@@ -24,6 +25,7 @@ const tabs = [
   { id: 'projects', label: 'Projects', icon: FolderGit2, description: 'Add, edit, remove projects' },
   { id: 'skills', label: 'Skills', icon: Wrench, description: 'Tech stack & proficiency' },
   { id: 'resume', label: 'Resume', icon: Briefcase, description: 'Work & Education' },
+  { id: 'blog', label: 'Blog', icon: BookOpen, description: 'Insights & articles' },
 ]
 
 export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminPanelProps) {
@@ -127,6 +129,7 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
                   {activeTab === 'projects' && <ProjectEditor />}
                   {activeTab === 'skills' && <SkillEditor />}
                   {activeTab === 'resume' && <ResumeEditor />}
+                  {activeTab === 'blog' && <BlogEditor />}
                 </motion.div>
               </AnimatePresence>
             </div>

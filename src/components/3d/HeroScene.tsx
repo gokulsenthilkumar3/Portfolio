@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useRef, useMemo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Float, MeshDistortMaterial, Sparkles, Stars } from '@react-three/drei'
 import * as THREE from 'three'
 import { ThreeGate } from './ThreeGate'
+import { useThemeStore } from '@/lib/hooks/use-theme'
 
-function DNAStrand() {
+function DNAStrand({ theme }: { theme: string }) {
   const groupRef = useRef<THREE.Group>(null)
   const count = 30
   
@@ -25,15 +26,19 @@ function DNAStrand() {
     }
   })
 
+  // In light mode, use deeper, bolder colors
+  const color1 = theme === 'light' ? '#4338ca' : '#6366f1' // Deeper indigo
+  const color2 = theme === 'light' ? '#be185d' : '#ec4899' // Deeper pink
+
   return (
     <group ref={groupRef} position={[5, 0, -3]}>
       {positions.map((pos, i) => (
         <mesh key={i} position={pos}>
           <sphereGeometry args={[0.08, 8, 8]} />
           <meshStandardMaterial
-            color={i % 2 === 0 ? '#6366f1' : '#ec4899'}
-            emissive={i % 2 === 0 ? '#6366f1' : '#ec4899'}
-            emissiveIntensity={0.8}
+            color={i % 2 === 0 ? color1 : color2}
+            emissive={i % 2 === 0 ? color1 : color2}
+            emissiveIntensity={theme === 'light' ? 0.3 : 0.8}
             metalness={0.8}
             roughness={0.1}
           />
@@ -43,7 +48,7 @@ function DNAStrand() {
   )
 }
 
-function CentralOrb() {
+function CentralOrb({ theme }: { theme: string }) {
   const meshRef = useRef<THREE.Mesh>(null)
   
   useFrame((state) => {
@@ -58,44 +63,45 @@ function CentralOrb() {
       <mesh ref={meshRef} position={[0, 0, 0]}>
         <icosahedronGeometry args={[1.8, 4]} />
         <MeshDistortMaterial
-          color="#6366f1"
-          emissive="#4338ca"
-          emissiveIntensity={0.5}
+          color={theme === 'light' ? '#3730a3' : '#6366f1'}
+          emissive={theme === 'light' ? '#312e81' : '#4338ca'}
+          emissiveIntensity={theme === 'light' ? 0.2 : 0.5}
           metalness={0.9}
           roughness={0.1}
           distort={0.4}
           speed={2}
           transparent
-          opacity={0.85}
+          opacity={theme === 'light' ? 0.6 : 0.85}
         />
       </mesh>
       <mesh position={[0, 0, 0]} rotation={[Math.PI / 4, 0, 0]}>
         <torusGeometry args={[2.5, 0.03, 16, 100]} />
         <meshStandardMaterial
-          color="#a78bfa"
-          emissive="#a78bfa"
-          emissiveIntensity={2}
+          color={theme === 'light' ? '#5b21b6' : '#a78bfa'}
+          emissive={theme === 'light' ? '#5b21b6' : '#a78bfa'}
+          emissiveIntensity={theme === 'light' ? 0.5 : 2}
           transparent
-          opacity={0.6}
+          opacity={theme === 'light' ? 0.4 : 0.6}
         />
       </mesh>
       <mesh position={[0, 0, 0]} rotation={[0, Math.PI / 3, Math.PI / 4]}>
         <torusGeometry args={[3.0, 0.02, 16, 100]} />
         <meshStandardMaterial
-          color="#ec4899"
-          emissive="#ec4899"
-          emissiveIntensity={1.5}
+          color={theme === 'light' ? '#9d174d' : '#ec4899'}
+          emissive={theme === 'light' ? '#9d174d' : '#ec4899'}
+          emissiveIntensity={theme === 'light' ? 0.5 : 1.5}
           transparent
-          opacity={0.4}
+          opacity={theme === 'light' ? 0.3 : 0.4}
         />
       </mesh>
     </Float>
   )
 }
 
-function TechCube({ position, color, scale = 1, speed = 1 }: {
+function TechCube({ position, color, theme, scale = 1, speed = 1 }: {
   position: [number, number, number]
   color: string
+  theme: string
   scale?: number
   speed?: number
 }) {
@@ -115,7 +121,7 @@ function TechCube({ position, color, scale = 1, speed = 1 }: {
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.4}
+          emissiveIntensity={theme === 'light' ? 0.1 : 0.4}
           metalness={0.9}
           roughness={0.05}
         />
@@ -126,37 +132,50 @@ function TechCube({ position, color, scale = 1, speed = 1 }: {
           color={color}
           wireframe
           transparent
-          opacity={0.2}
+          opacity={theme === 'light' ? 0.4 : 0.2}
         />
       </mesh>
     </Float>
   )
 }
 
-function ParticleField() {
+function ParticleField({ theme }: { theme: string }) {
   const meshRef = useRef<THREE.Points>(null)
+  const { viewport } = useThree()
   
   const { positions, colors } = useMemo(() => {
-    const count = 2000
+    const count = 3000
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
-    const palette = [
+    
+    // Use darker palette for light mode to improve visibility
+    const palette = theme === 'light' ? [
+      [0.2, 0.2, 0.7],  // Darker indigo
+      [0.7, 0.1, 0.4],  // Darker pink
+      [0.4, 0.3, 0.7],  // Darker purple
+      [0.0, 0.4, 0.3],  // Darker green
+    ] : [
       [0.39, 0.4, 0.95],
       [0.92, 0.28, 0.6],
       [0.67, 0.55, 0.98],
       [0.06, 0.73, 0.51],
     ]
+    
+    // Calculate dynamic spread based on viewport. Multiply by 1.5 to ensure it spans off-screen edges
+    const spreadX = Math.max(viewport.width * 1.5, 40)
+    const spreadY = Math.max(viewport.height * 1.5, 30)
+
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 15 - 5
+      positions[i * 3] = (Math.random() - 0.5) * spreadX
+      positions[i * 3 + 1] = (Math.random() - 0.5) * spreadY
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 5
       const c = palette[Math.floor(Math.random() * palette.length)]
       colors[i * 3] = c[0]
       colors[i * 3 + 1] = c[1]
       colors[i * 3 + 2] = c[2]
     }
     return { positions, colors }
-  }, [])
+  }, [theme, viewport.width, viewport.height])
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -172,10 +191,10 @@ function ParticleField() {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.06}
+        size={theme === 'light' ? 0.09 : 0.06} // slightly larger particles in light mode
         vertexColors
         transparent
-        opacity={0.8}
+        opacity={theme === 'light' ? 0.9 : 0.8}
         sizeAttenuation
       />
     </points>
@@ -215,6 +234,8 @@ export interface HeroSceneProps {
 }
 
 export function HeroScene({ className }: HeroSceneProps) {
+  const { theme } = useThemeStore()
+
   return (
     <ThreeGate className={className}>
       <Canvas
@@ -224,17 +245,17 @@ export function HeroScene({ className }: HeroSceneProps) {
         dpr={[1, 2]}
       >
         <DynamicLights />
-        <Stars radius={80} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
-        <ParticleField />
-        <CentralOrb />
-        <DNAStrand />
-        <TechCube position={[-5, 2, -1]} color="#6366f1" scale={0.4} speed={0.8} />
-        <TechCube position={[-4, -2, -2]} color="#ec4899" scale={0.6} speed={1.2} />
-        <TechCube position={[4, 3, -2]} color="#10b981" scale={0.35} speed={0.6} />
-        <TechCube position={[-6, 0, -3]} color="#f59e0b" scale={0.5} speed={1.4} />
-        <TechCube position={[2, -3, -1]} color="#a78bfa" scale={0.45} speed={0.9} />
-        <Sparkles count={120} scale={12} size={1.5} speed={0.3} color="#a78bfa" opacity={0.6} />
-        <Sparkles count={60} scale={8} size={2} speed={0.5} color="#ec4899" opacity={0.4} />
+        <Stars radius={120} depth={50} count={5000} factor={4} saturation={0} fade speed={0.5} color={theme === 'light' ? '#333333' : '#ffffff'} />
+        <ParticleField theme={theme} />
+        <CentralOrb theme={theme} />
+        <DNAStrand theme={theme} />
+        <TechCube theme={theme} position={[-5, 2, -1]} color={theme === 'light' ? '#3730a3' : '#6366f1'} scale={0.4} speed={0.8} />
+        <TechCube theme={theme} position={[-4, -2, -2]} color={theme === 'light' ? '#be185d' : '#ec4899'} scale={0.6} speed={1.2} />
+        <TechCube theme={theme} position={[4, 3, -2]} color={theme === 'light' ? '#047857' : '#10b981'} scale={0.35} speed={0.6} />
+        <TechCube theme={theme} position={[-6, 0, -3]} color={theme === 'light' ? '#b45309' : '#f59e0b'} scale={0.5} speed={1.4} />
+        <TechCube theme={theme} position={[2, -3, -1]} color={theme === 'light' ? '#5b21b6' : '#a78bfa'} scale={0.45} speed={0.9} />
+        <Sparkles count={120} scale={12} size={1.5} speed={0.3} color={theme === 'light' ? '#5b21b6' : '#a78bfa'} opacity={theme === 'light' ? 0.9 : 0.6} />
+        <Sparkles count={60} scale={8} size={2} speed={0.5} color={theme === 'light' ? '#be185d' : '#ec4899'} opacity={theme === 'light' ? 0.8 : 0.4} />
       </Canvas>
     </ThreeGate>
   )

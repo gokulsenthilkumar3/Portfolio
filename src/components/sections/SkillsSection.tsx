@@ -22,7 +22,7 @@ import Link from 'next/link'
 const ICON_SLUG: Record<string, string> = {
   // Testing
   selenium:       'selenium',
-  playwright:     'playwright',
+  playwright:     '',
   k6:             'k6',
   jest:           'jest',
   cypress:        'cypress',
@@ -42,7 +42,7 @@ const ICON_SLUG: Record<string, string> = {
   python:         'python',
   java:           'openjdk',
   // DevOps
-  'azure-devops': 'azuredevops',
+  'azure-devops': '',
   git:            'git',
   docker:         'docker',
   github:         'github',
@@ -154,9 +154,15 @@ function CategoryCard({
       animation={groupIndex % 2 === 0 ? 'slideLeft' : 'slideRight'}
       delay={groupIndex * 0.1}
     >
-      <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 h-full">
+      <div className="group rounded-2xl border border-white/10 bg-gradient-to-br from-card/40 to-card/10 backdrop-blur-xl p-5 h-full hover:border-primary/30 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] relative overflow-hidden">
+        {/* Subtle accent glow */}
+        <div 
+          className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[50px] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"
+          style={{ backgroundColor: meta.accent }}
+        />
+        
         {/* Category header — accent dot instead of emoji */}
-        <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-border/50">
+        <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-white/10">
           <span
             className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm"
             style={{ backgroundColor: meta.accent, boxShadow: `0 0 8px ${meta.accent}66` }}

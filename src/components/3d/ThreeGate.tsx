@@ -31,7 +31,6 @@ export function ThreeGate({
 }: ThreeGateProps) {
   const [shouldRender, setShouldRender] = useState(false)
   const [hasWebGL, setHasWebGL] = useState(true)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -43,14 +42,6 @@ export function ThreeGate({
     } catch (e) {
       setHasWebGL(false)
     }
-
-    // Check Reduced Motion
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-    
-    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', listener)
-    return () => mediaQuery.removeEventListener('change', listener)
   }, [])
 
   useEffect(() => {
@@ -60,11 +51,6 @@ export function ThreeGate({
       ([entry]) => {
         if (entry.isIntersecting) {
           setShouldRender(true)
-          // We can optionally disconnect here if we want to keep it mounted forever, 
-          // but if we want to unmount it when it scrolls out of view to save memory/battery,
-          // we should update state. Unmounting heavy Canvas can cause jank, so let's just 
-          // keep it mounted once loaded, but maybe the developer wants it unmounted. 
-          // For now, let's just mount it once.
           observer.disconnect()
         }
       },
@@ -75,16 +61,12 @@ export function ThreeGate({
     return () => observer.disconnect()
   }, [rootMargin])
 
-  if (!hasWebGL || prefersReducedMotion) {
-    // If WebGL is not supported or user prefers reduced motion, we can show a static fallback.
-    // We could alternatively allow a static prop `fallbackImage`.
+  if (!hasWebGL) {
     return (
       <div className={className}>
         <div className="w-full h-full flex items-center justify-center bg-muted/20 border border-border/50 rounded-2xl">
           <span className="text-muted-foreground/50 font-mono text-xs text-center px-4">
-            {prefersReducedMotion 
-              ? "3D animations paused (Reduced Motion Enabled)" 
-              : "WebGL not supported"}
+            WebGL not supported
           </span>
         </div>
       </div>

@@ -19,29 +19,35 @@ export function CertificationsSection() {
       <div className="space-y-4">
         {certifications.map((cert, index) => (
           <AnimatedSection key={cert.id} animation="slideUp" delay={0.1 * index}>
-            <Card className="group relative overflow-hidden border-white/8 bg-white/3 backdrop-blur-xl p-5 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
+            <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-card/30 to-card/10 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)]">
+              {/* Subtle side accent */}
+              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-primary/40 opacity-80" />
+              
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 pl-6">
                 <div>
-                  <h5 className="font-bold text-base mb-1">{cert.name}</h5>
-                  <p className="text-sm font-medium text-muted-foreground">{cert.issuer}</p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Issued {cert.issued} {cert.expires ? `· Expires ${cert.expires}` : ''}
-                  </p>
+                  <h5 className="font-bold text-lg text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">{cert.name}</h5>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium text-foreground/80">{cert.issuer}</span>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                    <span className="text-xs font-mono text-muted-foreground">
+                      {cert.issued} {cert.expires ? `→ ${cert.expires}` : ''}
+                    </span>
+                  </div>
                 </div>
                 {cert.url && (
-                  <div className="mt-4 sm:mt-0 flex-shrink-0">
+                  <div className="mt-2 sm:mt-0 flex-shrink-0">
                     <a
                       href={cert.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors bg-primary/10 px-3 py-1.5 rounded-lg"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-white transition-colors bg-primary/10 hover:bg-primary px-4 py-2 rounded-full border border-primary/20 hover:border-primary"
                     >
-                      Show credential <ExternalLink size={12} />
+                      Verify <ExternalLink size={12} />
                     </a>
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
           </AnimatedSection>
         ))}
       </div>

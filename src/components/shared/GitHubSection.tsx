@@ -80,8 +80,8 @@ function ContributionHeatmap({ contributions }: { contributions: Record<string, 
   }
 
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-1 min-w-max">
+    <div className="overflow-x-auto relative group pb-4">
+      <div className="flex gap-1 min-w-max relative z-10">
         {weeks.map((week, wi) => (
           <div key={wi} className="flex flex-col gap-1">
             {week.map((cell, di) => (
@@ -91,14 +91,43 @@ function ContributionHeatmap({ contributions }: { contributions: Record<string, 
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: (wi * 7 + di) * 0.004, duration: 0.3 }}
                 title={`${cell.date}: ${cell.count} events`}
-                className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-125"
+                className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-125 hover:z-20 relative"
                 style={{ backgroundColor: getColor(cell.count) }}
               />
             ))}
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+      
+      {/* Snake Animation Overlay */}
+      <div className="absolute inset-0 z-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+        <motion.div
+          className="absolute w-3 h-3 rounded-sm bg-primary blur-[2px] shadow-[0_0_15px_rgba(99,102,241,0.8)]"
+          animate={{
+            x: [0, 200, 200, 400, 400, 600, 600, 0],
+            y: [0, 0, 40, 40, 80, 80, 0, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        <motion.div
+          className="absolute w-12 h-1 bg-gradient-to-r from-transparent to-primary blur-[1px]"
+          animate={{
+            x: [-48, 152, 152, 352, 352, 552, 552, -48],
+            y: [4, 4, 44, 44, 84, 84, 4, 4],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      </div>
+
+      <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
         <span>Less</span>
         {[0.08, 0.25, 0.5, 0.75, 1].map((o, i) => (
           <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: `rgba(99,102,241,${o})` }} />
@@ -245,64 +274,7 @@ export function GitHubSection() {
         <ContributionHeatmap contributions={data.contributions} />
       </motion.div>
 
-      {/* Top Repos */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp size={16} className="text-primary" />
-          <h4 className="font-semibold text-sm">Top Repositories</h4>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-3">
-          {(() => {
-            const snakeRepo = data.allRepos.find(r => r.name.toLowerCase().includes('snake'))
-            const otherRepos = data.allRepos.filter(r => r.id !== snakeRepo?.id)
-            const reposToShow = [
-              ...(snakeRepo ? [snakeRepo] : []),
-              ...otherRepos
-            ].slice(0, 8)
-            
-            return reposToShow.map((repo, i) => {
-              const color = LANG_COLORS[repo.language] || '#6366f1'
-            return (
-              <motion.a
-                key={repo.id}
-                href={repo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + i * 0.08 }}
-                className="group relative overflow-hidden rounded-xl border border-white/8 bg-white/3 backdrop-blur-xl p-4 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.1)]"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate group-hover:text-primary transition-colors">{repo.name}</p>
-                    {repo.description && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{repo.description}</p>
-                    )}
-                  </div>
-                  <ExternalLink size={12} className="text-muted-foreground shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
-                  {repo.language && (
-                    <span className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                      {repo.language}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <Star size={10} />
-                    {repo.stars}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <GitFork size={10} />
-                    {repo.forks}
-                  </span>
-                </div>
-              </motion.a>
-            )
-          })})()}
-        </div>
-      </div>
+      {/* Repositories removed as requested */}
     </div>
   )
 }

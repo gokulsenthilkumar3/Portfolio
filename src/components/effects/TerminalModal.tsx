@@ -94,7 +94,7 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#1e1e1e] rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col h-[60vh] max-h-[600px]"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-2xl bg-[#1e1e1e] rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col h-[60vh] max-h-[600px]"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] border-b border-white/5 select-none">

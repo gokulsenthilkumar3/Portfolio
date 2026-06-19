@@ -30,7 +30,7 @@ function ThreeSkeleton({ className }: { className?: string }) {
 function ThreePoster({ className }: { className?: string }) {
   return (
     <div
-      className={`rounded-xl bg-gradient-to-br from-slate-900/60 to-blue-950/60 ${
+      className={`rounded-xl bg-background/5 backdrop-blur-sm border border-border/10 ${
         className ?? ''
       }`}
       aria-hidden="true"
