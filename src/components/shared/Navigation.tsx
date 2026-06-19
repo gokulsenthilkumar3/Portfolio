@@ -16,7 +16,7 @@ const NAV_LINKS = [
   { label: 'Projects',     href: '/#projects' },
   { label: 'GitHub',       href: '/#github'   },
   { label: 'Insights',     href: '/#insights' },
-  { label: 'Contact',      href: '/contact'   },
+    { label: 'Contact',    href: '#contact'   },
 ]
 
 export function Navigation() {
