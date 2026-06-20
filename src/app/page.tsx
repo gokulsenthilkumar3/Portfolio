@@ -241,9 +241,11 @@ export default function Home() {
 
 
       {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
-      <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
+<Section id="insights">
+                <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
         <BlogSection posts={isAdmin && portfolioData?.blog?.length > 0 ? portfolioData.blog : staticBlog || []} />
       </EditableSection>
+          </Section>
 
       {/* ─── CONTACT ─────────────────────────────────────────────────────────── */}
       <Section id="contact" background="muted">
