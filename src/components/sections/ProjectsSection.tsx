@@ -9,7 +9,7 @@
  */
 
 import { useState, useMemo, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { ExternalLink, Github, ArrowRight, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
@@ -24,6 +24,26 @@ interface Props {
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const springX = useSpring(x, { stiffness: 300, damping: 30 })
+  const springY = useSpring(y, { stiffness: 300, damping: 30 })
+  const rotateX = useTransform(springY, [-0.5, 0.5], ["10deg", "-10deg"])
+  const rotateY = useTransform(springX, [-0.5, 0.5], ["-10deg", "10deg"])
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
+    x.set(mouseX / rect.width - 0.5)
+    y.set(mouseY / rect.height - 0.5)
+  }
+
+  function handleMouseLeave() {
+    x.set(0)
+    y.set(0)
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,53 +51,62 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: (index % 9) * 0.05, duration: 0.4 }}
       layout
+      style={{ perspective: 1200 }}
+      className="h-full"
     >
-      <Card className="h-full flex flex-col group hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-        <CardContent className="flex flex-col h-full pt-5">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                {project.title}
-              </h3>
-              {project.featured && (
-                <Badge variant="secondary" className="text-[10px] shrink-0">Featured</Badge>
+      <motion.div
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+        className="h-full"
+      >
+        <Card className="h-full flex flex-col group hover:border-primary/50 transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.05)] bg-card/60 backdrop-blur-sm">
+          <CardContent className="flex flex-col h-full pt-5" style={{ transform: "translateZ(30px)" }}>
+            <div className="flex-1 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                  {project.title}
+                </h3>
+                {project.featured && (
+                  <Badge variant="secondary" className="text-[10px] shrink-0">Featured</Badge>
+                )}
+              </div>
+
+              {project.description && (
+                <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
+              )}
+
+              {project.technologies && project.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {project.technologies.slice(0, 4).map(tech => (
+                    <Badge key={tech} variant="outline" className="text-[10px] bg-background/50">{tech}</Badge>
+                  ))}
+                  {project.technologies.length > 4 && (
+                    <Badge variant="outline" className="text-[10px] bg-background/50">+{project.technologies.length - 4}</Badge>
+                  )}
+                </div>
               )}
             </div>
 
-            {project.description && (
-              <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
-            )}
-
-            {project.technologies && project.technologies.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {project.technologies.slice(0, 4).map(tech => (
-                  <Badge key={tech} variant="outline" className="text-[10px]">{tech}</Badge>
-                ))}
-                {project.technologies.length > 4 && (
-                  <Badge variant="outline" className="text-[10px]">+{project.technologies.length - 4}</Badge>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-2 mt-4 pt-3 border-t border-border/40">
-            {project.links?.github && (
-              <a href={project.links.github} target="_blank" rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
-              >
-                <Github className="w-3.5 h-3.5" /> Code
-              </a>
-            )}
-            {project.links?.live && (
-              <a href={project.links.live} target="_blank" rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
-              >
-                <ExternalLink className="w-3.5 h-3.5" /> Live
-              </a>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex gap-2 mt-4 pt-3 border-t border-border/40">
+              {project.links?.github && (
+                <a href={project.links.github} target="_blank" rel="noopener noreferrer"
+                  className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
+                >
+                  <Github className="w-3.5 h-3.5" /> Code
+                </a>
+              )}
+              {project.links?.live && (
+                <a href={project.links.live} target="_blank" rel="noopener noreferrer"
+                  className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Live
+                </a>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </motion.div>
   )
 }
@@ -196,11 +225,11 @@ export function ProjectsSection({ projects }: Props) {
       <AnimatePresence>
         {showStickyBtn && (
           <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 20, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 20, x: "-50%" }}
             onClick={handleShowLess}
-            className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+            className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl text-sm font-medium hover:bg-primary/90 transition-colors border border-primary-foreground/10"
           >
             <ChevronUp className="w-4 h-4" />
             Show Less

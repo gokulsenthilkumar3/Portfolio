@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Code2, Github, Sun, Moon, ExternalLink } from 'lucide-react'
+import { Menu, X, Code2, Github, Sun, Moon, ExternalLink, Download } from 'lucide-react'
 import { portfolioConfig } from '@/config/portfolio.config'
+import { useThemeStore } from '@/lib/hooks/use-theme'
 
 const { personal } = portfolioConfig
 
@@ -22,17 +23,10 @@ const NAV_LINKS = [
 export function Navigation() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [activeSection, setActiveSection] = useState('home')
   const pathname = usePathname()
   const navRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const saved = typeof window !== 'undefined'
-      ? (document.documentElement.dataset.theme as 'light' | 'dark' | undefined)
-      : 'dark'
-    setTheme((saved as 'light' | 'dark') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
-  }, [])
+  const { theme, setTheme } = useThemeStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -60,7 +54,6 @@ export function Navigation() {
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
-    document.documentElement.setAttribute('data-theme', next)
   }
 
   const isActive = (href: string) => {
@@ -127,15 +120,15 @@ export function Navigation() {
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
-            {/* GitHub CTA */}
+            {/* Resume CTA instead of Github/Theme */}
             <a
-              href={personal.github || 'https://github.com/gokulsenthilkumar3'}
+              href={personal.resume || '/Gokul_S_Resume.pdf'}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all"
             >
-              <Github className="h-3.5 w-3.5" />
-              GitHub
+              <Download className="h-3.5 w-3.5" />
+              Resume
             </a>
 
             {/* Mobile hamburger */}
@@ -209,13 +202,13 @@ export function Navigation() {
               </nav>
               <div className="px-4 pb-6 border-t border-border/40 pt-4">
                 <a
-                  href={personal.github || 'https://github.com/gokulsenthilkumar3'}
+                  href={personal.resume || '/Gokul_S_Resume.pdf'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm font-semibold"
                 >
-                  <Github className="h-4 w-4" />
-                  View on GitHub
+                  <Download className="h-4 w-4" />
+                  Download Resume
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </div>

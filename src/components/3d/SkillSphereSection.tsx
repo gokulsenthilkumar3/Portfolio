@@ -75,7 +75,10 @@ export function SkillSphereSection({
     onSkillSelect?.(skill)
   }
 
-  const proficiencyPercent = (level: string) => {
+  const proficiencyPercent = (level: number | string) => {
+    if (typeof level === 'number') {
+      return (level / 5) * 100
+    }
     switch (level?.toLowerCase()) {
       case 'expert': return 95
       case 'advanced': return 80
@@ -106,7 +109,9 @@ export function SkillSphereSection({
             <div className="flex items-center gap-2 mb-1">
               <span className="text-primary font-semibold text-lg">{selectedSkill.name}</span>
               <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full capitalize">
-                {selectedSkill.proficiency}
+                {typeof selectedSkill.proficiency === 'number' 
+                  ? ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced', 'Expert'][selectedSkill.proficiency] || 'Unknown'
+                  : selectedSkill.proficiency}
               </span>
               {selectedSkill.category && (
                 <span className="text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-muted/30 capitalize">

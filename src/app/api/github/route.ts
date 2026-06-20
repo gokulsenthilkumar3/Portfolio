@@ -47,15 +47,29 @@ export async function GET() {
         topics: r.topics || [],
       }))
 
-    // Contribution data from events (last 90 days)
-    const now = new Date()
-    const contributionMap: Record<string, number> = {}
-    events.forEach((event: any) => {
-      const date = event.created_at?.substring(0, 10)
-      if (date) {
-        contributionMap[date] = (contributionMap[date] || 0) + 1
+    // Contribution data from GitHub HTML (full year)
+    let contributionMap: Record<string, number> = {}
+    try {
+      const contribHtml = await fetch(`https://github.com/${GITHUB_USERNAME}/contributions`).then(r => r.text())
+      // Use data-date and data-level directly from the td elements
+      const cellRegex = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*?data-level="(\d)"/g
+      let match
+      while ((match = cellRegex.exec(contribHtml)) !== null) {
+        const date = match[1]
+        const level = parseInt(match[2], 10)
+        // Map levels to approximate counts to simulate the heatmap intensity
+        contributionMap[date] = level === 0 ? 0 : level === 1 ? 2 : level === 2 ? 5 : level === 3 ? 10 : 20
       }
-    })
+    } catch (err) {
+      console.error('Error fetching contributions HTML', err)
+      // Fallback to events
+      events.forEach((event: any) => {
+        const date = event.created_at?.substring(0, 10)
+        if (date) {
+          contributionMap[date] = (contributionMap[date] || 0) + 1
+        }
+      })
+    }
 
     // Language stats
     const langMap: Record<string, number> = {}

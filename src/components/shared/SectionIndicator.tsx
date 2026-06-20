@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
+import { useThemeStore } from '@/lib/hooks/use-theme'
 
 interface Section {
   id: string
@@ -43,19 +44,15 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
     element?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const { layout } = useThemeStore()
+
+  if (!layout.showIndicators) return null
+
   return (
     <div className={cn('fixed right-4 top-1/2 transform -translate-y-1/2 z-40', className)}>
       <div className="flex flex-col gap-3">
         {sections.map((section) => (
           <div key={section.id} className="group relative flex items-center justify-end">
-            {/* Tooltip label */}
-            <motion.span
-              initial={{ opacity: 0, x: 8 }}
-              whileHover={{ opacity: 1, x: 0 }}
-              className="absolute right-8 bg-background/90 backdrop-blur-sm border border-border/60 text-xs px-2 py-1 rounded-md text-foreground whitespace-nowrap pointer-events-none shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              {section.label}
-            </motion.span>
             {/* Dot */}
             <button
               onClick={() => scrollToSection(section.id)}
@@ -73,14 +70,13 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
                 whileTap={{ scale: 0.9 }}
               />
               <div className={cn(
-                "absolute right-6 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap pointer-events-none",
-                activeSection === section.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                "absolute right-6 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap pointer-events-none opacity-100"
               )}>
                 <span className={cn(
-                  "px-2 py-1 rounded text-xs transition-colors",
+                  "px-2 py-1 rounded text-xs transition-colors shadow-sm",
                   activeSection === section.id 
                     ? "bg-primary text-primary-foreground font-semibold" 
-                    : "bg-background/80 text-foreground border border-border backdrop-blur-sm"
+                    : "bg-background/80 text-foreground border border-border backdrop-blur-sm opacity-60 group-hover:opacity-100"
                 )}>
                   {section.label}
                 </span>

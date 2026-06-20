@@ -11,6 +11,7 @@ export function ContactSection({
   linkedin = 'https://linkedin.com/in/gokulsenthilkumar3',
   github = 'https://github.com/gokulsenthilkumar3',
   twitter,
+  emailZoho,
 }: {
   heading?: string
   desc?: string
@@ -39,6 +40,7 @@ export function ContactSection({
 
   const socials = [
     { icon: Mail, label: 'Email', href: `mailto:${email}`, color: 'text-red-400' },
+    ...(emailZoho ? [{ icon: Mail, label: 'Zoho Mail', href: `mailto:${emailZoho}`, color: 'text-indigo-400' }] : []),
     { icon: Github, label: 'GitHub', href: github || 'https://github.com/gokulsenthilkumar3', color: 'text-gray-300' },
     { icon: Linkedin, label: 'LinkedIn', href: linkedin || '#', color: 'text-blue-400' },
     ...(twitter ? [{ icon: Twitter, label: 'Twitter', href: twitter, color: 'text-sky-400' }] : []),
@@ -146,7 +148,7 @@ export function ContactSection({
                   <div>
                     <div className="text-sm font-medium group-hover:text-primary transition-colors">{label}</div>
                     <div className="text-xs text-muted-foreground">
-                      {label === 'Email' ? email : `@gokulsenthilkumar3`}
+                      {label === 'Email' ? email : label === 'Zoho Mail' ? emailZoho : `@gokulsenthilkumar3`}
                     </div>
                   </div>
                 </a>

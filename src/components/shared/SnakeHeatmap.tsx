@@ -40,8 +40,14 @@ export function SnakeHeatmap({ contributions, cols, rows, cellSize, gap }: Snake
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    canvas.width = cols * (cellSize + gap)
-    canvas.height = rows * (cellSize + gap)
+    const dpr = window.devicePixelRatio || 1
+    const w = cols * (cellSize + gap) - gap
+    const h = rows * (cellSize + gap) - gap
+    canvas.width = w * dpr
+    canvas.height = h * dpr
+    canvas.style.width = `${w}px`
+    canvas.style.height = `${h}px`
+    ctx.scale(dpr, dpr)
 
     // Initialize snake in center
     snakeRef.current = [
@@ -146,8 +152,7 @@ export function SnakeHeatmap({ contributions, cols, rows, cellSize, gap }: Snake
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-10"
-      style={{ width: '100%', height: '100%' }}
+      className="absolute top-0 left-0 pointer-events-none z-10"
     />
   )
 }

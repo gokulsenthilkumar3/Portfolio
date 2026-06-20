@@ -61,8 +61,8 @@ const PROFICIENCY_LABELS = ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced'
 function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
   const [imgError, setImgError] = useState(false)
   const slug = ICON_SLUG[skill.id]
-  // Black by default; invert in dark mode to be white
-  const iconUrl = slug ? `https://cdn.simpleicons.org/${slug}/000000` : null
+  // Use default brand color
+  const iconUrl = slug ? `https://cdn.simpleicons.org/${slug}` : null
   const pct = (skill.proficiency / 5) * 100
 
   return (
@@ -75,9 +75,9 @@ function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
       {/* Brand logo container */}
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-                   border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5
+                   border border-black/10 dark:border-white/10 bg-white dark:bg-white/5
                    transition-all duration-300
-                   group-hover:border-black/20 dark:group-hover:border-white/25 group-hover:bg-black/10 dark:group-hover:bg-white/10"
+                   group-hover:border-black/20 dark:group-hover:border-white/25 group-hover:bg-gray-50 dark:group-hover:bg-white/10"
       >
         {iconUrl && !imgError ? (
           <Image
@@ -85,7 +85,7 @@ function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
             alt={`${skill.name} icon`}
             width={18}
             height={18}
-            className="transition-all duration-300 opacity-70 group-hover:opacity-100 dark:invert"
+            className="transition-all duration-300 opacity-90 group-hover:opacity-100 group-hover:scale-110"
             onError={() => setImgError(true)}
             unoptimized
           />

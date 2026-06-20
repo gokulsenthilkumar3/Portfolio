@@ -428,7 +428,7 @@ function GTAGame({ onClose }: GTAGameProps) {
     >
       <div className="relative">
         <div className="absolute -top-10 left-0 right-0 flex items-center justify-between px-2">
-          <span className="text-sm font-bold text-[#e94560] font-mono tracking-wider">⚡ GTA: DEV CITY</span>
+          <span className="text-sm font-bold text-[#e94560] font-mono tracking-wider">⚡ GTA: COMMIT CITY</span>
           <button onClick={onClose} className="text-white hover:text-red-400 transition-colors">
             <X size={20} />
           </button>
@@ -568,7 +568,7 @@ function ContributionHeatmap({ contributions, createdAt }: { contributions: Reco
                 cols={weeks.length}
                 rows={7}
                 cellSize={12}
-                gap={3}
+                gap={4}
               />
             )}
 
@@ -757,7 +757,7 @@ export function GitHubSection() {
                     ❓ How to Play
                   </summary>
                   <div className="mt-2 p-3 rounded-lg bg-black/60 border border-[#e94560]/30 text-left space-y-1">
-                    <p className="font-bold text-[#e94560] text-[11px] mb-2">🎮 GTA: Dev City - Controls</p>
+                    <p className="font-bold text-[#e94560] text-[11px] mb-2">🎮 GTA: COMMIT CITY - Controls</p>
                     <p>🔼 <span className="text-white">WASD / Arrow Keys</span> — Move your car</p>
                     <p>💥 <span className="text-white">Space / F</span> — Shoot</p>
                     <p>⭐ <span className="text-white">Eliminate enemies</span> to gain score</p>

@@ -214,21 +214,22 @@ import { Check } from 'lucide-react'
 
 
 function LayoutContent() {
+  const { layout, updateLayout } = useThemeStore()
   return (
     <div className="space-y-4">
       <h3 className="font-medium">Layout Options</h3>
       <div className="space-y-3">
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Compact Mode</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={layout.compactMode} onChange={(e) => updateLayout({ compactMode: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Show Section Indicators</span>
-          <input type="checkbox" className="toggle" defaultChecked />
+          <input type="checkbox" className="toggle" checked={layout.showIndicators} onChange={(e) => updateLayout({ showIndicators: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Progress Bar</span>
-          <input type="checkbox" className="toggle" defaultChecked />
+          <input type="checkbox" className="toggle" checked={layout.progressBar} onChange={(e) => updateLayout({ progressBar: e.target.checked })} />
         </label>
       </div>
     </div>
@@ -236,21 +237,22 @@ function LayoutContent() {
 }
 
 function PerformanceContent() {
+  const { performance, updatePerformance } = useThemeStore()
   return (
     <div className="space-y-4">
       <h3 className="font-medium">Performance</h3>
       <div className="space-y-3">
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Reduce Animations</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={performance.reduceAnimations} onChange={(e) => updatePerformance({ reduceAnimations: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Disable 3D Elements</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={performance.disable3D} onChange={(e) => updatePerformance({ disable3D: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Simplified Theme</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={performance.simplifiedTheme} onChange={(e) => updatePerformance({ simplifiedTheme: e.target.checked })} />
         </label>
       </div>
     </div>
@@ -258,21 +260,22 @@ function PerformanceContent() {
 }
 
 function AccessibilityContent() {
+  const { accessibility, updateAccessibility } = useThemeStore()
   return (
     <div className="space-y-4">
       <h3 className="font-medium">Accessibility</h3>
       <div className="space-y-3">
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">High Contrast</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={accessibility.highContrast} onChange={(e) => updateAccessibility({ highContrast: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Larger Click Targets</span>
-          <input type="checkbox" className="toggle" />
+          <input type="checkbox" className="toggle" checked={accessibility.largerClickTargets} onChange={(e) => updateAccessibility({ largerClickTargets: e.target.checked })} />
         </label>
-        <label className="flex items-center justify-between">
+        <label className="flex items-center justify-between cursor-pointer">
           <span className="text-sm">Focus Indicators</span>
-          <input type="checkbox" className="toggle" defaultChecked />
+          <input type="checkbox" className="toggle" checked={accessibility.focusIndicators} onChange={(e) => updateAccessibility({ focusIndicators: e.target.checked })} />
         </label>
       </div>
     </div>

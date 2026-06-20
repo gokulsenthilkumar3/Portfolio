@@ -38,36 +38,50 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
 
     switch (trimmed) {
       case 'help':
-        output = 'Available commands:\n  whoami   - Display bio\n  skills   - List core skills\n  projects - Show top projects\n  insights - View portfolio insights\n  contact  - Get contact info\n  clear    - Clear terminal\n  exit     - Close terminal'
+        output = 'Available commands:\n  whoami   - Display bio\n  skills   - List core skills\n  projects - Show top projects\n  insights - View portfolio insights\n  contact  - Get contact info\n  github   - View GitHub stats\n  date     - Show current date/time\n  echo     - Print text\n  sudo     - Root access\n  clear    - Clear terminal\n  exit     - Close terminal'
         break
       case 'whoami':
-        output = 'Gokul Senthilkumar\nSDET & DevOps Enthusiast\nPassionate about Test Automation and CI/CD.'
+        output = 'Gokul Senthilkumar\nSDET & Full-Stack Developer\nPassionate about Test Automation, CI/CD, and scalable web apps.'
         break
       case 'skills':
-        output = 'Core competencies:\n- Testing: Selenium, Playwright, K6, Cypress\n- Frontend: React, Next.js, Tailwind\n- Backend: Node.js, PostgreSQL\n- DevOps: Docker, Git, Azure DevOps'
+        output = 'Core competencies:\n- Testing: Selenium, Playwright, K6, Cypress, Appium\n- Frontend: React, Next.js, Tailwind, 3D WebGL\n- Backend: Node.js, PostgreSQL, MongoDB\n- DevOps: Docker, Git, Azure DevOps, CI/CD'
         break
       case 'projects':
-        output = '1. QA Auto Framework - A comprehensive E2E automation solution.\n2. Cloud API Tester - A scalable microservices testing tool.'
+        output = '1. QA Auto Framework - A comprehensive E2E automation solution.\n2. Cloud API Tester - A scalable microservices testing tool.\n3. Portfolio - This interactive 3D portfolio.'
         break
       case 'insights':
         output = (
-          <div className="text-yellow-400 font-mono">
+          <div className="text-purple-400 font-mono">
             {`
-╔════════════════════════════════════════╗
-║           PORTFOLIO INSIGHTS           ║
-╠════════════════════════════════════════╣
-║  • Total Projects : 6 Active           ║
-║  • Top Language   : TypeScript         ║
-║  • UI Framework   : Next.js + React    ║
-║  • Total Skills   : 25+ Evaluated      ║
-║  • Status         : Open for Work      ║
-╚════════════════════════════════════════╝
+┌────────────────────────────────────────┐
+│           PORTFOLIO INSIGHTS           │
+├────────────────────────────────────────┤
+│  • Total Projects : 10+ Delivered      │
+│  • Top Language   : TypeScript         │
+│  • UI Framework   : Next.js + React    │
+│  • Total Skills   : 25+ Evaluated      │
+│  • Status         : Open for Work      │
+│  • Easter Eggs    : Found 1 of 3       │
+└────────────────────────────────────────┘
             `}
           </div>
         )
         break
+      case 'github':
+        output = (
+          <div className="text-green-400 font-mono">
+            Fetching GitHub data via API...\n
+            <span className="text-white">User:</span> gokulsenthilkumar3\n
+            <span className="text-white">Status:</span> 1,100+ contributions in the last year\n
+            <span className="text-white">Top Langs:</span> TypeScript, JavaScript, Python
+          </div>
+        )
+        break
       case 'contact':
-        output = 'Email: gokulsenthilkumar3@gmail.com\nLinkedIn: in/gokul-senthilkumar-5a8183201\nGitHub: github.com/gokulsenthilkumar3'
+        output = 'Email: gokulsenthilkumar3@gmail.com\nLinkedIn: linkedin.com/in/gokul-senthilkumar-5a8183201\nGitHub: github.com/gokulsenthilkumar3\nTwitter: @GokulKangeyanS'
+        break
+      case 'date':
+        output = new Date().toString()
         break
       case 'clear':
         setHistory([])
@@ -77,10 +91,18 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
         onClose()
         return
       case 'sudo':
-        output = 'Nice try. This incident will be reported.'
+        output = <span className="text-red-500">Access denied. This incident will be reported to the administrator.</span>
+        break
+      case 'rm -rf /':
+      case 'sudo rm -rf /':
+        output = <span className="text-red-500 animate-pulse">NICE TRY! System lock initiated... Just kidding.</span>
         break
       default:
-        output = `Command not found: ${trimmed}. Type 'help' to see available commands.`
+        if (trimmed.startsWith('echo ')) {
+          output = trimmed.substring(5)
+        } else {
+          output = `Command not found: ${trimmed}. Type 'help' to see available commands.`
+        }
     }
 
     setHistory((prev) => [...prev, { command: cmd, output }])
@@ -108,10 +130,14 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-2xl bg-[#1e1e1e] rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col h-[60vh] max-h-[600px]"
+            drag
+            dragConstraints={{ left: -200, right: 200, top: -200, bottom: 200 }}
+            dragElastic={0.1}
+            dragMomentum={false}
+            initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
+            animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+            exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
+            className="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-2xl bg-[#1e1e1e] rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col h-[60vh] max-h-[600px] cursor-move"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] border-b border-white/5 select-none">
