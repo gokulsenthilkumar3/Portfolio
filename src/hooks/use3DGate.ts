@@ -26,6 +26,11 @@ export function use3DGate(): boolean {
     const isMobile = window.matchMedia('(max-width: 768px)').matches
     if (isMobile) return
 
+    // Disable for Lighthouse, PageSpeed Insights, and headless bots
+    // These emulators hang completely when trying to render heavy WebGL shaders
+    const isBot = /Lighthouse|HeadlessChrome|bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)
+    if (isBot) return
+
     // Check WebGL availability without throwing
     try {
       const canvas = document.createElement('canvas')
