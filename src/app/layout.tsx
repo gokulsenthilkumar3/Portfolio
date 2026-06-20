@@ -55,6 +55,8 @@ const sections = [
   { id: 'contact', label: 'Contact' }
 ]
 
+import { LiquidTransitions } from '@/components/effects/LiquidTransitions'
+
 export default function RootLayout({
   children,
 }: {
@@ -63,7 +65,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Boska (display) + Satoshi (body) via Fontshare */}
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
@@ -72,13 +73,13 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ThemeProvider>
           <AdminClientWrapper>
+            <LiquidTransitions />
             <ProgressBar />
             <Navigation />
             <main>{children}</main>
             <Footer />
             <ScrollToTop />
             <SectionIndicator sections={sections} />
-
           </AdminClientWrapper>
         </ThemeProvider>
       </body>

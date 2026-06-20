@@ -77,10 +77,10 @@ export default function Home() {
       )}
 
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
-      <Section id="home" className="min-h-screen flex items-center relative overflow-hidden">
+      <section id="home" className="min-h-screen flex items-center relative overflow-hidden bg-background">
         <div className="absolute inset-0 z-0">
-          {/* Overlay adapts: semi-transparent in dark, lighter in light mode */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/20 z-10 pointer-events-none" />
+          {/* Overlay adapts: semi-transparent in dark, much lighter in light mode */}
+          <div className="absolute inset-0 bg-gradient-to-b dark:from-background/80 dark:via-background/50 dark:to-background/20 from-background/40 via-background/20 to-transparent z-10 pointer-events-none" />
           <HeroScene className="w-full h-full" />
         </div>
 
@@ -88,7 +88,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
 
             <AnimatedSection animation="fadeIn" delay={0.1}>
-              <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-md text-primary uppercase tracking-widest">
+              <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-md text-primary uppercase tracking-widest drop-shadow-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -99,7 +99,7 @@ export default function Home() {
 
             <AnimatedSection animation="slideUp" delay={0.3}>
               {/* First name: theme-aware foreground; last name: gradient accent */}
-              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display drop-shadow-xl dark:drop-shadow-none">
                 <span className="text-foreground">
                   {currentPersonal.name.split(' ')[0]}
                 </span>
@@ -179,7 +179,7 @@ export default function Home() {
         
         {/* Terminal Modal */}
         <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
-      </Section>
+      </section>
 
       {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">

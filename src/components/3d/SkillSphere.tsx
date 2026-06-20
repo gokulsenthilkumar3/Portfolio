@@ -257,7 +257,6 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
         style={{ cursor: hoveredSkill ? 'pointer' : 'grab' }}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={['transparent']} />
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} intensity={1.2} color="#818cf8" />
         <pointLight position={[-10, -5, -10]} intensity={0.5} color="#34d399" />

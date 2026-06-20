@@ -29,10 +29,11 @@ export function BlogSection({ posts }: { posts: BlogPost[] }) {
           {posts.map((post, i) => (
             <AnimatedSection key={post.id} animation="slideUp" delay={0.1 * i}>
               <Card 
-                className="h-full flex flex-col hover:shadow-xl transition-all duration-300 group border-border/60 hover:border-primary/30 cursor-pointer overflow-hidden"
+                className="relative h-full flex flex-col transition-all duration-300 group cursor-pointer overflow-hidden rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)]"
                 onClick={() => setSelectedPost(post)}
               >
-                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 relative z-10">
                   <ChevronRight className="text-primary" />
                 </div>
                 

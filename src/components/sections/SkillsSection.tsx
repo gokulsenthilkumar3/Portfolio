@@ -127,8 +127,9 @@ function CategoryCard({
   return (
     <AnimatedSection
       delay={groupIndex * 0.08}
-      className="rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm p-5"
+      className="relative rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden group"
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold tracking-wide uppercase" style={{ color: meta.accent }}>
           {meta.label}

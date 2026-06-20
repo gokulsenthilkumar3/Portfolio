@@ -60,8 +60,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
         className="h-full"
       >
-        <Card className="h-full flex flex-col group hover:border-primary/50 transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.05)] bg-card/60 backdrop-blur-sm">
-          <CardContent className="flex flex-col h-full pt-5" style={{ transform: "translateZ(30px)" }}>
+        <Card className="h-full flex flex-col group transition-all duration-500 bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_30px_60px_-15px_rgba(139,92,246,0.3)] hover:-translate-y-2">
+          {/* Inner ambient glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <CardContent className="flex flex-col h-full pt-6 px-6 relative z-10" style={{ transform: "translateZ(40px)" }}>
             <div className="flex-1 space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 
 interface AnimatedSectionProps {
@@ -94,21 +94,18 @@ export function AnimatedSection({
 
   return (
     <div ref={ref} className={cn('relative', className)}>
-      <AnimatePresence>
         <motion.div
           variants={getAnimationVariants()}
           initial="hidden"
           animate={isVisible ? 'visible' : 'hidden'}
-          exit="hidden"
           transition={{
-            duration,
+            duration: duration * 1.2, // Slightly longer but snappier ease
             delay,
-            ease: 'easeOut'
+            ease: [0.16, 1, 0.3, 1] // Custom apple-like snappy ease
           }}
         >
           {children}
         </motion.div>
-      </AnimatePresence>
     </div>
   )
 }

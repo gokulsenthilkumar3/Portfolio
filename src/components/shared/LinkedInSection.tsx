@@ -24,7 +24,7 @@ export function LinkedInSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="rounded-2xl border border-white/8 bg-[#0a66c2]/5 backdrop-blur-xl p-6 relative overflow-hidden"
+        className="rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] group"
       >
         <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
           <Linkedin size={120} />
@@ -81,7 +81,8 @@ export function LinkedInSection() {
                   
                   <div className="absolute left-0 md:static mt-1 md:mt-0 z-10 w-4 h-4 rounded-full bg-[#0a66c2] border-4 border-background flex items-center justify-center shadow-[0_0_10px_rgba(10,102,194,0.5)] shrink-0" />
                   
-                  <Card className="flex-1 border-white/8 bg-white/3 backdrop-blur-sm hover:border-[#0a66c2]/30 transition-colors">
+                  <Card className="flex-1 relative border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:border-[#0a66c2]/30 transition-colors rounded-3xl overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0a66c2]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     <CardContent className="p-5">
                       <div className="md:hidden text-xs text-muted-foreground mb-2">
                         {formatDate(exp.period.start)} - 
@@ -140,7 +141,8 @@ export function LinkedInSection() {
                   
                   <div className="absolute left-0 md:static mt-1 md:mt-0 z-10 w-4 h-4 rounded-full bg-muted-foreground border-4 border-background flex items-center justify-center shrink-0" />
                   
-                  <Card className="flex-1 border-white/8 bg-white/3 backdrop-blur-sm">
+                  <Card className="flex-1 relative border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     <CardContent className="p-5">
                       <div className="md:hidden text-xs text-muted-foreground mb-2">
                         {formatDate(edu.period.start)} – {edu.period.present ? 'Present' : formatDate(edu.period.end ?? '')}

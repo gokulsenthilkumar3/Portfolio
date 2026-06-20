@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Github, Star, GitFork, Users, BookOpen, Code2, Activity, ExternalLink, TrendingUp, Gamepad2, X } from 'lucide-react'
-import { SnakeHeatmap } from './SnakeHeatmap'
+
 
 interface GitHubData {
   profile: {
@@ -428,7 +428,7 @@ function GTAGame({ onClose }: GTAGameProps) {
     >
       <div className="relative">
         <div className="absolute -top-10 left-0 right-0 flex items-center justify-between px-2">
-          <span className="text-sm font-bold text-[#e94560] font-mono tracking-wider">⚡ GTA: COMMIT CITY</span>
+          <span className="text-sm font-bold text-[#e94560] font-mono tracking-wider">⚡ COMMIT CITY</span>
           <button onClick={onClose} className="text-white hover:text-red-400 transition-colors">
             <X size={20} />
           </button>
@@ -482,12 +482,12 @@ function ContributionHeatmap({ contributions, createdAt }: { contributions: Reco
   const WEEK_SIZE = 7
 
   const getColor = (count: number) => {
-    if (count === 0) return 'rgba(99,102,241,0.08)'
+    if (count === 0) return 'rgba(150,150,150,0.1)'
     const intensity = count / max
-    if (intensity < 0.25) return 'rgba(99,102,241,0.25)'
-    if (intensity < 0.5) return 'rgba(99,102,241,0.5)'
-    if (intensity < 0.75) return 'rgba(99,102,241,0.75)'
-    return 'rgba(99,102,241,1)'
+    if (intensity < 0.25) return 'rgba(52, 199, 89, 0.4)'
+    if (intensity < 0.5) return 'rgba(52, 199, 89, 0.6)'
+    if (intensity < 0.75) return 'rgba(52, 199, 89, 0.8)'
+    return 'rgba(52, 199, 89, 1)'
   }
 
   const weeks: { date: string; count: number }[][] = []
@@ -554,39 +554,18 @@ function ContributionHeatmap({ contributions, createdAt }: { contributions: Reco
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: Math.min((wi * 7 + di) * 0.002, 0.8), duration: 0.3 }}
                   title={`${cell.date}: ${cell.count} contributions`}
-                  className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-125 hover:z-20 relative"
+                  className="w-3 h-3 rounded-[3px] cursor-pointer transition-all hover:scale-125 hover:z-20 relative shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
                   style={{ backgroundColor: getColor(cell.count) }}
                 />
               ))}
             </div>
           ))}
         </div>
-                    {/* Snake animation - slithers across contribution grid */}
-            {viewMode === '12weeks' && (
-              <SnakeHeatmap
-                contributions={contributions}
-                cols={weeks.length}
-                rows={7}
-                cellSize={12}
-                gap={4}
-              />
-            )}
-
-        {/* Snake hover overlay (12 weeks mode only) */}
-        {viewMode === '12weeks' && (
-          <div className="absolute inset-0 z-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-            <motion.div
-              className="absolute w-3 h-3 rounded-sm bg-primary blur-[2px] shadow-[0_0_15px_rgba(99,102,241,0.8)]"
-              animate={{ x: [0, 200, 200, 400, 400, 600, 600, 0], y: [0, 0, 40, 40, 80, 80, 0, 0] }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-            />
-          </div>
-        )}
 
         <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
           <span>Less</span>
-          {[0.08, 0.25, 0.5, 0.75, 1].map((o, i) => (
-            <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: `rgba(99,102,241,${o})` }} />
+          {['rgba(150,150,150,0.1)', 'rgba(52, 199, 89, 0.4)', 'rgba(52, 199, 89, 0.6)', 'rgba(52, 199, 89, 0.8)', 'rgba(52, 199, 89, 1)'].map((color, i) => (
+            <div key={i} className="w-3 h-3 rounded-[3px] shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)] border border-black/5 dark:border-white/5" style={{ backgroundColor: color }} />
           ))}
           <span>More</span>
         </div>
@@ -728,7 +707,7 @@ export function GitHubSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-xl p-6"
+          className="relative rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden"
         >
           <div className="flex items-center justify-between gap-2 mb-5">
             <div className="flex items-center gap-2">
@@ -745,11 +724,11 @@ export function GitHubSection() {
               onClick={() => setGameOpen(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title="Play GTA: Dev City"
+              title="Play Commit City"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#e94560]/40 bg-[#e94560]/10 text-[#e94560] text-[10px] font-bold font-mono tracking-wider hover:bg-[#e94560]/20 transition-all"
             >
               <Gamepad2 size={12} />
-              GTA MODE
+              COMMIT CITY
             </motion.button>
                 {/* GTA How To Play - collapsible details */}
                 <details className="text-[10px] text-[#e94560]/70 cursor-pointer">
@@ -757,7 +736,7 @@ export function GitHubSection() {
                     ❓ How to Play
                   </summary>
                   <div className="mt-2 p-3 rounded-lg bg-black/60 border border-[#e94560]/30 text-left space-y-1">
-                    <p className="font-bold text-[#e94560] text-[11px] mb-2">🎮 GTA: COMMIT CITY - Controls</p>
+                    <p className="font-bold text-[#e94560] text-[11px] mb-2">🎮 COMMIT CITY - Controls</p>
                     <p>🔼 <span className="text-white">WASD / Arrow Keys</span> — Move your car</p>
                     <p>💥 <span className="text-white">Space / F</span> — Shoot</p>
                     <p>⭐ <span className="text-white">Eliminate enemies</span> to gain score</p>

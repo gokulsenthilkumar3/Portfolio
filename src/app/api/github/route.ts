@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 const GITHUB_USERNAME = 'gokulsenthilkumar3'
 const GITHUB_API = 'https://api.github.com'
 
-// Cache for 10 minutes
+// Cache for 1 minute
 let cache: { data: any; ts: number } | null = null
-const CACHE_TTL = 10 * 60 * 1000
+const CACHE_TTL = 60 * 1000
 
 async function fetchGitHub(path: string) {
   const headers: Record<string, string> = {
@@ -15,7 +15,7 @@ async function fetchGitHub(path: string) {
   if (process.env.GITHUB_TOKEN) {
     headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
   }
-  const res = await fetch(`${GITHUB_API}${path}`, { headers, next: { revalidate: 600 } })
+  const res = await fetch(`${GITHUB_API}${path}`, { headers, next: { revalidate: 60 } })
   if (!res.ok) throw new Error(`GitHub API error: ${res.status}`)
   return res.json()
 }
@@ -50,7 +50,7 @@ export async function GET() {
     // Contribution data from GitHub HTML (full year)
     let contributionMap: Record<string, number> = {}
     try {
-      const contribHtml = await fetch(`https://github.com/${GITHUB_USERNAME}/contributions`).then(r => r.text())
+      const contribHtml = await fetch(`https://github.com/users/${GITHUB_USERNAME}/contributions`).then(r => r.text())
       // Use data-date and data-level directly from the td elements
       const cellRegex = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*?data-level="(\d)"/g
       let match

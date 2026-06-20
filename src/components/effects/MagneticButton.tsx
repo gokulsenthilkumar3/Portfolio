@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useSpring } from 'framer-motion'
 import { useMousePosition } from '@/lib/hooks/use-mouse-position'
 import { cn } from '@/lib/utils/cn'
 
@@ -22,6 +22,9 @@ export function MagneticButton({
   const containerRef = useRef<HTMLDivElement>(null)
   const mousePosition = useMousePosition()
 
+  const x = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 })
+  const y = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 })
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (disabled || !containerRef.current) return
 
@@ -29,16 +32,13 @@ export function MagneticButton({
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
 
-    const deltaX = (mousePosition.x - centerX) * strength
-    const deltaY = (mousePosition.y - centerY) * strength
-
-    containerRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+    x.set((e.clientX - centerX) * strength)
+    y.set((e.clientY - centerY) * strength)
   }
 
   const handleMouseLeave = () => {
-    if (containerRef.current) {
-      containerRef.current.style.transform = 'translate(0, 0)'
-    }
+    x.set(0)
+    y.set(0)
     setIsHovered(false)
   }
 
@@ -46,27 +46,30 @@ export function MagneticButton({
     <motion.div
       ref={containerRef}
       className={cn(
-        'relative transition-transform duration-300 ease-out inline-block',
+        'relative inline-block z-10 group',
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
+      style={{ x, y }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
-      {children}
-      {isHovered && !disabled && (
-        <motion.div
-          className="absolute inset-0 rounded-lg bg-primary/20 pointer-events-none"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.2 }}
-        />
-      )}
+      <div className="relative z-20">
+        {children}
+      </div>
+      <motion.div
+        className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-tr from-primary to-accent blur-md pointer-events-none"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ 
+          opacity: isHovered && !disabled ? 0.5 : 0, 
+          scale: isHovered && !disabled ? 1.1 : 0.8 
+        }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
     </motion.div>
   )
 }

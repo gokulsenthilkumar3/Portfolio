@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 
 export default function NotFound() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -98,7 +99,7 @@ export default function NotFound() {
               404
             </h1>
             <h2 className="text-2xl font-bold mb-4">You&apos;ve wandered off the map.</h2>
-            <p className="text-muted-foreground mb-6">Press Space to play a mini-game while you&apos;re here!</p>
+            <p className="text-muted-foreground mb-6">Play a round of <span className="text-indigo-500 font-bold">Commit City</span> while you&apos;re here! Jump over the Merge Conflicts.</p>
             <button 
               onClick={startGame}
               className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:scale-105 transition-transform"
@@ -126,23 +127,40 @@ export default function NotFound() {
               {/* Ground */}
               <div className="absolute bottom-0 w-full h-12 bg-border/40 border-t-2 border-primary/50" />
 
-              {/* Player (Car/Cube) */}
-              <div
+              {/* Player (Designer Toy / Car) */}
+              <motion.div
                 ref={carRef}
-                className={`absolute left-10 w-10 h-10 bg-gradient-to-br from-primary to-indigo-500 rounded-md shadow-[0_0_20px_rgba(99,102,241,0.6)] ${isJumping ? 'bottom-[120px] transition-all duration-200 ease-out' : 'bottom-12 transition-all duration-300 ease-in'}`}
+                className="absolute left-10 w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-400 border border-white/20 shadow-[inset_0_4px_4px_rgba(255,255,255,0.4),0_10px_20px_rgba(79,70,229,0.4)]"
+                animate={{
+                  y: isJumping ? -100 : 0,
+                  rotate: isJumping ? 180 : 0,
+                  scale: isJumping ? 1.1 : 1
+                }}
+                transition={{
+                  y: { type: "spring", stiffness: 300, damping: 20 },
+                  rotate: { type: "spring", stiffness: 200, damping: 20 }
+                }}
+                style={{ bottom: '48px' }}
               >
-                {/* Wheels */}
-                <div className="absolute -bottom-1.5 left-1 w-3 h-3 bg-zinc-800 rounded-full" />
-                <div className="absolute -bottom-1.5 right-1 w-3 h-3 bg-zinc-800 rounded-full" />
-              </div>
+                {/* Eyes/Visor */}
+                <div className="absolute top-3 right-2 w-6 h-3 bg-white/90 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]" />
+                {/* Wheels/Hover pads */}
+                <div className="absolute -bottom-2 left-1 w-4 h-4 bg-zinc-800 rounded-full shadow-[inset_0_-2px_4px_rgba(255,255,255,0.2)]" />
+                <div className="absolute -bottom-2 right-1 w-4 h-4 bg-zinc-800 rounded-full shadow-[inset_0_-2px_4px_rgba(255,255,255,0.2)]" />
+              </motion.div>
 
               {/* Obstacle */}
-              <div
+              <motion.div
                 ref={obstacleRef}
-                className="absolute bottom-12 w-8 h-12 bg-rose-500 rounded-t-md shadow-[0_0_20px_rgba(244,63,94,0.4)]"
-                style={{
-                  animation: isPlaying ? 'moveLeft 1.5s infinite linear' : 'none',
-                  right: isPlaying ? '-50px' : '20%',
+                className="absolute bottom-12 w-10 h-14 bg-gradient-to-tr from-rose-600 to-rose-400 rounded-t-xl shadow-[inset_0_4px_4px_rgba(255,255,255,0.4),0_10px_20px_rgba(225,29,72,0.4)]"
+                initial={{ x: '100vw' }}
+                animate={isPlaying ? { x: '-20vw' } : { x: '100vw' }}
+                transition={{
+                  x: {
+                    repeat: isPlaying ? Infinity : 0,
+                    duration: Math.max(0.8, 1.5 - score * 0.05), // Speeds up as score increases
+                    ease: "linear"
+                  }
                 }}
               />
 
