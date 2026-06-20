@@ -60,8 +60,16 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
               />
-              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                <span className="bg-primary text-primary-foreground px-2 py-1 rounded text-xs">
+              <div className={cn(
+                "absolute right-6 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap pointer-events-none",
+                activeSection === section.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              )}>
+                <span className={cn(
+                  "px-2 py-1 rounded text-xs transition-colors",
+                  activeSection === section.id 
+                    ? "bg-primary text-primary-foreground font-semibold" 
+                    : "bg-background/80 text-foreground border border-border backdrop-blur-sm"
+                )}>
                   {section.label}
                 </span>
               </div>

@@ -38,7 +38,7 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
 
     switch (trimmed) {
       case 'help':
-        output = 'Available commands:\n  whoami   - Display bio\n  skills   - List core skills\n  projects - Show top projects\n  contact  - Get contact info\n  clear    - Clear terminal\n  exit     - Close terminal'
+        output = 'Available commands:\n  whoami   - Display bio\n  skills   - List core skills\n  projects - Show top projects\n  insights - View portfolio insights\n  contact  - Get contact info\n  clear    - Clear terminal\n  exit     - Close terminal'
         break
       case 'whoami':
         output = 'Gokul Senthilkumar\nSDET & DevOps Enthusiast\nPassionate about Test Automation and CI/CD.'
@@ -48,6 +48,23 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
         break
       case 'projects':
         output = '1. QA Auto Framework - A comprehensive E2E automation solution.\n2. Cloud API Tester - A scalable microservices testing tool.'
+        break
+      case 'insights':
+        output = (
+          <div className="text-yellow-400 font-mono">
+            {`
+╔════════════════════════════════════════╗
+║           PORTFOLIO INSIGHTS           ║
+╠════════════════════════════════════════╣
+║  • Total Projects : 6 Active           ║
+║  • Top Language   : TypeScript         ║
+║  • UI Framework   : Next.js + React    ║
+║  • Total Skills   : 25+ Evaluated      ║
+║  • Status         : Open for Work      ║
+╚════════════════════════════════════════╝
+            `}
+          </div>
+        )
         break
       case 'contact':
         output = 'Email: gokulsenthilkumar3@gmail.com\nLinkedIn: in/gokul-senthilkumar-5a8183201\nGitHub: github.com/gokulsenthilkumar3'

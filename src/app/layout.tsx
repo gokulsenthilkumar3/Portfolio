@@ -48,8 +48,9 @@ export const metadata: Metadata = {
 const sections = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
-  { id: 'projects', label: 'Projects' },
   { id: 'skills', label: 'Skills' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'insights', label: 'Insights' },
   { id: 'contact', label: 'Contact' }
 ]
 

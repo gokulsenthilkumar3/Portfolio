@@ -52,7 +52,7 @@ const LANG_COLORS: Record<string, string> = {
 }
 
 function ContributionHeatmap({ contributions }: { contributions: Record<string, number> }) {
-  const days = 84 // 12 weeks
+  const days = 119 // 17 weeks * 7 days
   const today = new Date()
   const cells: { date: string; count: number }[] = []
   
@@ -65,73 +65,82 @@ function ContributionHeatmap({ contributions }: { contributions: Record<string, 
 
   const max = Math.max(...cells.map(c => c.count), 1)
 
-  const getColor = (count: number) => {
-    if (count === 0) return 'rgba(99,102,241,0.08)'
+  const getColorClass = (count: number) => {
+    if (count === 0) return 'bg-white/5 border-white/5'
     const intensity = count / max
-    if (intensity < 0.25) return 'rgba(99,102,241,0.25)'
-    if (intensity < 0.5) return 'rgba(99,102,241,0.5)'
-    if (intensity < 0.75) return 'rgba(99,102,241,0.75)'
-    return 'rgba(99,102,241,1)'
+    if (intensity < 0.25) return 'bg-primary/30 border-primary/20'
+    if (intensity < 0.5) return 'bg-primary/50 border-primary/40'
+    if (intensity < 0.75) return 'bg-primary/70 border-primary/60'
+    return 'bg-primary border-primary/80 shadow-[0_0_8px_rgba(99,102,241,0.6)]'
   }
 
   const weeks = []
-  for (let w = 0; w < 12; w++) {
+  for (let w = 0; w < 17; w++) {
     weeks.push(cells.slice(w * 7, w * 7 + 7))
   }
 
+  // Snake path animation across the top of the grid
+  const snakePathX = [0, 100, 100, 250, 250, 400, 400, 0]
+  const snakePathY = [0, 0, 40, 40, 80, 80, 0, 0]
+
   return (
-    <div className="overflow-x-auto relative group pb-4">
-      <div className="flex gap-1 min-w-max relative z-10">
+    <div className="overflow-hidden relative group pb-4">
+      <div className="flex gap-[6px] relative z-10 p-1">
         {weeks.map((week, wi) => (
-          <div key={wi} className="flex flex-col gap-1">
+          <div key={wi} className="flex flex-col gap-[6px]">
             {week.map((cell, di) => (
               <motion.div
                 key={cell.date}
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: (wi * 7 + di) * 0.004, duration: 0.3 }}
+                transition={{ delay: (wi * 7 + di) * 0.002, duration: 0.4, type: "spring" }}
                 title={`${cell.date}: ${cell.count} events`}
-                className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-125 hover:z-20 relative"
-                style={{ backgroundColor: getColor(cell.count) }}
+                className={`w-[14px] h-[14px] rounded-[3px] border ${getColorClass(cell.count)} cursor-pointer transition-all duration-300 hover:scale-150 hover:z-20 relative`}
               />
             ))}
           </div>
         ))}
       </div>
       
-      {/* Snake Animation Overlay */}
-      <div className="absolute inset-0 z-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+      {/* Sleek Snake Animation Overlay */}
+      <div className="absolute inset-0 z-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+        {/* Snake Head */}
         <motion.div
-          className="absolute w-3 h-3 rounded-sm bg-primary blur-[2px] shadow-[0_0_15px_rgba(99,102,241,0.8)]"
+          className="absolute w-[14px] h-[14px] rounded-[3px] bg-primary z-10 shadow-[0_0_20px_rgba(99,102,241,1)]"
           animate={{
-            x: [0, 200, 200, 400, 400, 600, 600, 0],
-            y: [0, 0, 40, 40, 80, 80, 0, 0],
+            x: [0, 300, 300, 600, 600, 900, 900, 0],
+            y: [0, 0, 60, 60, 120, 120, 0, 0],
           }}
           transition={{
-            duration: 10,
+            duration: 12,
             repeat: Infinity,
             ease: "linear"
           }}
         />
+        {/* Snake Body Trail */}
         <motion.div
-          className="absolute w-12 h-1 bg-gradient-to-r from-transparent to-primary blur-[1px]"
+          className="absolute w-[100px] h-[14px] bg-gradient-to-r from-transparent via-primary/50 to-primary rounded-full blur-[2px]"
           animate={{
-            x: [-48, 152, 152, 352, 352, 552, 552, -48],
-            y: [4, 4, 44, 44, 84, 84, 4, 4],
+            x: [-100, 200, 200, 500, 500, 800, 800, -100],
+            y: [0, 0, 60, 60, 120, 120, 0, 0],
           }}
           transition={{
-            duration: 10,
+            duration: 12,
             repeat: Infinity,
             ease: "linear"
           }}
         />
       </div>
 
-      <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 mt-4 text-xs font-medium text-muted-foreground">
         <span>Less</span>
-        {[0.08, 0.25, 0.5, 0.75, 1].map((o, i) => (
-          <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: `rgba(99,102,241,${o})` }} />
-        ))}
+        <div className="flex gap-[4px]">
+          <div className="w-[14px] h-[14px] rounded-[3px] bg-white/5 border border-white/5" />
+          <div className="w-[14px] h-[14px] rounded-[3px] bg-primary/30 border border-primary/20" />
+          <div className="w-[14px] h-[14px] rounded-[3px] bg-primary/50 border border-primary/40" />
+          <div className="w-[14px] h-[14px] rounded-[3px] bg-primary/70 border border-primary/60" />
+          <div className="w-[14px] h-[14px] rounded-[3px] bg-primary border border-primary/80 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+        </div>
         <span>More</span>
       </div>
     </div>

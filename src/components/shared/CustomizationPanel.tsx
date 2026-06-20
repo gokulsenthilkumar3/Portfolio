@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useThemeStore } from '@/lib/hooks/use-theme'
 import { themes, Theme } from '@/lib/design-system'
 import { Settings, X, Palette, Layout, Zap, Eye, RotateCcw } from 'lucide-react'
+import { Tabs } from '@/components/ui/Tabs'
 
 interface CustomizationPanelProps {
   className?: string
@@ -82,25 +83,22 @@ export function CustomizationPanel({ className }: CustomizationPanelProps) {
               </div>
 
               {/* Tabs */}
-              <div className="flex p-2 gap-1 bg-black/20 mx-4 my-4 rounded-xl border border-white/5">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon
-                  const isActive = activeTab === tab.id
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]'
-                          : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span className="hidden sm:inline">{tab.label}</span>
-                    </button>
-                  )
-                })}
+              <div className="px-4 py-4">
+                <Tabs
+                  tabs={tabs.map(t => ({
+                    id: t.id,
+                    label: (
+                      <div className="flex flex-col items-center justify-center gap-1.5">
+                        <t.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-widest">{t.label}</span>
+                      </div>
+                    )
+                  }))}
+                  activeTab={activeTab}
+                  onChange={(id) => setActiveTab(id as any)}
+                  className="bg-black/20 p-2 border-white/5"
+                  tabClassName="py-3"
+                />
               </div>
 
               {/* Content */}

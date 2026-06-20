@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo, useState } from 'react'
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
-import { OrbitControls, Html, Line } from '@react-three/drei'
+import { OrbitControls, Text, Line, Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
@@ -30,62 +30,62 @@ function SkillNode({
 
   const color = useMemo(() => {
     if (isSelected) return '#ffffff'
-    if (isHovered) return skill.color || '#3b82f6'
-    return skill.color ? skill.color + '80' : '#3b82f680'
+    if (isHovered) return skill.color || '#6366f1'
+    return skill.color ? skill.color : '#6366f1'
   }, [isSelected, isHovered, skill.color])
 
   const scale = useMemo(() => {
-    const baseScale = 0.3 + skill.proficiency * 0.1
+    const baseScale = 0.4 + skill.proficiency * 0.08
     return isSelected ? baseScale * 1.5 : isHovered ? baseScale * 1.2 : baseScale
   }, [isSelected, isHovered, skill.proficiency])
 
   useFrame((state) => {
     if (meshRef.current && !isSelected) {
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.5
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.5
+      meshRef.current.rotation.x = state.clock.elapsedTime * 0.3
+      meshRef.current.rotation.y = state.clock.elapsedTime * 0.3
     }
   })
 
   return (
     <group position={position}>
-      <mesh
-        ref={meshRef}
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick(skill)
-        }}
-        onPointerOver={(e) => {
-          e.stopPropagation()
-          onHover(skill)
-        }}
-        onPointerOut={() => onHover(null)}
-        scale={scale}
-      >
-        <octahedronGeometry args={[0.4, 0]} />
-        <meshStandardMaterial
-          color={color}
-          metalness={0.8}
-          roughness={0.2}
-          emissive={color}
-          emissiveIntensity={isHovered || isSelected ? 0.8 : 0.2}
-          wireframe={!isSelected && !isHovered}
-        />
-      </mesh>
-      
-      <Html center className="pointer-events-none" zIndexRange={[100, 0]}>
-        <div 
-          className="whitespace-nowrap font-display font-medium tracking-wide transition-all duration-300"
-          style={{ 
-            color: isSelected ? '#ffffff' : (skill.color || '#ffffff'),
-            fontSize: isSelected ? '1.25rem' : isHovered ? '1.1rem' : '0.85rem',
-            opacity: isSelected || isHovered ? 1 : 0.6,
-            textShadow: isSelected || isHovered ? `0px 0px 10px ${skill.color}` : '0px 2px 4px rgba(0,0,0,0.8)',
-            transform: `translate3d(-50%, ${isSelected || isHovered ? '-30px' : '-20px'}, 0)`
+      <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
+        <mesh
+          ref={meshRef}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick(skill)
           }}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            onHover(skill)
+          }}
+          onPointerOut={() => onHover(null)}
+          scale={scale}
+        >
+          <octahedronGeometry args={[0.5, 0]} />
+          <meshStandardMaterial
+            color={color}
+            metalness={0.6}
+            roughness={0.2}
+            emissive={color}
+            emissiveIntensity={isHovered || isSelected ? 0.6 : 0.1}
+            wireframe={!isSelected && !isHovered}
+          />
+        </mesh>
+        
+        <Text
+          position={[0, isSelected || isHovered ? -0.8 : -0.6, 0]}
+          fontSize={isSelected ? 0.4 : isHovered ? 0.35 : 0.25}
+          color={isSelected ? '#ffffff' : (skill.color || '#ffffff')}
+          anchorX="center"
+          anchorY="middle"
+          fillOpacity={isSelected || isHovered ? 1 : 0.7}
+          outlineWidth={0.02}
+          outlineColor="#000000"
         >
           {skill.name}
-        </div>
-      </Html>
+        </Text>
+      </Float>
     </group>
   )
 }

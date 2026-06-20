@@ -12,7 +12,7 @@ export function Footer() {
       icon: Github,
       href: personal.github || 'https://github.com/gokulsenthilkumar3',
       label: 'GitHub',
-      hoverColor: 'hover:text-white',
+      hoverColor: 'hover:text-foreground',
     },
     {
       icon: Linkedin,
