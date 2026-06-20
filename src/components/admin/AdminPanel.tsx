@@ -11,6 +11,7 @@ import { ResumeEditor } from './editors/ResumeEditor'
 import { BlogEditor } from './editors/BlogEditor'
 import { useAdmin } from './AdminProvider'
 import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save, FileText, BookOpen } from 'lucide-react'
+import { Tabs } from '@/components/ui/Tabs'
 
 interface AdminPanelProps {
   isOpen: boolean
@@ -89,27 +90,24 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
             </div>
 
             {/* Tabs */}
-            <div className="flex px-3 py-2 gap-1 border-b border-white/5">
-              {tabs.map(tab => {
-                const Icon = tab.icon
-                const isActive = activeTab === tab.id
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all text-center border ${
-                      isActive 
-                        ? 'bg-blue-500/15 border-blue-500/25' 
-                        : 'bg-transparent border-transparent'
-                    }`}
-                  >
-                    <Icon size={14} className={isActive ? 'text-blue-400' : 'text-gray-500'} />
-                    <span className={`text-[10px] font-medium ${isActive ? 'text-blue-300' : 'text-gray-500'}`}>
-                      {tab.label}
-                    </span>
-                  </button>
-                )
-              })}
+            <div className="px-3 py-2 border-b border-white/5">
+              <Tabs
+                tabs={tabs.map(tab => ({
+                  id: tab.id,
+                  label: (
+                    <div className="flex flex-col items-center gap-1">
+                      <tab.icon size={14} className={activeTab === tab.id ? 'text-blue-400' : 'text-gray-500'} />
+                      <span className={`text-[10px] font-medium ${activeTab === tab.id ? 'text-blue-300' : 'text-gray-500'}`}>
+                        {tab.label}
+                      </span>
+                    </div>
+                  )
+                }))}
+                activeTab={activeTab}
+                onChange={setActiveTab}
+                className="bg-transparent border-none space-x-1"
+                tabClassName="py-2 px-1"
+              />
             </div>
 
             {/* Content */}
