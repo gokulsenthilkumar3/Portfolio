@@ -55,8 +55,7 @@ const sections = [
   { id: 'contact', label: 'Contact' }
 ]
 
-import dynamic from 'next/dynamic'
-const LiquidTransitions = dynamic(() => import('@/components/effects/LiquidTransitions').then(mod => mod.LiquidTransitions), { ssr: false })
+import { LiquidTransitionsWrapper } from '@/components/effects/LiquidTransitionsWrapper'
 
 export default function RootLayout({
   children,
@@ -101,7 +100,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ThemeProvider>
           <AdminClientWrapper>
-            <LiquidTransitions />
+            <LiquidTransitionsWrapper />
             <ProgressBar />
             <Navigation />
             <main>{children}</main>
