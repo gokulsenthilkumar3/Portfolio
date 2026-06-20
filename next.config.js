@@ -13,8 +13,7 @@ const nextConfig = {
         hostname: 'picsum.photos',
       },
     ],
-    formats: ['image/webp', 'image/avif'],
-    unoptimized: true // Often needed for static exports/subpaths
+    formats: ['image/webp', 'image/avif']
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production'

@@ -672,7 +672,7 @@ export function GitHubSection() {
         >
           <div className="flex items-center gap-2 mb-5">
             <Code2 size={16} className="text-primary" />
-            <h4 className="font-semibold text-sm">Languages Used</h4>
+            <h3 className="font-semibold text-sm">Languages Used</h3>
           </div>
           <div className="space-y-3">
             {data.languages.map((lang, i) => {
@@ -712,7 +712,7 @@ export function GitHubSection() {
           <div className="flex items-center justify-between gap-2 mb-5">
             <div className="flex items-center gap-2">
               <Activity size={16} className="text-primary" />
-              <h4 className="font-semibold text-sm">Activity</h4>
+              <h3 className="font-semibold text-sm">Activity</h3>
               {data.profile.created_at && (
                 <span className="text-[10px] text-muted-foreground/60 font-mono">
                   synced since {new Date(data.profile.created_at).toLocaleDateString('en', { month: 'short', year: 'numeric' })}

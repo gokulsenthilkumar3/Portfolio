@@ -55,7 +55,8 @@ const sections = [
   { id: 'contact', label: 'Contact' }
 ]
 
-import { LiquidTransitions } from '@/components/effects/LiquidTransitions'
+import dynamic from 'next/dynamic'
+const LiquidTransitions = dynamic(() => import('@/components/effects/LiquidTransitions').then(mod => mod.LiquidTransitions), { ssr: false })
 
 export default function RootLayout({
   children,

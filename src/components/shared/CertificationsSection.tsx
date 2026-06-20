@@ -25,7 +25,7 @@ export function CertificationsSection() {
               
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 pl-6">
                 <div>
-                  <h5 className="font-bold text-lg text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">{cert.name}</h5>
+                  <h4 className="font-bold text-lg text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">{cert.name}</h4>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-sm font-medium text-foreground/80">{cert.issuer}</span>
                     <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />

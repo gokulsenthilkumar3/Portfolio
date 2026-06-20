@@ -25,7 +25,7 @@ export function LanguagesSection() {
               <div className="p-5 pl-6">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h5 className="font-bold text-lg text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">{lang.name}</h5>
+                    <h4 className="font-bold text-lg text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">{lang.name}</h4>
                     <p className="text-sm font-medium text-foreground/80">{lang.proficiency}</p>
                   </div>
                 </div>

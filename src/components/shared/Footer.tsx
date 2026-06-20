@@ -75,7 +75,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">Navigate</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-foreground/80">Navigate</h4>
             <ul className="space-y-2.5">
               {navLinks.map(link => (
                 <li key={link.label}>
@@ -90,7 +90,7 @@ export function Footer() {
 
           {/* Built with */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">Built with</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-foreground/80">Built with</h4>
             <ul className="space-y-2.5">
               {techStack.map(tech => (
                 <li key={tech.label}>
