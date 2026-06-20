@@ -95,7 +95,6 @@ function SkillNode({ skill, position, isSelected, isHovered, onClick, onHover }:
       const glowTarget = isSelected || isHovered ? baseSize * 3.5 : baseSize * 2.2
       glowRef.current.scale.setScalar(THREE.MathUtils.lerp(glowRef.current.scale.x, glowTarget, 0.1))
     }
-    }
   })
 
   return (
