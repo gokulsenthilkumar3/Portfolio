@@ -13,7 +13,7 @@ export function CertificationsSection() {
     <div className="mt-12">
       <div className="flex items-center gap-2 mb-6">
         <Award size={20} className="text-primary" />
-        <h4 className="text-xl font-bold font-display">Licenses & Certifications</h4>
+        <h3 className="text-xl font-bold font-display">Licenses & Certifications</h3>
       </div>
 
       <div className="space-y-4">

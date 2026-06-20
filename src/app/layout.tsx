@@ -12,7 +12,7 @@ import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(seo.siteUrl || 'http://localhost:3000'),
+  metadataBase: new URL(seo.siteUrl || personal.website || 'https://portfolio-ten-plum-98.vercel.app'),
   title: seo.title,
   description: seo.description,
   keywords: seo.keywords,
@@ -65,10 +65,37 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link
-          rel="stylesheet"
+          rel="preload"
+          as="style"
           href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
         />
+        <link
+          id="fontshare-css"
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
+          media="print"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var link = document.getElementById('fontshare-css');
+                if (link) {
+                  link.addEventListener('load', function() { this.media = 'all'; });
+                  if (link.sheet) link.media = 'all';
+                }
+              })();
+            `
+          }}
+        />
+        <noscript>
+          <link
+            rel="stylesheet"
+            href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
+          />
+        </noscript>
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>

@@ -76,6 +76,7 @@ export const portfolioConfig = {
     description: "Portfolio of Gokul Senthilkumar — Software Development Engineer in Test and Full-Stack Developer.",
     keywords: ["SDET", "QA", "Automation", "Full Stack", "React", "Next.js", "TypeScript"],
     ogImage: "/og-image.png",
+    siteUrl: "https://portfolio-ten-plum-98.vercel.app",
   },
 
   // ─── SOCIAL LINKS ───────────────────────────────────────────────────────────

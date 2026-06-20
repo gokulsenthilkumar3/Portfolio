@@ -3,6 +3,7 @@
 import { Card, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
+import Image from 'next/image'
 import { Linkedin, ExternalLink, Briefcase, MapPin, Building2, GraduationCap } from 'lucide-react'
 import { portfolioConfig } from '@/config/portfolio.config'
 const { experiences, education, personal } = portfolioConfig
@@ -32,7 +33,7 @@ export function LinkedInSection() {
         
         <div className="flex flex-col md:flex-row gap-6 items-start relative z-10">
           <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#0a66c2]/30 shadow-lg shrink-0">
-            <img src={personal.avatar} alt={personal.name} className="w-full h-full object-cover" />
+            <Image src={personal.avatar} alt={personal.name} width={96} height={96} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3 flex-wrap mb-2">

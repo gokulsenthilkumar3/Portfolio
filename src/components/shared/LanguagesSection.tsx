@@ -12,7 +12,7 @@ export function LanguagesSection() {
     <div className="mt-12">
       <div className="flex items-center gap-2 mb-6">
         <Languages size={20} className="text-primary" />
-        <h4 className="text-xl font-bold font-display">Languages</h4>
+        <h3 className="text-xl font-bold font-display">Languages</h3>
       </div>
 
       <div className="space-y-4">

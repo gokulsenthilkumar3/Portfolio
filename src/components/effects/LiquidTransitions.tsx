@@ -8,13 +8,16 @@ export function LiquidTransitions() {
   const [dimensions, setDimensions] = useState({ height: 0 })
 
   useEffect(() => {
+    // Disable transition on small screen sizes to prevent layout thrashing on load
+    if (window.innerWidth <= 768) return
+
     setDimensions({ height: window.innerHeight })
     setIsTransitioning(true)
     const timeout = setTimeout(() => setIsTransitioning(false), 1500)
     return () => clearTimeout(timeout)
   }, [])
 
-  if (dimensions.height === 0) return null
+  if (dimensions.height === 0 || window.innerWidth <= 768) return null
 
   const initialPath = `M0 0 L100 0 L100 ${dimensions.height} Q50 ${dimensions.height + 200} 0 ${dimensions.height} Z`
   const targetPath = `M0 0 L100 0 L100 0 Q50 0 0 0 Z`
