@@ -35,6 +35,7 @@ import { ContactSection } from '@/components/sections/ContactSection'
 import { BlogSection } from '@/components/sections/BlogSection'
 import { TerminalModal } from '@/components/effects/TerminalModal'
 import { Terminal } from 'lucide-react'
+import { use3DGate } from '@/hooks/use3DGate'
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
@@ -42,6 +43,7 @@ export default function Home() {
   const [adminPanelTab, setAdminPanelTab] = useState('personal')
   const [isClient, setIsClient] = useState(false)
   const [terminalOpen, setTerminalOpen] = useState(false)
+  const allow3D = use3DGate()
 
   useEffect(() => {
     setIsClient(true)
@@ -81,7 +83,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           {/* Overlay adapts: semi-transparent in dark, much lighter in light mode */}
           <div className="absolute inset-0 bg-gradient-to-b dark:from-background/80 dark:via-background/50 dark:to-background/20 from-background/40 via-background/20 to-transparent z-10 pointer-events-none" />
-          <HeroScene className="w-full h-full" />
+          {allow3D && <HeroScene className="w-full h-full" />}
         </div>
 
         <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full pt-20">

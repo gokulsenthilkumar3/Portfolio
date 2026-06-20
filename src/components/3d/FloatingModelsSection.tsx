@@ -27,18 +27,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { FloatingModels } from '@/components/3d/FloatingModels'
-
-function canUseWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas')
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    )
-  } catch {
-    return false
-  }
-}
+import { use3DGate } from '@/hooks/use3DGate'
 
 interface Props {
   className?: string
@@ -53,13 +42,7 @@ export function FloatingModelsSection({
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [nearViewport, setNearViewport] = useState(false)
-  const [allow3D, setAllow3D] = useState(false)
-
-  // Gate 1: reduced-motion + WebGL availability check (runs once on mount)
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    setAllow3D(!reduced && canUseWebGL())
-  }, [])
+  const allow3D = use3DGate()
 
   // Gate 2: only mount the canvas when the section is near the viewport
   useEffect(() => {

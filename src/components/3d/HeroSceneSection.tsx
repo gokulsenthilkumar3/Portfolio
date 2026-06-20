@@ -11,32 +11,15 @@
  *   - Immediate mount (hero is above fold, no IntersectionObserver delay needed)
  */
 
-import { useEffect, useState } from 'react'
 import { HeroScene } from '@/components/3d/HeroScene'
-
-function canUseWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas')
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    )
-  } catch {
-    return false
-  }
-}
+import { use3DGate } from '@/hooks/use3DGate'
 
 interface Props {
   className?: string
 }
 
 export function HeroSceneSection({ className }: Props) {
-  const [allow3D, setAllow3D] = useState(false)
-
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    setAllow3D(!reduced && canUseWebGL())
-  }, [])
+  const allow3D = use3DGate()
 
   if (!allow3D) return null
 

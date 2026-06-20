@@ -16,11 +16,7 @@ import Image from 'next/image'
 import { ArrowLeft, ChevronUp } from 'lucide-react'
 import type { Skill } from '@/lib/types/portfolio'
 
-// Dynamically import 3D sphere (no SSR — WebGL is browser-only)
-const SkillSphereSection = dynamic(
-  () => import('@/components/3d/SkillSphereSection').then(m => ({ default: m.SkillSphereSection })),
-  { ssr: false, loading: () => <div className="w-full h-[400px] animate-pulse rounded-xl bg-white/5" /> }
-)
+
 
 const ICON_SLUG: Record<string, string> = {
   selenium:      'selenium',
@@ -145,7 +141,6 @@ function CategoryCard({
 
 export function SkillsSection({ skills }: { skills: Skill[] }) {
   const [showAll, setShowAll] = useState(false)
-  const [sphereView, setSphereView] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
 
   const grouped = useMemo(() => {
@@ -166,7 +161,6 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
 
   const handleBack = () => {
     setShowAll(false)
-    setSphereView(false)
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -196,64 +190,20 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
           </div>
         </div>
 
-        {/* 3D / Grid toggle (only in expanded view) */}
-        {showAll && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSphereView(false)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                !sphereView
-                  ? 'bg-primary/20 border-primary/40 text-primary'
-                  : 'border-border/50 text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Grid
-            </button>
-            <button
-              onClick={() => setSphereView(true)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                sphereView
-                  ? 'bg-primary/20 border-primary/40 text-primary'
-                  : 'border-border/50 text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              3D Sphere
-            </button>
-          </div>
-        )}
+
       </div>
 
-      {/* 3D Sphere view */}
-      <AnimatePresence>
-        {showAll && sphereView && (
-          <motion.div
-            key="sphere"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="mb-8"
-          >
-            <SkillSphereSection skills={skills} />
-            <p className="text-center text-xs text-muted-foreground mt-2">
-              Drag to rotate · Scroll to zoom · Click a node to inspect
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Grid view */}
-      {(!showAll || !sphereView) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {visibleGroups.map(([category, catSkills], gi) => (
-            <CategoryCard
-              key={category}
-              category={category}
-              catSkills={catSkills}
-              groupIndex={gi}
-            />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {visibleGroups.map(([category, catSkills], gi) => (
+          <CategoryCard
+            key={category}
+            category={category}
+            catSkills={catSkills}
+            groupIndex={gi}
+          />
+        ))}
+      </div>
 
       {/* View All / Back toggle */}
       <div className="mt-6 flex justify-center">

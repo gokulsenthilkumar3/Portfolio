@@ -6,7 +6,7 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { SkillSphereSection } from '@/components/3d/SkillSphereSection'
+
 import { skills } from '@/lib/data/content'
 import { getTopSkills, getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
@@ -48,7 +48,6 @@ function getProficiencyColor(p: number) {
 
 export default function SkillsPage() {
   const router = useRouter()
-  const [viewMode, setViewMode] = useState<'3d' | '2d'>('2d')
   const [selectedCategory, setSelectedCategory] = useState<Category>('all')
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
 
@@ -83,25 +82,7 @@ export default function SkillsPage() {
         </p>
       </AnimatedSection>
 
-      {/* View Toggle */}
-      <div className="container mx-auto px-4 flex justify-center gap-2 mb-8">
-        <Button
-          variant={viewMode === '2d' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setViewMode('2d')}
-          className="min-w-[90px]"
-        >
-          Grid View
-        </Button>
-        <Button
-          variant={viewMode === '3d' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setViewMode('3d')}
-          className="min-w-[90px]"
-        >
-          3D Sphere
-        </Button>
-      </div>
+
 
       {/* Category Filter */}
       <div className="container mx-auto px-4 flex flex-wrap justify-center gap-2 mb-8">
@@ -123,61 +104,42 @@ export default function SkillsPage() {
         ))}
       </div>
 
-      {/* 3D View */}
-      {viewMode === '3d' && (
-        <div className="container mx-auto px-4">
-          {selectedSkill && (
-            <div className="text-center mb-4 text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{selectedSkill.name}</span>
-              {' — '}
-              <span>{getProficiencyLabel(selectedSkill.proficiency)} ({selectedSkill.proficiency}/5)</span>
-            </div>
-          )}
-          <SkillSphereSection skills={skills as Skill[]} onSkillSelect={handleSkillSelect} />
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            Click a node to inspect · Drag to rotate · Scroll to zoom
-          </p>
-        </div>
-      )}
-
       {/* 2D Grid View */}
-      {viewMode === '2d' && (
-        <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredSkills.map((skill, index) => (
-            <Card
-              key={skill.id}
-              className={`cursor-pointer border bg-gradient-to-br ${CATEGORY_COLORS[skill.category as Category] ?? CATEGORY_COLORS.all} hover:scale-[1.02] transition-transform ${
-                selectedSkill?.id === skill.id ? 'ring-2 ring-primary' : ''
-              }`}
-              onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">{skill.name}</CardTitle>
-                  <Badge variant="outline" className="text-[10px] capitalize">{skill.category}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">{getProficiencyLabel(skill.proficiency)}</span>
-                  <span className="text-xs font-mono">{skill.proficiency}/5</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-border/40 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${getProficiencyColor(skill.proficiency)} transition-all`}
-                    style={{ width: `${(skill.proficiency / 5) * 100}%` }}
-                  />
-                </div>
-                {skill.yearsOfExperience && (
-                  <p className="text-[10px] text-muted-foreground mt-2">
-                    {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'yr' : 'yrs'} experience
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredSkills.map((skill, index) => (
+          <Card
+            key={skill.id}
+            className={`cursor-pointer border bg-gradient-to-br ${CATEGORY_COLORS[skill.category as Category] ?? CATEGORY_COLORS.all} hover:scale-[1.02] transition-transform ${
+              selectedSkill?.id === skill.id ? 'ring-2 ring-primary' : ''
+            }`}
+            onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold">{skill.name}</CardTitle>
+                <Badge variant="outline" className="text-[10px] capitalize">{skill.category}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-muted-foreground">{getProficiencyLabel(skill.proficiency)}</span>
+                <span className="text-xs font-mono">{skill.proficiency}/5</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-border/40 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${getProficiencyColor(skill.proficiency)} transition-all`}
+                  style={{ width: `${(skill.proficiency / 5) * 100}%` }}
+                />
+              </div>
+              {skill.yearsOfExperience && (
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'yr' : 'yrs'} experience
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {/* Core Competencies */}
       <div className="container mx-auto px-4 mt-12 text-center">

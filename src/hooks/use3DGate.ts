@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
  * Returns true only when:
  * - The browser supports WebGL
  * - The user has NOT requested reduced motion
+ * - The viewport is larger than typical mobile devices (> 768px)
  *
  * Use this to conditionally mount React Three Fiber canvases
  * so users on low-capability devices or with accessibility
@@ -20,6 +21,10 @@ export function use3DGate(): boolean {
       '(prefers-reduced-motion: reduce)'
     ).matches
     if (reducedMotion) return
+
+    // Check for mobile devices (disable heavy 3D on small screens)
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    if (isMobile) return
 
     // Check WebGL availability without throwing
     try {
