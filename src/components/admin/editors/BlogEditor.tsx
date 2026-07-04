@@ -34,7 +34,7 @@ export function BlogEditor() {
       excerpt: 'Brief summary of the post...',
       content: '### New Post\n\nStart writing here...',
       slug: 'new-insight',
-      readingTime: 3,
+  
       tags: [],
       featured: false
     }
