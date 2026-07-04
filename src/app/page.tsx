@@ -30,7 +30,7 @@ const ContactSection = dynamic(() =>
   import('@/components/sections/ContactSection').then(mod => ({ default: mod.ContactSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
 )
-const BlogSection = dynamic(() =>
+const BlogSection = dynamic<{ posts: import('@/lib/types/portfolio').BlogPost[] }>(() =>
   import('@/components/sections/BlogSection').then(mod => ({ default: mod.BlogSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
 )
