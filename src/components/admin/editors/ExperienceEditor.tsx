@@ -13,8 +13,8 @@ const BLANK: Experience = {
   role: '',
   company: '',
   period: { start: '', present: false },
-      description: '',
-    technologies: [] as string[],
+  description: '',
+  technologies: [] as string[],
   location: '',
   type: 'full-time',
 }
@@ -119,7 +119,12 @@ function ExperienceForm({
   onCancel: () => void
 }) {
   const [form, setForm] = useState({ ...experience })
-  const [descInput, setDescInput] = useState(experience.description?.join('\n') || '')
+  const descValue = typeof form.description === 'string'
+    ? form.description
+    : Array.isArray(form.description)
+      ? (form.description as string[]).join('\n')
+      : ''
+  const [descInput, setDescInput] = useState(descValue)
 
   return (
     <motion.div
@@ -221,7 +226,7 @@ function ExperienceForm({
                 setDescInput(e.target.value)
                 setForm(prev => ({
                   ...prev,
-                  description: e.target.value.split('\n').filter(Boolean)
+                  description: e.target.value
                 }))
               }}
               rows={4}
