@@ -1,4 +1,23 @@
- export interface Project {
+ export interface SiteConfig {
+  name: string
+  title: string
+  tagline: string
+  description: string
+  bio: string
+  email: string
+  emailZoho?: string
+  location: string
+  availability: string
+  avatar: string
+  resume: string
+  github: string
+  linkedin: string
+  twitter: string
+  website: string
+  careerStart: string
+}
+
+export interface Project {
   id: string
   title: string
   description: string
