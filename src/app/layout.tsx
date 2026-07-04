@@ -110,16 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
-          media="print"
-          // @ts-expect-error onLoad is valid for link elements
-          onLoad="this.media='all'"
         />
-        <noscript>
-          <link
-            rel="stylesheet"
-            href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
-          />
-        </noscript>
         {/* JSON-LD structured data for Google Search rich results */}
         <script
           type="application/ld+json"

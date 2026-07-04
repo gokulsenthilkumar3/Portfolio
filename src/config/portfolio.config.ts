@@ -216,7 +216,7 @@ export const portfolioConfig = {
       technologies: ["Selenium", "TypeScript", "Jest", "Azure DevOps"],
       category: "testing",
       featured: true,
-      images: [],
+      images: ["/projects/selenium-framework.webp"],
       date: "2024-09-01",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -227,7 +227,7 @@ export const portfolioConfig = {
       technologies: ["K6", "JavaScript", "Grafana", "InfluxDB"],
       category: "testing",
       featured: false,
-      images: [],
+      images: ["/projects/k6-suite.webp"],
       date: "2024-11-01",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -238,7 +238,7 @@ export const portfolioConfig = {
       technologies: ["Next.js", "TypeScript", "Three.js", "Tailwind CSS"],
       category: "web",
       featured: false,
-      images: [],
+      images: ["/projects/portfolio.webp"],
       date: "2025-01-01",
       links: { github: "https://github.com/gokulsenthilkumar3/Portfolio" }
     },
