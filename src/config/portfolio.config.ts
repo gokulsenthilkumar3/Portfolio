@@ -172,7 +172,7 @@ export const portfolioConfig = {
       technologies: ["PHP", "MySQL", "HTML", "CSS"],
       category: "web",
       featured: true,
-      images: ["/projects/weaver-book.png"],
+      images: ["/projects/weaver-book.webp"],
       date: "2023-01-15",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -183,7 +183,7 @@ export const portfolioConfig = {
       technologies: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/car-spa.png"],
+      images: ["/projects/car-spa.webp"],
       date: "2023-08-20",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -194,7 +194,7 @@ export const portfolioConfig = {
       technologies: ["React", "Node.js", "PostgreSQL", "Express"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/yarn-management.png"],
+      images: ["/projects/yarn-management.webp"],
       date: "2024-01-10",
       links: { github: "https://github.com/gokulsenthilkumar3/Yarn-Management" }
     },
@@ -205,7 +205,7 @@ export const portfolioConfig = {
       technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/oxfin.png"],
+      images: ["/projects/oxfin.webp"],
       date: "2024-06-01",
       links: { github: "https://github.com/gokulsenthilkumar3/OxFin" }
     },
@@ -216,7 +216,7 @@ export const portfolioConfig = {
       technologies: ["Selenium", "TypeScript", "Jest", "Azure DevOps"],
       category: "testing",
       featured: true,
-      images: ["/projects/selenium-framework.png"],
+      images: [],
       date: "2024-09-01",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -227,7 +227,7 @@ export const portfolioConfig = {
       technologies: ["K6", "JavaScript", "Grafana", "InfluxDB"],
       category: "testing",
       featured: false,
-      images: ["/projects/k6-suite.png"],
+      images: [],
       date: "2024-11-01",
       links: { github: "https://github.com/gokulsenthilkumar3" }
     },
@@ -238,7 +238,7 @@ export const portfolioConfig = {
       technologies: ["Next.js", "TypeScript", "Three.js", "Tailwind CSS"],
       category: "web",
       featured: false,
-      images: ["/projects/portfolio.png"],
+      images: [],
       date: "2025-01-01",
       links: { github: "https://github.com/gokulsenthilkumar3/Portfolio" }
     },

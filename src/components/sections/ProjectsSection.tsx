@@ -28,6 +28,7 @@ interface GitHubRepo {
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const [imgError, setImgError] = useState(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 300, damping: 30 })
@@ -67,13 +68,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
           {/* Thumbnail */}
           <div className="relative w-full aspect-video overflow-hidden bg-muted/60 shrink-0">
-            {project.images && project.images.length > 0 ? (
+            {project.images && project.images.length > 0 && !imgError ? (
               <Image
                 src={project.images[0]}
                 alt={`${project.title} preview`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
+                onError={() => setImgError(true)}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
