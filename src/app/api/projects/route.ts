@@ -103,7 +103,7 @@ function detectFrameworks(paths: string[], lang: string | null): string[] {
   if (has(/svelte\.config/)) fw.push('SvelteKit')
   if (has(/k6|load.?test|performance\.js/)) fw.push('K6')
   if (lang) fw.push(lang)
-  return [...new Set(fw)].slice(0, 8)
+    return Array.from(new Set(fw)).slice(0, 8)
 }
 
 export interface DynamicProject {
