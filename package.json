@@ -11,19 +11,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@react-three/postprocessing": "^3.0.4",
-    "@react-three/rapier": "^2.2.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.182.0",
+    "@vercel/analytics": "^1.5.0",
     "autoprefixer": "^10.4.24",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
@@ -45,5 +47,9 @@
     "three-custom-shader-material": "^6.4.0",
     "typescript": "^5.9.3",
     "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/playwright": "^1.7.0"
   }
 }
