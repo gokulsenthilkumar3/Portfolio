@@ -259,7 +259,7 @@ export default function Home() {
       {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
       <Section id="insights">
         <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
-                    <BlogSection posts={(isAdmin && (portfolioData?.blog?.length ?? 0) > 0) ? portfolioData.blog! : (staticBlog || [])} />
+                              <BlogSection posts={((isAdmin && (portfolioData?.blog?.length ?? 0) > 0) ? portfolioData.blog! : (staticBlog || [])) as import('@/lib/types/portfolio').BlogPost[]} />
         </EditableSection>
       </Section>
 
