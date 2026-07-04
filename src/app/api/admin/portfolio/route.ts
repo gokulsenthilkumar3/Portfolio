@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const storedData = readPortfolioData()
+  const storedData = await readPortfolioData()
   // Merge stored data over the static config
   const merged = {
     personal: storedData.personal || portfolioConfig.personal,
@@ -47,9 +47,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid section' }, { status: 400 })
     }
 
-    updatePortfolioSection(section, data)
+    await updatePortfolioSection(section, data)
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Server error'
+    // Surface the real reason (e.g. "no KV configured") instead of a generic
+    // 500 — this is what would have made the original silent-failure bug
+    // visible immediately instead of looking like a successful save.
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

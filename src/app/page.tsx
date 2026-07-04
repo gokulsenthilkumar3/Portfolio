@@ -186,9 +186,25 @@ export default function Home() {
         <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
       </section>
 
+      {/* ─── PROJECTS ─────────────────────────────────────────── */}
+      {/* REORDER: Projects moved directly after Hero — visitors decide to keep scrolling
+          based on proof of work, not career history. id="projects" is set inside ProjectsSection. */}
+      <Section background="muted">
+        <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
+          <ProjectsSection projects={currentProjects} />
+        </EditableSection>
+      </Section>
+
+      {/* ─── SKILLS ───────────────────────────────────────────── */}
+      {/* id="skills" is already set inside SkillsSection — outer Section gets no id to avoid duplicates */}
+      <Section>
+        <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
+          <SkillsSection skills={currentSkills} />
+        </EditableSection>
+      </Section>
+
       {/* ─── ABOUT / LINKEDIN ─────────────────────────────────── */}
-      {/* FIX: removed duplicate id="about" — Section wrapper should not repeat the id
-          that the inner component already provides for anchor nav */}
+      {/* REORDER: experience/education timeline now comes after the proof-of-work sections */}
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <MorphingBlob className="absolute -top-20 -right-20 opacity-30" size={500} />
@@ -201,7 +217,7 @@ export default function Home() {
                 </div>
                 Professional Sync
               </h2>
-              <p className="text-muted-foreground">Experience & education timeline.</p>
+              <p className="text-muted-foreground">Experience &amp; education timeline.</p>
             </AnimatedSection>
             <AnimatedSection animation="slideLeft" delay={0.4}>
               <LinkedInSection />
@@ -214,22 +230,6 @@ export default function Home() {
             </AnimatedSection>
           </div>
         </div>
-      </Section>
-
-      {/* ─── SKILLS ───────────────────────────────────────────── */}
-      {/* FIX: id="skills" is already set inside SkillsSection — outer Section gets no id to avoid duplicates */}
-      <Section>
-        <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
-          <SkillsSection skills={currentSkills} />
-        </EditableSection>
-      </Section>
-
-      {/* ─── PROJECTS ─────────────────────────────────────────── */}
-      {/* FIX: id="projects" is already set inside ProjectsSection — outer Section gets no id */}
-      <Section background="muted">
-        <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
-          <ProjectsSection projects={currentProjects} />
-        </EditableSection>
       </Section>
 
       {/* ─── GITHUB ───────────────────────────────────────────── */}

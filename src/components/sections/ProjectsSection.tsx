@@ -2,8 +2,9 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { ExternalLink, Github, ArrowRight, ChevronUp } from 'lucide-react'
+import { ExternalLink, Github, ArrowRight, ChevronUp, ImageOff } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -62,7 +63,25 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         className="h-full"
       >
         <Card className="h-full flex flex-col group transition-all duration-500 bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_30px_60px_-15px_rgba(139,92,246,0.3)] hover:-translate-y-2">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
+
+          {/* Thumbnail */}
+          <div className="relative w-full aspect-video overflow-hidden bg-muted/60 shrink-0">
+            {project.images && project.images.length > 0 ? (
+              <Image
+                src={project.images[0]}
+                alt={`${project.title} preview`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
+                <ImageOff className="w-8 h-8" />
+              </div>
+            )}
+          </div>
+
           <CardContent className="flex flex-col h-full pt-6 px-6 relative z-10" style={{ transform: 'translateZ(40px)' }}>
             <div className="flex-1 space-y-3">
               <div className="flex items-start justify-between gap-2">
