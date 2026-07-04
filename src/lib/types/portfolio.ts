@@ -14,10 +14,11 @@ export interface Project {
   tags?: string[]
   date?: string
   status?: 'completed' | 'in-progress' | 'planned'
+    technologies?: string[] // alias for tech — satisfies project page usage
 }
 
 export interface Skill {
-  id: string
+      id: string
   name: string
   category: 'frontend' | 'backend' | 'tools' | 'soft-skills' | 'design'
   proficiency: number // 1-5
