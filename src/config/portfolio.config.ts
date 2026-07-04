@@ -77,6 +77,7 @@ export const portfolioConfig = {
     keywords: ["SDET", "QA", "Automation", "Full Stack", "React", "Next.js", "TypeScript"],
     ogImage: "/og-image.png",
     siteUrl: "https://portfolio-ten-plum-98.vercel.app",
+        author: "Gokul Senthilkumar",
   },
 
   // ─── SOCIAL LINKS ───────────────────────────────────────────────────────────
