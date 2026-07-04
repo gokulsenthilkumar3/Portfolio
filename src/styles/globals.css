@@ -208,3 +208,82 @@ input, button, textarea, select { font: inherit; color: inherit; }
   opacity: 1;
   transform: translateY(0);
 }
+
+
+/* ─── Accent system CSS variables (defaults — overridden by AccentSwitcher) ─── */
+:root {
+  --accent-primary: 220 90% 60%;
+  --accent-secondary: 270 80% 65%;
+  --accent-glow: rgba(99,102,241,0.35);
+  --accent-glow-alt: rgba(168,85,247,0.25);
+}
+
+/* ─── Float badge keyframe (Tier 1 FloatingTechOrbs CSS fallback) ──────────── */
+@keyframes float-badge {
+  from { transform: translateY(0px) rotate(-1deg); }
+  to   { transform: translateY(-12px) rotate(1deg); }
+}
+
+/* ─── Section wipe entrance (clip-path based, GPU-composited) ───────────────── */
+@keyframes section-wipe-in {
+  from { clip-path: inset(0 0 100% 0); opacity: 0; }
+  to   { clip-path: inset(0 0 0% 0);   opacity: 1; }
+}
+
+.section-wipe {
+  animation: section-wipe-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger children within wipe sections */
+.section-wipe > * { animation: section-wipe-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.section-wipe > *:nth-child(1) { animation-delay: 0.05s; }
+.section-wipe > *:nth-child(2) { animation-delay: 0.10s; }
+.section-wipe > *:nth-child(3) { animation-delay: 0.15s; }
+.section-wipe > *:nth-child(4) { animation-delay: 0.20s; }
+.section-wipe > *:nth-child(5) { animation-delay: 0.25s; }
+
+/* ─── Accent glow utility classes ───────────────────────────────────────────── */
+.accent-glow {
+  box-shadow: 0 0 32px var(--accent-glow), 0 0 64px var(--accent-glow-alt);
+}
+
+.accent-border {
+  border-color: hsl(var(--accent-primary) / 0.4);
+}
+
+.accent-text {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--accent-primary)) 0%,
+    hsl(var(--accent-secondary)) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Scroll velocity blur band ─────────────────────────────────────────────── */
+.scroll-blur-band {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  backdrop-filter: blur(var(--scroll-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--scroll-blur, 0px));
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  z-index: 9997;
+  transition: backdrop-filter 0.1s linear;
+}
+
+/* ─── content-visibility: auto on off-screen sections ───────────────────────── */
+/* Applied directly in Section.tsx via inline style or Tailwind variant */
+/* Fallback for browsers that don't support contain-intrinsic-size */
+@supports (content-visibility: auto) {
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+}
