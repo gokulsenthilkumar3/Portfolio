@@ -2,88 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Fonts ─────────────────────────────────────────────────── */
+/* ─── Fonts ───────────────────────────────────────────────────────────────── */
 :root {
   --font-display: 'Boska', Georgia, serif;
   --font-body: 'Satoshi', 'Inter', -apple-system, sans-serif;
 }
 
-/* ─── Light Mode (Default) ──────────────────────────────────── */
+/* ─── Light Mode ──────────────────────────────────────────────────────────── */
+/* Warm white base — feels premium instead of clinical blue-grey */
 :root,
 .light,
 [data-theme="light"] {
-  --background: 0 0% 97%;
-  --foreground: 222 20% 10%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 20% 10%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 20% 10%;
-  --primary: 220 90% 50%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 14% 94%;
-  --secondary-foreground: 222 20% 20%;
-  --muted: 220 14% 94%;
-  --muted-foreground: 220 10% 46%;
-  --accent: 220 14% 94%;
-  --accent-foreground: 222 20% 20%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 220 13% 88%;
-  --input: 220 13% 88%;
-  --ring: 220 90% 50%;
-  --radius: 0.625rem;
+  --background:            30 20% 98%;
+  --foreground:            222 24% 10%;
+  --card:                  0 0% 100%;
+  --card-foreground:       222 24% 10%;
+  --popover:               0 0% 100%;
+  --popover-foreground:    222 24% 10%;
+  --primary:               230 85% 54%;
+  --primary-foreground:    0 0% 100%;
+  --secondary:             220 16% 94%;
+  --secondary-foreground:  222 24% 22%;
+  --muted:                 220 16% 94%;
+  --muted-foreground:      220 12% 46%;
+  --accent:                260 70% 58%;
+  --accent-foreground:     0 0% 100%;
+  --destructive:           0 84% 60%;
+  --destructive-foreground:0 0% 100%;
+  --border:                220 14% 88%;
+  --input:                 220 14% 88%;
+  --ring:                  230 85% 54%;
+  --radius:                0.625rem;
 }
 
-/* ─── Dark Mode ─────────────────────────────────────────────── */
+/* ─── Dark Mode ───────────────────────────────────────────────────────────── */
+/* Deeper, richer dark — avoids the generic "#111" flat look                   */
 .dark,
 [data-theme="dark"] {
-  --background: 222 20% 7%;
-  --foreground: 210 20% 94%;
-  --card: 222 20% 10%;
-  --card-foreground: 210 20% 94%;
-  --popover: 222 20% 10%;
-  --popover-foreground: 210 20% 94%;
-  --primary: 220 90% 62%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 222 18% 16%;
-  --secondary-foreground: 210 20% 90%;
-  --muted: 222 18% 16%;
-  --muted-foreground: 217 12% 58%;
-  --accent: 222 18% 16%;
-  --accent-foreground: 210 20% 90%;
-  --destructive: 0 62% 44%;
-  --destructive-foreground: 210 20% 94%;
-  --border: 222 18% 18%;
-  --input: 222 18% 18%;
-  --ring: 220 90% 62%;
+  --background:            228 22%  7%;   /* deep navy-black */
+  --foreground:            214 28% 94%;
+  --card:                  226 22% 10%;
+  --card-foreground:       214 28% 94%;
+  --popover:               226 22% 10%;
+  --popover-foreground:    214 28% 94%;
+  --primary:               226 90% 66%;   /* vivid indigo-blue */
+  --primary-foreground:    0   0% 100%;
+  --secondary:             226 20% 16%;
+  --secondary-foreground:  214 28% 90%;
+  --muted:                 226 20% 14%;
+  --muted-foreground:      218 14% 56%;
+  --accent:                264 80% 68%;   /* violet accent */
+  --accent-foreground:     0   0% 100%;
+  --destructive:           0   62% 50%;
+  --destructive-foreground:214 28% 94%;
+  --border:                226 18% 16%;
+  --input:                 226 18% 18%;
+  --ring:                  226 90% 66%;
 }
 
-/* ─── System preference fallback ────────────────────────────── */
+/* ─── System preference fallback ─────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not([data-theme="light"]) {
-    --background: 222 20% 7%;
-    --foreground: 210 20% 94%;
-    --card: 222 20% 10%;
-    --card-foreground: 210 20% 94%;
-    --popover: 222 20% 10%;
-    --popover-foreground: 210 20% 94%;
-    --primary: 220 90% 62%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 18% 16%;
-    --secondary-foreground: 210 20% 90%;
-    --muted: 222 18% 16%;
-    --muted-foreground: 217 12% 58%;
-    --accent: 222 18% 16%;
-    --accent-foreground: 210 20% 90%;
-    --destructive: 0 62% 44%;
-    --destructive-foreground: 210 20% 94%;
-    --border: 222 18% 18%;
-    --input: 222 18% 18%;
-    --ring: 220 90% 62%;
+    --background:            228 22%  7%;
+    --foreground:            214 28% 94%;
+    --card:                  226 22% 10%;
+    --card-foreground:       214 28% 94%;
+    --popover:               226 22% 10%;
+    --popover-foreground:    214 28% 94%;
+    --primary:               226 90% 66%;
+    --primary-foreground:    0   0% 100%;
+    --secondary:             226 20% 16%;
+    --secondary-foreground:  214 28% 90%;
+    --muted:                 226 20% 14%;
+    --muted-foreground:      218 14% 56%;
+    --accent:                264 80% 68%;
+    --accent-foreground:     0   0% 100%;
+    --destructive:           0   62% 50%;
+    --destructive-foreground:214 28% 94%;
+    --border:                226 18% 16%;
+    --input:                 226 18% 18%;
+    --ring:                  226 90% 66%;
   }
 }
 
-/* ─── Type Scale ─────────────────────────────────────────────── */
+/* ─── Accent system ───────────────────────────────────────────────────────── */
+:root {
+  --accent-primary:     226 90% 66%;
+  --accent-secondary:   264 80% 68%;
+  --accent-glow:        rgba(79, 115, 255, 0.32);
+  --accent-glow-alt:    rgba(160, 90, 255, 0.22);
+  --accent-glow-light:  rgba(79, 115, 255, 0.18);
+}
+
+/* ─── Type Scale (fluid) ──────────────────────────────────────────────────── */
 :root {
   --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
@@ -94,7 +105,7 @@
   --text-hero: clamp(2.8rem,   1rem    + 5vw,    6rem);
 }
 
-/* ─── Base Reset ─────────────────────────────────────────────── */
+/* ─── Base Reset ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -103,7 +114,6 @@ html {
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-  hanging-punctuation: first last;
 }
 
 body {
@@ -118,35 +128,34 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  text-wrap: balance;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
-p, li { text-wrap: pretty; max-width: 72ch; }
+p, li { max-width: 72ch; }
 img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
 input, button, textarea, select { font: inherit; color: inherit; }
 
-/* ─── Tailwind layer wiring ──────────────────────────────────── */
+/* ─── Tailwind layer wiring ───────────────────────────────────────────────── */
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
 }
 
-/* ─── Selection ──────────────────────────────────────────────── */
+/* ─── Selection ───────────────────────────────────────────────────────────── */
 ::selection {
-  background: hsl(220 90% 50% / 0.2);
+  background: hsl(226 90% 66% / 0.22);
   color: hsl(var(--foreground));
 }
 
-/* ─── Focus ──────────────────────────────────────────────────── */
+/* ─── Focus ───────────────────────────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* ─── Reduced Motion ─────────────────────────────────────────── */
+/* ─── Reduced Motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -155,26 +164,42 @@ input, button, textarea, select { font: inherit; color: inherit; }
   }
 }
 
-/* ─── Premium scrollbar ──────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
+/* ─── Premium scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: hsl(var(--muted-foreground) / 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.6);
+  background: hsl(var(--primary) / 0.5);
 }
 
-/* ─── Gradient text utility ──────────────────────────────────── */
+/* ─── Gradient text utility ───────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--accent))  100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ─── Card hover shine ───────────────────────────────────────── */
+/* Foreground-to-primary variant (headings) */
+.gradient-text-subtle {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--foreground)) 0%,
+    hsl(var(--primary) / 0.9) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Card hover shine ────────────────────────────────────────────────────── */
 .card-shine {
   position: relative;
   overflow: hidden;
@@ -189,7 +214,7 @@ input, button, textarea, select { font: inherit; color: inherit; }
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    hsl(var(--primary) / 0.05) 90deg,
+    hsl(var(--primary) / 0.06) 90deg,
     transparent 180deg
   );
   opacity: 0;
@@ -198,7 +223,7 @@ input, button, textarea, select { font: inherit; color: inherit; }
 }
 .card-shine:hover::before { opacity: 1; }
 
-/* ─── Section fade-in utility ────────────────────────────────── */
+/* ─── Section fade-in utility ─────────────────────────────────────────────── */
 .section-enter {
   opacity: 0;
   transform: translateY(24px);
@@ -209,22 +234,13 @@ input, button, textarea, select { font: inherit; color: inherit; }
   transform: translateY(0);
 }
 
-
-/* ─── Accent system CSS variables (defaults — overridden by AccentSwitcher) ─── */
-:root {
-  --accent-primary: 220 90% 60%;
-  --accent-secondary: 270 80% 65%;
-  --accent-glow: rgba(99,102,241,0.35);
-  --accent-glow-alt: rgba(168,85,247,0.25);
-}
-
-/* ─── Float badge keyframe (Tier 1 FloatingTechOrbs CSS fallback) ──────────── */
+/* ─── Float badge keyframe ────────────────────────────────────────────────── */
 @keyframes float-badge {
   from { transform: translateY(0px) rotate(-1deg); }
   to   { transform: translateY(-12px) rotate(1deg); }
 }
 
-/* ─── Section wipe entrance (clip-path based, GPU-composited) ───────────────── */
+/* ─── Section wipe entrance ───────────────────────────────────────────────── */
 @keyframes section-wipe-in {
   from { clip-path: inset(0 0 100% 0); opacity: 0; }
   to   { clip-path: inset(0 0 0% 0);   opacity: 1; }
@@ -233,8 +249,6 @@ input, button, textarea, select { font: inherit; color: inherit; }
 .section-wipe {
   animation: section-wipe-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-
-/* Stagger children within wipe sections */
 .section-wipe > * { animation: section-wipe-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .section-wipe > *:nth-child(1) { animation-delay: 0.05s; }
 .section-wipe > *:nth-child(2) { animation-delay: 0.10s; }
@@ -242,9 +256,14 @@ input, button, textarea, select { font: inherit; color: inherit; }
 .section-wipe > *:nth-child(4) { animation-delay: 0.20s; }
 .section-wipe > *:nth-child(5) { animation-delay: 0.25s; }
 
-/* ─── Accent glow utility classes ───────────────────────────────────────────── */
+/* ─── Accent glow utilities ───────────────────────────────────────────────── */
 .accent-glow {
-  box-shadow: 0 0 32px var(--accent-glow), 0 0 64px var(--accent-glow-alt);
+  box-shadow:
+    0 0 32px var(--accent-glow),
+    0 0 64px var(--accent-glow-alt);
+}
+.accent-glow-sm {
+  box-shadow: 0 0 16px var(--accent-glow-light);
 }
 
 .accent-border {
@@ -262,7 +281,23 @@ input, button, textarea, select { font: inherit; color: inherit; }
   background-clip: text;
 }
 
-/* ─── Scroll velocity blur band ─────────────────────────────────────────────── */
+/* ─── Mesh background utility (used by Hero) ──────────────────────────────── */
+.mesh-bg {
+  background-image:
+    radial-gradient(at 20% 20%, hsl(var(--primary) / 0.12) 0px, transparent 60%),
+    radial-gradient(at 80% 10%, hsl(var(--accent) / 0.09) 0px, transparent 50%),
+    radial-gradient(at 60% 80%, hsl(var(--primary) / 0.07) 0px, transparent 50%);
+}
+
+/* ─── Glassmorphism card ──────────────────────────────────────────────────── */
+.glass-card {
+  background: hsl(var(--card) / 0.6);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--border) / 0.6);
+}
+
+/* ─── Scroll velocity blur band ───────────────────────────────────────────── */
 .scroll-blur-band {
   pointer-events: none;
   position: fixed;
@@ -270,17 +305,15 @@ input, button, textarea, select { font: inherit; color: inherit; }
   left: 0;
   right: 0;
   height: 60px;
-  backdrop-filter: blur(var(--scroll-blur, 0px));
   -webkit-backdrop-filter: blur(var(--scroll-blur, 0px));
-  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  backdrop-filter: blur(var(--scroll-blur, 0px));
   -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   z-index: 9997;
   transition: backdrop-filter 0.1s linear;
 }
 
-/* ─── content-visibility: auto on off-screen sections ───────────────────────── */
-/* Applied directly in Section.tsx via inline style or Tailwind variant */
-/* Fallback for browsers that don't support contain-intrinsic-size */
+/* ─── content-visibility: auto for off-screen sections ───────────────────── */
 @supports (content-visibility: auto) {
   .cv-auto {
     content-visibility: auto;

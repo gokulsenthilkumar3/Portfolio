@@ -59,13 +59,13 @@ export const viewport: Viewport = {
 }
 
 const sections = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
+  { id: 'home',     label: 'Home'     },
   { id: 'projects', label: 'Projects' },
-  { id: 'github', label: 'GitHub' },
+  { id: 'skills',   label: 'Skills'   },
+  { id: 'about',    label: 'About'    },
+  { id: 'github',   label: 'GitHub'   },
   { id: 'insights', label: 'Insights' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'contact',  label: 'Contact'  },
 ]
 
 // JSON-LD structured data — Person schema for Google rich results
