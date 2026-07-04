@@ -72,13 +72,21 @@ function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
   )
 }
 
+// FIX: title was incorrectly concatenated into className string — moved to proper title prop
 function ConfidenceDot({ confidence }: { confidence: 'high' | 'medium' | 'low' }) {
-  const map = {
-    high: 'bg-emerald-500 title="High confidence"',
+  const colorMap: Record<string, string> = {
+    high: 'bg-emerald-500',
     medium: 'bg-amber-400',
     low: 'bg-white/20',
   }
-  return <span className={`inline-block w-1.5 h-1.5 rounded-full ${map[confidence] ?? map.low} flex-shrink-0 mt-0.5`} title={`${confidence} confidence`} />
+  return (
+    <span
+      className={`inline-block w-1.5 h-1.5 rounded-full ${
+        colorMap[confidence] ?? colorMap.low
+      } flex-shrink-0 mt-0.5`}
+      title={`${confidence} confidence`}
+    />
+  )
 }
 
 function PriorityBadge({ priority }: { priority: string }) {
@@ -142,8 +150,8 @@ export function ProjectReview() {
       setRepos(data.repos ?? [])
       setSummary({ totalRepos: data.totalRepos, averageScore: data.averageScore, analyzedAt: data.analyzedAt })
       setLastFetched(new Date())
-    } catch (e: any) {
-      setError(e.message ?? 'Failed to fetch repos')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch repos')
     } finally {
       setLoading(false)
     }
@@ -162,7 +170,6 @@ export function ProjectReview() {
 
   useEffect(() => { fetchAll() }, [fetchAll])
 
-  // Characteristic definitions (UI labels only — scoring is all server-side)
   const CHARS = [
     { id: 'core_intelligence', label: 'Intelligence' },
     { id: 'ux', label: 'UX' },
@@ -341,6 +348,8 @@ export function ProjectReview() {
             {sortedByActiveChar.map((repo) => {
               const isExpanded = expanded === repo.id
               const isRefreshing = analyzingRepo === repo.name
+              // Unique ID for aria-controls linking button → detail panel
+              const detailPanelId = `repo-detail-${repo.id}`
 
               return (
                 <div
@@ -350,10 +359,12 @@ export function ProjectReview() {
                   }`}
                 >
                   {/* Card header — always visible */}
+                  {/* FIX: added aria-controls pointing to expanded detail panel */}
                   <button
                     className="w-full text-left p-5 flex items-start gap-4"
                     onClick={() => setExpanded(isExpanded ? null : repo.id)}
                     aria-expanded={isExpanded}
+                    aria-controls={detailPanelId}
                   >
                     <div className="flex-shrink-0">
                       <ScoreRing score={repo.overallScore} />
@@ -415,9 +426,9 @@ export function ProjectReview() {
                     </div>
                   </button>
 
-                  {/* Expanded detail */}
+                  {/* FIX: added id matching aria-controls above */}
                   {isExpanded && (
-                    <div className="border-t border-white/5 px-5 pb-6">
+                    <div id={detailPanelId} className="border-t border-white/5 px-5 pb-6">
                       <div className="pt-5 grid md:grid-cols-2 gap-6">
 
                         {/* Left: Characteristic breakdown */}
@@ -443,7 +454,6 @@ export function ProjectReview() {
                                     </span>
                                   </div>
                                   <ScoreBar score={c.score} />
-                                  {/* Signals tooltip on hover — shown inline */}
                                   <div className="mt-0.5 flex flex-wrap gap-1">
                                     {c.signals.slice(0, 2).map((sig, i) => (
                                       <span key={i} className="text-[9px] text-muted-foreground/60 leading-tight">
@@ -458,7 +468,6 @@ export function ProjectReview() {
 
                         {/* Right: Metadata + signals */}
                         <div className="space-y-5">
-                          {/* Framework + tech signals */}
                           <div>
                             <h4 className="text-xs font-semibold mb-3 uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                               <Code2 className="h-3.5 w-3.5" /> Detected Stack
@@ -478,7 +487,6 @@ export function ProjectReview() {
                             </div>
                           </div>
 
-                          {/* Infra flags */}
                           <div>
                             <h4 className="text-xs font-semibold mb-3 uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                               <ShieldCheck className="h-3.5 w-3.5" /> Infrastructure Signals
@@ -506,7 +514,6 @@ export function ProjectReview() {
                             </div>
                           </div>
 
-                          {/* Commit activity */}
                           <div>
                             <h4 className="text-xs font-semibold mb-3 uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                               <GitBranch className="h-3.5 w-3.5" /> Activity
@@ -525,12 +532,10 @@ export function ProjectReview() {
                             </div>
                           </div>
 
-                          {/* Summary */}
                           <p className="text-xs text-muted-foreground leading-relaxed italic border-l-2 border-primary/20 pl-3">
                             {repo.summary}
                           </p>
 
-                          {/* Actions */}
                           <div className="flex gap-2 pt-1">
                             <a
                               href={repo.url}

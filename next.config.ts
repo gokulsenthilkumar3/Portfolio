@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   // Handle subpath deployments (like GitHub Pages or custom proxies)
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   trailingSlash: true,
+  compress: true,
+  poweredByHeader: false,
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },

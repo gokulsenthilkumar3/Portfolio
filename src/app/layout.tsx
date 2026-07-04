@@ -13,7 +13,9 @@ import { LiquidTransitionsWrapper } from '@/components/effects/LiquidTransitions
 import { Analytics } from '@vercel/analytics/react'
 import { ClientEffects } from '@/components/shared/ClientEffects'
 
-const BASE_URL = seo.siteUrl || personal.website || 'https://portfolio-ten-plum-98.vercel.app'
+// BASE_URL must always be set via NEXT_PUBLIC_SITE_URL env var in production.
+// The personal.website fallback is for local dev only — never use a Vercel preview URL here.
+const BASE_URL = seo.siteUrl || personal.website || 'https://gokulsenthilkumar3.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -21,6 +23,10 @@ export const metadata: Metadata = {
   description: seo.description,
   keywords: seo.keywords,
   authors: [{ name: seo.author }],
+  // Canonical URL — prevents duplicate content penalty across preview/prod deployments
+  alternates: {
+    canonical: BASE_URL,
+  },
   openGraph: {
     title: seo.title,
     description: seo.description,
@@ -131,8 +137,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <AdminClientWrapper>
             <LiquidTransitionsWrapper />
-                        <ClientEffects />
-                  <ProgressBar />
+            <ClientEffects />
+            <ProgressBar />
             <Navigation />
             <main id="main-content">{children}</main>
             <Footer />
