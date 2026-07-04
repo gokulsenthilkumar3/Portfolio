@@ -16,23 +16,37 @@ const HeroScene = dynamic(() => import('@/components/3d/HeroScene').then(mod => 
   loading: () => <div className="absolute inset-0 bg-background/80 backdrop-blur-3xl" />
 })
 
+// Lazy-load heavy section components to reduce initial JS bundle
+const ProjectsSection = dynamic(() =>
+  import('@/components/sections/ProjectsSection').then(mod => ({ default: mod.ProjectsSection })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
+)
+const SkillsSection = dynamic(() =>
+  import('@/components/sections/SkillsSection').then(mod => ({ default: mod.SkillsSection })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
+)
+const ContactSection = dynamic(() =>
+  import('@/components/sections/ContactSection').then(mod => ({ default: mod.ContactSection })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
+)
+const BlogSection = dynamic(() =>
+  import('@/components/sections/BlogSection').then(mod => ({ default: mod.BlogSection })),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
+)
+
 import { GitHubSection } from '@/components/shared/GitHubSection'
 import { LinkedInSection } from '@/components/shared/LinkedInSection'
 import { CertificationsSection } from '@/components/shared/CertificationsSection'
 import { LanguagesSection } from '@/components/shared/LanguagesSection'
 import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout, blog as staticBlog } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
-import type { Project } from '@/lib/types/portfolio'
+import type { Project, Skill } from '@/lib/types/portfolio'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/Button'
 import { cn } from '@/lib/utils/cn'
 import { useAdmin } from '@/components/admin/AdminProvider'
 import { EditableSection } from '@/components/admin/EditableSection'
 import { AdminPanel } from '@/components/admin/AdminPanel'
-import { ProjectsSection } from '@/components/sections/ProjectsSection'
-import { SkillsSection } from '@/components/sections/SkillsSection'
-import { ContactSection } from '@/components/sections/ContactSection'
-import { BlogSection } from '@/components/sections/BlogSection'
 import { TerminalModal } from '@/components/effects/TerminalModal'
 import { Terminal } from 'lucide-react'
 import { use3DGate } from '@/hooks/use3DGate'
@@ -53,15 +67,16 @@ export default function Home() {
     ? portfolioData.projects
     : staticProjects) as Project[]
 
-  const currentSkills = isAdmin && portfolioData.skills?.length > 0
+  // Unified type — no `as any` cast
+  const currentSkills: Skill[] = (isAdmin && portfolioData.skills?.length > 0
     ? portfolioData.skills
-    : staticSkills
+    : staticSkills) as Skill[]
 
   const currentPersonal = isAdmin ? portfolioData.personal : siteConfig
   const currentAbout = isAdmin ? portfolioData.about : staticAbout
 
   const featuredProjects = getFeaturedProjects(currentProjects)
-  const topSkills = getTopSkills(currentSkills as any, 8)
+  const topSkills = getTopSkills(currentSkills, 8)
 
   const openPanel = (tab: string) => {
     setAdminPanelTab(tab)
@@ -81,7 +96,6 @@ export default function Home() {
       {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden bg-background">
         <div className="absolute inset-0 z-0">
-          {/* Overlay adapts: semi-transparent in dark, much lighter in light mode */}
           <div className="absolute inset-0 bg-gradient-to-b dark:from-background/80 dark:via-background/50 dark:to-background/20 from-background/40 via-background/20 to-transparent z-10 pointer-events-none" />
           {allow3D && <HeroScene className="w-full h-full" />}
         </div>
@@ -100,7 +114,6 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection animation="slideUp" delay={0.3}>
-              {/* First name: theme-aware foreground; last name: gradient accent */}
               <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display drop-shadow-xl dark:drop-shadow-none">
                 <span className="text-foreground">
                   {currentPersonal.name.split(' ')[0]}
@@ -113,11 +126,9 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection animation="slideUp" delay={0.5}>
-              {/* Title: theme-aware muted foreground */}
               <p className="text-xl md:text-3xl font-medium text-foreground/80 mb-6 tracking-tight max-w-3xl mx-auto">
                 {currentPersonal.title}
               </p>
-              {/* Bio: card-style box that adapts in both modes */}
               <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed
                             backdrop-blur-sm p-4 rounded-2xl
                             bg-muted/40 border border-border/50">
@@ -179,7 +190,6 @@ export default function Home() {
           </div>
         </EditableSection>
         
-        {/* Terminal Modal */}
         <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
       </section>
 
@@ -212,13 +222,15 @@ export default function Home() {
       </Section>
 
       {/* ─── SKILLS ────────────────────────────────────────────────────────────── */}
+      {/* NOTE: id="skills" lives inside SkillsSection itself — no duplicate here */}
       <Section id="skills">
         <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
-          <SkillsSection skills={currentSkills as any} />
+          <SkillsSection skills={currentSkills} />
         </EditableSection>
       </Section>
 
       {/* ─── PROJECTS ─────────────────────────────────────────────────────────── */}
+      {/* NOTE: id="projects" lives inside ProjectsSection itself — no duplicate here */}
       <Section id="projects" background="muted">
         <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
           <ProjectsSection projects={currentProjects} />
@@ -242,14 +254,12 @@ export default function Home() {
         </div>
       </Section>
 
-
-
       {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
-<Section id="insights">
-                <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
-        <BlogSection posts={isAdmin && portfolioData?.blog?.length > 0 ? portfolioData.blog : staticBlog || []} />
-      </EditableSection>
-          </Section>
+      <Section id="insights">
+        <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
+          <BlogSection posts={isAdmin && portfolioData?.blog?.length > 0 ? portfolioData.blog : staticBlog || []} />
+        </EditableSection>
+      </Section>
 
       {/* ─── CONTACT ─────────────────────────────────────────────────────────── */}
       <Section id="contact" background="muted">

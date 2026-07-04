@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Github, Linkedin, Twitter, Send, ArrowUp, MapPin, MessageSquare, Copy, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function ContactSection({
   heading = 'Get In Touch',
@@ -21,7 +22,7 @@ export function ContactSection({
   github?: string
   twitter?: string
 }) {
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null)
 
@@ -34,28 +35,58 @@ export function ContactSection({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (status === 'sending') return
     setStatus('sending')
+
     try {
-      await fetch(`mailto:${email}?subject=Portfolio Contact: ${form.name}&body=${encodeURIComponent(form.message + '\n\nFrom: ' + form.email)}`)
-      setStatus('sent')
-      setTimeout(() => setStatus('idle'), 3000)
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.ok) {
+        setStatus('sent')
+        setForm({ name: '', email: '', subject: '', message: '' })
+        toast.success(data.message || 'Message sent! I\'ll reply within 24h. 🎉')
+        setTimeout(() => setStatus('idle'), 4000)
+      } else if (data.fallback) {
+        // EmailJS not configured — open native mail client as fallback
+        setStatus('idle')
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent(form.subject || 'Portfolio Contact: ' + form.name)}&body=${encodeURIComponent(form.message + '\n\nFrom: ' + form.email)}`
+        toast.info('Opening your mail client as fallback.')
+      } else {
+        setStatus('error')
+        toast.error(data.message || 'Failed to send. Please try again.')
+        setTimeout(() => setStatus('idle'), 3000)
+      }
     } catch {
       setStatus('error')
+      toast.error('Network error. Please email me directly.')
+      setTimeout(() => setStatus('idle'), 3000)
     }
   }
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   const socials = [
-    { icon: Mail, label: 'Email', href: `mailto:${email}`, color: 'text-red-400' },
-    ...(emailZoho ? [{ icon: Mail, label: 'Zoho Mail', href: `mailto:${emailZoho}`, color: 'text-indigo-400' }] : []),
-    { icon: Github, label: 'GitHub', href: github || 'https://github.com/gokulsenthilkumar3', color: 'text-gray-300' },
-    { icon: Linkedin, label: 'LinkedIn', href: linkedin || '#', color: 'text-blue-400' },
-    ...(twitter ? [{ icon: Twitter, label: 'Twitter', href: twitter, color: 'text-sky-400' }] : []),
+    { icon: Mail, label: 'Email', href: `mailto:${email}`, copyText: email, color: 'text-red-400' },
+    ...(emailZoho ? [{ icon: Mail, label: 'Zoho Mail', href: `mailto:${emailZoho}`, copyText: emailZoho, color: 'text-indigo-400' }] : []),
+    { icon: Github, label: 'GitHub', href: github || 'https://github.com/gokulsenthilkumar3', copyText: github || 'https://github.com/gokulsenthilkumar3', color: 'text-gray-300' },
+    { icon: Linkedin, label: 'LinkedIn', href: linkedin || '#', copyText: linkedin || '#', color: 'text-blue-400' },
+    ...(twitter ? [{ icon: Twitter, label: 'Twitter', href: twitter, copyText: twitter, color: 'text-sky-400' }] : []),
   ]
 
+  const subLabel = (label: string) => {
+    if (label === 'Email') return email
+    if (label === 'Zoho Mail') return emailZoho
+    return `@gokulsenthilkumar3`
+  }
+
   return (
-    <div className="max-w-4xl mx-auto" id="contact">
+    <div className="max-w-4xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -82,15 +113,11 @@ export function ContactSection({
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           <h3 className="text-lg font-semibold mb-4 relative z-10">Send a Message</h3>
-          <form
-            onSubmit={handleSubmit}
-            action={`mailto:${email}`}
-            method="get"
-            className="space-y-4 relative z-10"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Your Name</label>
+              <label htmlFor="contact-name" className="text-sm text-muted-foreground mb-1 block">Your Name</label>
               <input
+                id="contact-name"
                 type="text"
                 required
                 value={form.name}
@@ -100,8 +127,9 @@ export function ContactSection({
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Your Email</label>
+              <label htmlFor="contact-email" className="text-sm text-muted-foreground mb-1 block">Your Email</label>
               <input
+                id="contact-email"
                 type="email"
                 required
                 value={form.email}
@@ -111,10 +139,24 @@ export function ContactSection({
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Message</label>
+              <label htmlFor="contact-subject" className="text-sm text-muted-foreground mb-1 block">Subject</label>
+              <input
+                id="contact-subject"
+                type="text"
+                required
+                value={form.subject}
+                onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                placeholder="Project inquiry, collaboration..."
+                className="w-full bg-background/60 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-inner"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-message" className="text-sm text-muted-foreground mb-1 block">Message</label>
               <textarea
+                id="contact-message"
                 required
                 rows={4}
+                minLength={10}
                 value={form.message}
                 onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                 placeholder="How can I help you?"
@@ -126,10 +168,10 @@ export function ContactSection({
               disabled={status === 'sending' || status === 'sent'}
               className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
-              {status === 'idle' && <><Send className="w-4 h-4" /> Send Message</>}
+              {status === 'idle'    && <><Send className="w-4 h-4" /> Send Message</>}
               {status === 'sending' && <span className="animate-pulse">Sending...</span>}
-              {status === 'sent' && <span>Sent Successfully!</span>}
-              {status === 'error' && <span>Open Mail Client</span>}
+              {status === 'sent'    && <span>✓ Sent Successfully!</span>}
+              {status === 'error'   && <><Send className="w-4 h-4" /> Try Again</>}
             </button>
           </form>
         </motion.div>
@@ -146,7 +188,7 @@ export function ContactSection({
           <div className="relative z-10">
             <h3 className="text-lg font-semibold mb-4">Connect With Me</h3>
             <div className="space-y-3">
-              {socials.map(({ icon: Icon, label, href, color }) => (
+              {socials.map(({ icon: Icon, label, href, copyText, color }) => (
                 <div key={label} className="relative flex items-center group/item">
                   <a
                     href={href}
@@ -159,24 +201,25 @@ export function ContactSection({
                     </div>
                     <div>
                       <div className="text-sm font-medium group-hover/item:text-primary transition-colors">{label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {label === 'Email' ? email : label === 'Zoho Mail' ? emailZoho : `@gokulsenthilkumar3`}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{subLabel(label)}</div>
                     </div>
                   </a>
                   <button
-                    onClick={(e) => handleCopy(e, href.replace('mailto:', ''), label)}
+                    onClick={(e) => handleCopy(e, copyText, label)}
                     className="absolute right-3 p-2 rounded-lg hover:bg-primary/20 text-muted-foreground hover:text-primary opacity-0 group-hover/item:opacity-100 transition-all"
                     title={`Copy ${label}`}
+                    type="button"
                   >
-                    {copiedLabel === label ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    {copiedLabel === label
+                      ? <Check className="h-4 w-4 text-green-500" />
+                      : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-card/50 border border-border/50 rounded-2xl p-6 backdrop-blur-sm">
+          <div className="bg-card/50 border border-border/50 rounded-2xl p-6 backdrop-blur-sm mt-6">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Location</span>
@@ -196,6 +239,7 @@ export function ContactSection({
       >
         <button
           onClick={scrollToTop}
+          type="button"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-border/50 hover:border-primary/50 hover:bg-primary/5 text-sm text-muted-foreground hover:text-primary transition-all group"
         >
           <ArrowUp className="h-4 w-4 group-hover:-translate-y-1 transition-transform" />
