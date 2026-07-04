@@ -53,7 +53,7 @@ export default function SkillsPage() {
 
   const filteredSkills = useMemo(() => {
     if (selectedCategory === 'all') return skills as Skill[]
-    return getSkillsByCategory(skills as Skill[], selectedCategory) as Skill[]
+    return getSkillsByCategory(skills as Skill[], selectedCategory as Skill['category']) as Skill[]
   }, [selectedCategory])
 
   const topSkills = getTopSkills(skills as Skill[], 8)
