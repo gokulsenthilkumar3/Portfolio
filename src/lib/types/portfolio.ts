@@ -1,4 +1,4 @@
-export interface Project {
+ export interface Project {
   id: string
   title: string
   description: string
@@ -20,7 +20,7 @@ export interface Project {
 export interface Skill {
       id: string
   name: string
-  category: 'frontend' | 'backend' | 'tools' | 'soft-skills' | 'design'
+    category: 'frontend' | 'backend' | 'tools' | 'soft-skills' | 'design' | 'testing' | 'devops'
   proficiency: number // 1-5
   icon?: string
   color?: string
