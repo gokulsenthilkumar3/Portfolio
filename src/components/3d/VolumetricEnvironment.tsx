@@ -46,7 +46,7 @@ export function VolumetricEnvironment({ theme }: { theme: string }) {
         <Sparkles count={100} scale={10} size={6} speed={0.2} opacity={0.3} color="#ec4899" />
       </Float>
 
-      <EffectComposer disableNormalPass multisampling={4}>
+              <EffectComposer multisampling={4}>
         <DepthOfField target={[0, 0, 0]} focalLength={0.02} bokehScale={1.5} height={480} />
         <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={1.5} />
         <ChromaticAberration 
