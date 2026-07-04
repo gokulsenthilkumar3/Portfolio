@@ -14,6 +14,7 @@ const BLANK: Experience = {
   company: '',
   period: { start: '', present: false },
   description: '',
+  achievements: [],
   technologies: [] as string[],
   location: '',
   type: 'full-time',
@@ -95,7 +96,6 @@ export function ExperienceEditor() {
         </motion.div>
       ))}
 
-      {/* Experience Form Modal */}
       <AnimatePresence>
         {editing && (
           <ExperienceForm
