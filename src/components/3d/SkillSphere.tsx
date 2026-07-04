@@ -230,7 +230,7 @@ export function SkillSphere({ onSkillSelect, selectedCategory, className }: Skil
 
   const filteredSkills = useMemo(() => {
     if (!selectedCategory) return skills.slice(0, 28)
-    return getSkillsByCategory(skills, selectedCategory as any).slice(0, 20)
+          return getSkillsByCategory(skills as import('@/lib/types/portfolio').Skill[], selectedCategory as any).slice(0, 20)
   }, [selectedCategory])
 
   // Fibonacci sphere distribution
