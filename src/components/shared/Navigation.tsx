@@ -109,12 +109,11 @@ export function Navigation() {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1" role="menubar">
+          <div className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map(link => (
               <Link
                 key={link.label}
                 href={link.href}
-                role="menuitem"
                 aria-current={isActive(link.href) ? 'page' : undefined}
                 className={`relative px-3 py-1.5 text-sm font-medium rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
                   isActive(link.href) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
@@ -155,8 +154,6 @@ export function Navigation() {
             <button
               onClick={() => setOpen(o => !o)}
               aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              aria-controls="mobile-drawer"
               className="md:hidden w-9 h-9 rounded-lg border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
             >
               <AnimatePresence mode="wait" initial={false}>

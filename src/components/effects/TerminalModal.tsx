@@ -148,6 +148,7 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
               <button
                 onClick={onClose}
                 className="p-1 hover:bg-white/10 rounded-md transition-colors text-gray-400 hover:text-white"
+                title="Close Terminal"
               >
                 <X size={16} />
               </button>
@@ -184,6 +185,8 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
                   className="flex-1 bg-transparent outline-none border-none text-white shadow-none focus:ring-0 p-0 m-0"
                   spellCheck={false}
                   autoComplete="off"
+                  title="Terminal Input"
+                  placeholder="Enter command..."
                 />
               </div>
               <div ref={bottomRef} />

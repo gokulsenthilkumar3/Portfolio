@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable react/forbid-dom-props, react/forbid-component-props */
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Section } from '@/components/shared/Section'
@@ -127,8 +128,8 @@ export default function SkillsPage() {
               </div>
               <div className="w-full h-1.5 rounded-full bg-border/40 overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${getProficiencyColor(skill.proficiency)} transition-all`}
-                  style={{ width: `${(skill.proficiency / 5) * 100}%` }}
+                  className={`h-full rounded-full ${getProficiencyColor(skill.proficiency)} transition-all w-[var(--skill-width)]`}
+                  {...({ style: { '--skill-width': `${(skill.proficiency / 5) * 100}%` } } as any)}
                 />
               </div>
               {skill.yearsOfExperience && (

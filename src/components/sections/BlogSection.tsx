@@ -89,6 +89,7 @@ export function BlogSection({ posts }: { posts: BlogPost[] }) {
                 <button
                   onClick={() => setSelectedPost(null)}
                   className="p-2 hover:bg-muted rounded-full transition-colors"
+                  title="Close Post"
                 >
                   <X size={20} />
                 </button>

@@ -66,6 +66,7 @@ export function BlogEditor() {
                 <button
                   onClick={(e) => { e.stopPropagation(); deletePost(post.id) }}
                   className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  title="Delete post"
                 >
                   <Trash2 size={12} />
                 </button>
@@ -86,6 +87,8 @@ export function BlogEditor() {
                         value={post.title}
                         onChange={e => updatePost(post.id, { title: e.target.value })}
                         className="w-full bg-black/20 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500/50 transition-colors"
+                        title="Title"
+                        placeholder="Post title"
                       />
                     </div>
                     
@@ -96,6 +99,8 @@ export function BlogEditor() {
                           value={post.category || ''}
                           onChange={e => updatePost(post.id, { category: e.target.value })}
                           className="w-full bg-black/20 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500/50 transition-colors"
+                          title="Category"
+                          placeholder="Category"
                         />
                       </div>
                       <div>
@@ -104,6 +109,8 @@ export function BlogEditor() {
                           value={post.date}
                           onChange={e => updatePost(post.id, { date: e.target.value })}
                           className="w-full bg-black/20 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500/50 transition-colors"
+                          title="Date"
+                          placeholder="Date"
                         />
                       </div>
                     </div>
@@ -115,6 +122,8 @@ export function BlogEditor() {
                         onChange={e => updatePost(post.id, { excerpt: e.target.value })}
                         rows={2}
                         className="w-full bg-black/20 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500/50 transition-colors resize-none"
+                        title="Excerpt"
+                        placeholder="Short excerpt"
                       />
                     </div>
 
@@ -125,6 +134,8 @@ export function BlogEditor() {
                         onChange={e => updatePost(post.id, { content: e.target.value })}
                         rows={6}
                         className="w-full bg-black/20 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500/50 transition-colors resize-none font-mono"
+                        title="Content"
+                        placeholder="Post content (Markdown)"
                       />
                     </div>
                   </motion.div>

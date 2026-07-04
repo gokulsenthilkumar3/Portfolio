@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 
 type AnimationType = 'fadeIn' | 'slideUp' | 'slideDown' | 'scaleIn' | 'slideLeft' | 'slideRight'
 
-const VARIANTS: Record<AnimationType, { hidden: object; visible: object }> = {
+const VARIANTS: Record<AnimationType, Variants> = {
   fadeIn:     { hidden: { opacity: 0 },                 visible: { opacity: 1 } },
   slideUp:    { hidden: { opacity: 0, y: 40 },          visible: { opacity: 1, y: 0 } },
   slideDown:  { hidden: { opacity: 0, y: -40 },         visible: { opacity: 1, y: 0 } },

@@ -4,7 +4,15 @@
   "main": "index.js",
   "author": "Gokul Senthilkumar",
   "description": "Personal developer portfolio built with Next.js 14, TypeScript, and Tailwind CSS — featuring 3D animations, server-side rendering, and CI/CD deployment on Vercel.",
-  "keywords": ["portfolio", "nextjs", "typescript", "sdet", "full-stack", "react", "tailwind"],
+  "keywords": [
+    "portfolio",
+    "nextjs",
+    "typescript",
+    "sdet",
+    "full-stack",
+    "react",
+    "tailwind"
+  ],
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
@@ -25,7 +33,7 @@
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.182.0",
-    "@vercel/analytics": "^1.5.0",
+    "@vercel/analytics": "^1.6.1",
     "autoprefixer": "^10.4.24",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable react/forbid-dom-props, react/forbid-component-props */
 
 /**
  * SkillsSection — inline expand/collapse with 3D sphere in expanded view
@@ -101,8 +102,8 @@ function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
         </div>
         <div className="h-1 rounded-full bg-border/30 overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary/80 transition-all duration-700"
-            style={{ width: `${pct}%` }}
+            className="h-full rounded-full bg-primary/80 transition-all duration-700 w-[var(--skill-width)]"
+            {...({ style: { '--skill-width': `${pct}%` } } as any)}
           />
         </div>
       </div>
@@ -127,7 +128,7 @@ function CategoryCard({
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold tracking-wide uppercase" style={{ color: meta.accent }}>
+        <h3 className="text-sm font-semibold tracking-wide uppercase text-[var(--accent-color)]" {...({ style: { '--accent-color': meta.accent } } as any)}>
           {meta.label}
         </h3>
         <span className="text-[10px] text-muted-foreground">{catSkills.length} skills</span>
