@@ -3,13 +3,12 @@
 import { Environment, Float, Sparkles, Lightformer } from '@react-three/drei'
 import { EffectComposer, Bloom, ChromaticAberration, Noise } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
-import * as THREE from 'react-three-fiber' // keep existing import path style
+import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useMemo } from 'react'
-import * as THREEns from 'three'
 
 export function VolumetricEnvironment({ theme }: { theme: string }) {
-  const groupRef = useRef<THREEns.Group>(null)
+  const groupRef = useRef<THREE.Group>(null)
 
   // Skip all post-processing and heavy effects when user prefers reduced motion
   const prefersReduced = useMemo(
@@ -46,7 +45,6 @@ export function VolumetricEnvironment({ theme }: { theme: string }) {
         </Environment>
       </group>
 
-      {/* Sparkles reduced: 200/100 → 100/50 */}
       {!prefersReduced && (
         <Float speed={2} rotationIntensity={1} floatIntensity={2}>
           <Sparkles count={100} scale={10} size={4} speed={0.4} opacity={0.2} color="#8b5cf6" />
@@ -54,13 +52,12 @@ export function VolumetricEnvironment({ theme }: { theme: string }) {
         </Float>
       )}
 
-      {/* Post-processing: multisampling 4→2, DepthOfField removed (expensive), skip entirely on reduced-motion */}
       {!prefersReduced && (
         <EffectComposer multisampling={2}>
           <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={1.5} />
           <ChromaticAberration
             blendFunction={BlendFunction.NORMAL}
-            offset={new THREEns.Vector2(0.001, 0.001)}
+            offset={new THREE.Vector2(0.001, 0.001)}
             radialModulation={false}
             modulationOffset={0}
           />
