@@ -10,6 +10,7 @@ import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
 import { LiquidTransitionsWrapper } from '@/components/effects/LiquidTransitionsWrapper'
+import { Analytics } from '@vercel/analytics/react'
 
 const BASE_URL = seo.siteUrl || personal.website || 'https://portfolio-ten-plum-98.vercel.app'
 
@@ -46,19 +47,38 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)',  color: '#09090b' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
   ],
 }
 
 const sections = [
-  { id: 'home',     label: 'Home'     },
-  { id: 'about',    label: 'About'    },
-  { id: 'skills',   label: 'Skills'   },
+  { id: 'home', label: 'Home' },
+  { id: 'about', label: 'About' },
+  { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Projects' },
-  { id: 'github',   label: 'GitHub'   },
+  { id: 'github', label: 'GitHub' },
   { id: 'insights', label: 'Insights' },
-  { id: 'contact',  label: 'Contact'  },
+  { id: 'contact', label: 'Contact' },
 ]
+
+// JSON-LD structured data — Person schema for Google rich results
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: seo.author,
+  url: BASE_URL,
+  sameAs: [
+    personal.github,
+    personal.linkedin,
+    personal.twitter,
+  ].filter(Boolean),
+  jobTitle: 'SDET & Full-Stack Developer',
+  knowsAbout: ['TypeScript', 'Next.js', 'React', 'Playwright', 'Node.js', 'Test Automation'],
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Freelance / Open Source',
+  },
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -67,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Preconnect to font provider — speeds up first font fetch */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         {/* dns-prefetch as fallback for browsers that ignore preconnect */}
-        <link rel="dns-prefetch" href="//api.fontshare.com" />
+        <link rel="dns-prefetch" href="https://api.fontshare.com" />
         {/*
           Load fonts as non-blocking:
           1. Preload the stylesheet so the browser discovers it early.
@@ -81,15 +101,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
         />
         <link
-          id="fontshare-css"
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
           media="print"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var l=document.getElementById('fontshare-css');if(l){l.onload=function(){l.media='all'};if(l.sheet)l.media='all';}})();`,
-          }}
+          // @ts-expect-error onLoad is valid for link elements
+          onLoad="this.media='all'"
         />
         <noscript>
           <link
@@ -97,8 +113,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
           />
         </noscript>
+        {/* JSON-LD structured data for Google Search rich results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body suppressHydrationWarning>
+        {/* Skip-to-content — standard a11y pattern for keyboard users */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:text-sm focus:font-medium focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider>
           <AdminClientWrapper>
             <LiquidTransitionsWrapper />
@@ -112,6 +140,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Toaster position="bottom-right" richColors closeButton />
           </AdminClientWrapper>
         </ThemeProvider>
+        {/* Vercel Analytics — privacy-first, no cookies */}
+        <Analytics />
       </body>
     </html>
   )
