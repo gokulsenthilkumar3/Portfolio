@@ -1,4 +1,4 @@
- export interface SiteConfig {
+export interface SiteConfig {
   name: string
   title: string
   tagline: string
@@ -7,21 +7,22 @@
   email: string
   emailZoho?: string
   location: string
-  availability: string
-  avatar: string
-  resume: string
-  github: string
-  linkedin: string
-  twitter: string
-  website: string
-  careerStart: string
+  availability: 'available' | 'busy' | 'open-to-offers'
+  avatar?: string
+  resume?: string
+  github?: string
+  linkedin?: string
+  twitter?: string
+  website?: string
+  careerStart?: string
 }
 
 export interface Project {
   id: string
   title: string
   description: string
-  tech: string[]
+  tech?: string[]
+  technologies?: string[]
   images: string[]
   links: {
     live?: string
@@ -29,18 +30,17 @@ export interface Project {
     demo?: string
   }
   featured: boolean
-  category: 'web' | 'mobile' | '3d' | 'ai' | 'fullstack' | 'iot' | 'other'
+  category: 'web' | 'mobile' | '3d' | 'ai' | 'fullstack' | 'iot' | 'testing' | 'other'
   tags?: string[]
   date?: string
   status?: 'completed' | 'in-progress' | 'planned'
-    technologies?: string[] // alias for tech — satisfies project page usage
 }
 
 export interface Skill {
-      id: string
+  id: string
   name: string
-    category: 'frontend' | 'backend' | 'tools' | 'soft-skills' | 'design' | 'testing' | 'devops'
-  proficiency: number // 1-5
+  category: 'frontend' | 'backend' | 'tools' | 'soft-skills' | 'design' | 'testing' | 'devops'
+  proficiency: number
   icon?: string
   color?: string
   description?: string
@@ -57,17 +57,18 @@ export interface Experience {
     present?: boolean
   }
   description: string | string[]
+  achievements?: string[]
   technologies: string[]
   location?: string
-  type?: 'full-time' | 'part-time' | 'freelance' | 'internship'
+  type?: 'full-time' | 'part-time' | 'freelance' | 'internship' | 'contract'
 }
 
 export interface SocialLink {
-  id: string
-  platform: 'github' | 'linkedin' | 'twitter' | 'email' | 'website' | 'instagram'
+  id?: string
+  platform: string
   url: string
   icon: string
-  color: string
+  color?: string
   username?: string
 }
 
@@ -79,27 +80,10 @@ export interface BlogPost {
   category: string
   excerpt: string
   content: string
-   slug?: string
+  slug?: string
   coverImage?: string
   featured?: boolean
   tags?: string[]
-}
-
-export interface SiteConfig {
-  name: string
-  title: string
-  description: string
-  email: string
-  location: string
-  availability: 'available' | 'busy' | 'open-to-offers'
-  bio: string
-  tagline: string
-  resume?: string
-  avatar?: string
-  github?: string
-  linkedin?: string
-  twitter?: string
-  website?: string
 }
 
 export interface Testimonial {
@@ -109,21 +93,8 @@ export interface Testimonial {
   company: string
   content: string
   avatar?: string
-  rating: number // 1-5
+  rating: number
   date: string
-}
-
-export interface BlogPost {
-  id: string
-  title: string
-  excerpt: string
-  content: string
-    slug?: string
-  date: string
-    readTime: string
-    category: string
-    featured?: boolean
-  coverImage?: string
 }
 
 export interface ContactForm {
@@ -148,6 +119,7 @@ export interface ThemeCustomization {
   highContrast: boolean
   disable3D: boolean
 }
+
 export interface AboutConfig {
   title: string
   subtitle: string
