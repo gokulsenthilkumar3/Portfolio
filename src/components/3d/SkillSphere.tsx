@@ -4,10 +4,11 @@ import React, { useRef, useMemo, useState, useCallback } from 'react'
 import { Canvas, useFrame, useThree, ThreeEvent } from '@react-three/fiber'
 import { OrbitControls, Html, Text, Line, Sparkles, Float } from '@react-three/drei'
 import * as THREE from 'three'
-import { skills } from '@/lib/data/content'
+import { skills as _skills } from '@/lib/data/content'
 import { getSkillsByCategory } from '@/lib/utils/content-helpers'
 import type { Skill } from '@/lib/types/portfolio'
 import { ThreeGate } from './ThreeGate'
+const skills = _skills as Skill[]
 
 // ─── Neon Ring ────────────────────────────────────────────────────
 function NeonRing({ radius, color, tiltX = 0, tiltZ = 0, speed = 0.3 }: {
