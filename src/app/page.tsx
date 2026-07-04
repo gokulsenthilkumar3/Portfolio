@@ -10,6 +10,7 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import dynamic from 'next/dynamic'
 import { TextReveal } from '@/components/effects/TextReveal'
 import { MagneticButton } from '@/components/effects/MagneticButton'
+const MorphingBlob = dynamic(() => import('@/components/effects/MorphingBlob').then(m => ({ default: m.MorphingBlob })), { ssr: false })
 
 const HeroScene = dynamic(() => import('@/components/3d/HeroScene').then(mod => mod.HeroScene), {
   ssr: false,
@@ -196,6 +197,7 @@ export default function Home() {
       {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+          <MorphingBlob className="absolute -top-20 -right-20 opacity-30" size={500} />
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="space-y-6">
