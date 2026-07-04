@@ -13,8 +13,8 @@ const BLANK: Experience = {
   role: '',
   company: '',
   period: { start: '', present: false },
-  description: [],
-  technologies: [],
+      description: '',
+    technologies: [] as string[],
   location: '',
   type: 'full-time',
 }
