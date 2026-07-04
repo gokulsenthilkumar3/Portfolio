@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion, useSpring } from 'framer-motion'
-import { useMousePosition } from '@/lib/hooks/use-mouse-position'
 import { cn } from '@/lib/utils/cn'
 
 interface MagneticButtonProps {
@@ -12,28 +11,33 @@ interface MagneticButtonProps {
   disabled?: boolean
 }
 
-export function MagneticButton({ 
-  children, 
-  className, 
+/**
+ * MagneticButton — self-contained, no global useMousePosition listener.
+ * Uses onMouseMove on the element itself → zero overhead when cursor is
+ * elsewhere on the page. Respects prefers-reduced-motion.
+ */
+export function MagneticButton({
+  children,
+  className,
   strength = 0.3,
-  disabled = false 
+  disabled = false,
 }: MagneticButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const mousePosition = useMousePosition()
 
   const x = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 })
   const y = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 })
 
+  useEffect(() => {
+    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (disabled || !containerRef.current) return
-
+    if (disabled || reducedMotion || !containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-
-    x.set((e.clientX - centerX) * strength)
-    y.set((e.clientY - centerY) * strength)
+    x.set((e.clientX - rect.left - rect.width  / 2) * strength)
+    y.set((e.clientY - rect.top  - rect.height / 2) * strength)
   }
 
   const handleMouseLeave = () => {
@@ -46,30 +50,30 @@ export function MagneticButton({
     <motion.div
       ref={containerRef}
       className={cn(
-        'relative inline-block z-10 group',
+        'relative inline-block z-10',
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
-      style={{ x, y }}
+      style={{ x: reducedMotion ? 0 : x, y: reducedMotion ? 0 : y }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={reducedMotion ? {} : { scale: 1.05 }}
+      whileTap={reducedMotion ? {} : { scale: 0.96 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
-      <div className="relative z-20">
-        {children}
-      </div>
-      <motion.div
-        className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-tr from-primary to-accent blur-md pointer-events-none"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ 
-          opacity: isHovered && !disabled ? 0.5 : 0, 
-          scale: isHovered && !disabled ? 1.1 : 0.8 
-        }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-      />
+      <div className="relative z-20">{children}</div>
+      {!reducedMotion && (
+        <motion.div
+          className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-tr from-primary to-accent blur-md pointer-events-none"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: isHovered && !disabled ? 0.4 : 0,
+            scale:   isHovered && !disabled ? 1.1  : 0.8,
+          }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        />
+      )}
     </motion.div>
   )
 }

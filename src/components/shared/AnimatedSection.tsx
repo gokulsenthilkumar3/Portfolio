@@ -4,10 +4,21 @@ import React, { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 
+type AnimationType = 'fadeIn' | 'slideUp' | 'slideDown' | 'scaleIn' | 'slideLeft' | 'slideRight'
+
+const VARIANTS: Record<AnimationType, { hidden: object; visible: object }> = {
+  fadeIn:     { hidden: { opacity: 0 },                 visible: { opacity: 1 } },
+  slideUp:    { hidden: { opacity: 0, y: 40 },          visible: { opacity: 1, y: 0 } },
+  slideDown:  { hidden: { opacity: 0, y: -40 },         visible: { opacity: 1, y: 0 } },
+  slideLeft:  { hidden: { opacity: 0, x: 40 },          visible: { opacity: 1, x: 0 } },
+  slideRight: { hidden: { opacity: 0, x: -40 },         visible: { opacity: 1, x: 0 } },
+  scaleIn:    { hidden: { opacity: 0, scale: 0.92 },    visible: { opacity: 1, scale: 1 } },
+}
+
 interface AnimatedSectionProps {
   children: React.ReactNode
   className?: string
-  animation?: 'fadeIn' | 'slideUp' | 'slideDown' | 'scaleIn' | 'slideLeft' | 'slideRight'
+  animation?: AnimationType
   delay?: number
   duration?: number
   threshold?: number
@@ -19,93 +30,56 @@ export function AnimatedSection({
   className,
   animation = 'slideUp',
   delay = 0,
-  duration = 0.6,
-  threshold = 0.1,
-  once = true
+  duration = 0.5,
+  threshold = 0.08,
+  once = true,
 }: AnimatedSectionProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [hasAnimated, setHasAnimated] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [done, setDone]       = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const element = ref.current
-    if (!element) return
+    // Respect prefers-reduced-motion: skip animation, show immediately
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setVisible(true)
+      setDone(true)
+      return
+    }
 
-    const observer = new IntersectionObserver(
+    const el = ref.current
+    if (!el) return
+
+    const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && (!once || !hasAnimated)) {
-          setIsVisible(true)
-          if (once) {
-            setHasAnimated(true)
-          }
+        if (entry.isIntersecting && (!once || !done)) {
+          setVisible(true)
+          if (once) setDone(true)
         } else if (!once && !entry.isIntersecting) {
-          setIsVisible(false)
+          setVisible(false)
         }
       },
       { threshold }
     )
-
-    observer.observe(element)
-
-    return () => {
-      observer.unobserve(element)
-    }
-  }, [threshold, once, hasAnimated])
-
-  const getAnimationVariants = () => {
-    switch (animation) {
-      case 'fadeIn':
-        return {
-          hidden: { opacity: 0 },
-          visible: { opacity: 1 }
-        }
-      case 'slideUp':
-        return {
-          hidden: { opacity: 0, y: 50 },
-          visible: { opacity: 1, y: 0 }
-        }
-      case 'slideDown':
-        return {
-          hidden: { opacity: 0, y: -50 },
-          visible: { opacity: 1, y: 0 }
-        }
-      case 'slideLeft':
-        return {
-          hidden: { opacity: 0, x: 50 },
-          visible: { opacity: 1, x: 0 }
-        }
-      case 'slideRight':
-        return {
-          hidden: { opacity: 0, x: -50 },
-          visible: { opacity: 1, x: 0 }
-        }
-      case 'scaleIn':
-        return {
-          hidden: { opacity: 0, scale: 0.9 },
-          visible: { opacity: 1, scale: 1 }
-        }
-      default:
-        return {
-          hidden: { opacity: 0, y: 50 },
-          visible: { opacity: 1, y: 0 }
-        }
-    }
-  }
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [threshold, once, done])
 
   return (
     <div ref={ref} className={cn('relative', className)}>
-        <motion.div
-          variants={getAnimationVariants()}
-          initial="hidden"
-          animate={isVisible ? 'visible' : 'hidden'}
-          transition={{
-            duration: duration * 1.2, // Slightly longer but snappier ease
-            delay,
-            ease: [0.16, 1, 0.3, 1] // Custom apple-like snappy ease
-          }}
-        >
-          {children}
-        </motion.div>
+      <motion.div
+        variants={VARIANTS[animation]}
+        initial="hidden"
+        animate={visible ? 'visible' : 'hidden'}
+        transition={{
+          duration,
+          delay,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        // Promote to GPU layer only while animating, then release
+        style={{ willChange: visible && !done ? 'transform, opacity' : 'auto' }}
+      >
+        {children}
+      </motion.div>
     </div>
   )
 }

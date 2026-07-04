@@ -1,37 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface MousePosition {
   x: number
   y: number
 }
 
-export const useMousePosition = () => {
-  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 })
+/**
+ * Tracks global mouse position using a requestAnimationFrame loop
+ * instead of per-event setState — eliminates React render-per-mousemove
+ * and keeps the UI thread free during fast cursor movement.
+ */
+export const useMousePosition = (): MousePosition => {
+  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
+  const pending = useRef<MousePosition | null>(null)
+  const rafId = useRef<number>(0)
 
   useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+    const onMove = (e: MouseEvent) => {
+      pending.current = { x: e.clientX, y: e.clientY }
     }
 
-    const throttledUpdate = throttle(updateMousePosition, 16) // ~60fps
+    const flush = () => {
+      if (pending.current) {
+        setPos(pending.current)
+        pending.current = null
+      }
+      rafId.current = requestAnimationFrame(flush)
+    }
 
-    window.addEventListener('mousemove', throttledUpdate)
-    
+    rafId.current = requestAnimationFrame(flush)
+    window.addEventListener('mousemove', onMove, { passive: true })
+
     return () => {
-      window.removeEventListener('mousemove', throttledUpdate)
+      cancelAnimationFrame(rafId.current)
+      window.removeEventListener('mousemove', onMove)
     }
   }, [])
 
-  return mousePosition
-}
-
-function throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
-  let inThrottle: boolean
-  return ((...args: Parameters<T>) => {
-    if (!inThrottle) {
-      func(...args)
-      inThrottle = true
-      setTimeout(() => inThrottle = false, limit)
-    }
-  }) as T
+  return pos
 }
