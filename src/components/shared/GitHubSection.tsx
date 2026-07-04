@@ -6,6 +6,12 @@ import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Github, Star, GitFork, Users, BookOpen, Code2, Activity, Gamepad2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { CodeRain } from '@/components/effects/CodeRain'
+
+const CommitGraph3D = dynamic(
+  () => import('@/components/effects/CommitGraph3D').then(m => ({ default: m.CommitGraph3D })),
+  { ssr: false, loading: () => null }
+)
 
 const GTAGame = dynamic(() => import('./GTAGame').then(m => ({ default: m.GTAGame })), {
   ssr: false,
@@ -196,6 +202,60 @@ export function GitHubSection() {
       </AnimatePresence>
 
       <div className="space-y-8">
+
+        {/* ── Globe + CodeRain Hero Panel ─────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="relative rounded-3xl border border-white/10 bg-black/30 backdrop-blur-xl overflow-hidden"
+          style={{ minHeight: 220 }}
+        >
+          {/* Code rain lives as section background */}
+          <CodeRain className="absolute inset-0 w-full h-full pointer-events-none" opacity={0.14} />
+
+          {/* Gradient overlay so text stays readable */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 p-6">
+            {/* 3D Commit Globe */}
+            <div className="shrink-0 flex items-center justify-center">
+              <CommitGraph3D
+                contributions={data.contributions}
+                size={200}
+                className="opacity-90 drop-shadow-[0_0_24px_rgba(99,102,241,0.4)]"
+              />
+            </div>
+
+            {/* Stats summary beside the globe */}
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2">
+                <Github size={18} className="text-primary" />
+                <span className="font-bold text-sm">{data.profile.login}</span>
+                {data.profile.location && (
+                  <span className="text-[11px] text-muted-foreground">📍 {data.profile.location}</span>
+                )}
+              </div>
+              {data.profile.bio && (
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">{data.profile.bio}</p>
+              )}
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { label: 'Repos',     val: data.stats.totalRepos,  col: '#6366f1' },
+                  { label: 'Stars',     val: data.stats.totalStars,  col: '#f59e0b' },
+                  { label: 'Forks',     val: data.stats.totalForks,  col: '#10b981' },
+                  { label: 'Followers', val: data.stats.followers,   col: '#ec4899' },
+                ].map(({ label, val, col }) => (
+                  <div key={label} className="text-center">
+                    <div className="text-lg font-black font-display" {...inlineStyle({ color: col })}>{val}</div>
+                    <div className="text-[10px] text-muted-foreground">{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard icon={BookOpen} label="Public Repos"  value={data.stats.totalRepos}  color="#6366f1" delay={0.1} />
           <StatCard icon={Star}     label="Total Stars"   value={data.stats.totalStars}   color="#f59e0b" delay={0.2} />

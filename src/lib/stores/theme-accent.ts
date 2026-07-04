@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useThemeStore } from '../hooks/use-theme'
 
 /**
  * Theme Accent System — 4 palettes, user-selectable
@@ -14,15 +15,24 @@ export interface AccentPalette {
   id: AccentId
   name: string
   emoji: string
-  // HSL values used as CSS custom properties
-  primary: string    // --accent-primary
-  secondary: string  // --accent-secondary
-  glow: string       // --accent-glow (rgba for box-shadow/bloom)
-  glowAlt: string    // --accent-glow-alt
-  // Three.js hex colors (used in WebGL components)
+  
+  // Dark mode values
+  primary: string
+  secondary: string
+  glow: string
+  glowAlt: string
   threeA: string
   threeB: string
   threeC: string
+  
+  // Light mode variants
+  primaryLight: string
+  secondaryLight: string
+  glowLight: string
+  glowAltLight: string
+  threeALight: string
+  threeBLight: string
+  threeCLight: string
 }
 
 export const ACCENT_PALETTES: Record<AccentId, AccentPalette> = {
@@ -37,6 +47,14 @@ export const ACCENT_PALETTES: Record<AccentId, AccentPalette> = {
     threeA: '#6366f1',
     threeB: '#a855f7',
     threeC: '#818cf8',
+    
+    primaryLight: '230 85% 54%',
+    secondaryLight: '270 70% 50%',
+    glowLight: 'rgba(59,130,246,0.25)',
+    glowAltLight: 'rgba(147,51,234,0.15)',
+    threeALight: '#3b82f6',
+    threeBLight: '#9333ea',
+    threeCLight: '#60a5fa',
   },
   'purple-pink': {
     id: 'purple-pink',
@@ -49,6 +67,14 @@ export const ACCENT_PALETTES: Record<AccentId, AccentPalette> = {
     threeA: '#a855f7',
     threeB: '#ec4899',
     threeC: '#c084fc',
+
+    primaryLight: '270 70% 50%',
+    secondaryLight: '330 75% 50%',
+    glowLight: 'rgba(147,51,234,0.25)',
+    glowAltLight: 'rgba(219,39,119,0.15)',
+    threeALight: '#9333ea',
+    threeBLight: '#db2777',
+    threeCLight: '#a855f7',
   },
   'cyan-green': {
     id: 'cyan-green',
@@ -61,6 +87,14 @@ export const ACCENT_PALETTES: Record<AccentId, AccentPalette> = {
     threeA: '#06b6d4',
     threeB: '#22c55e',
     threeC: '#67e8f9',
+
+    primaryLight: '185 80% 35%',
+    secondaryLight: '142 75% 35%',
+    glowLight: 'rgba(8,145,178,0.25)',
+    glowAltLight: 'rgba(22,163,74,0.15)',
+    threeALight: '#0891b2',
+    threeBLight: '#16a34a',
+    threeCLight: '#06b6d4',
   },
   'orange-gold': {
     id: 'orange-gold',
@@ -73,6 +107,14 @@ export const ACCENT_PALETTES: Record<AccentId, AccentPalette> = {
     threeA: '#f97316',
     threeB: '#eab308',
     threeC: '#fb923c',
+
+    primaryLight: '25 90% 45%',
+    secondaryLight: '45 90% 40%',
+    glowLight: 'rgba(234,88,12,0.25)',
+    glowAltLight: 'rgba(202,138,4,0.15)',
+    threeALight: '#ea580c',
+    threeBLight: '#ca8a04',
+    threeCLight: '#f97316',
   },
 }
 
@@ -85,24 +127,27 @@ export const useAccentStore = create<AccentStore>()(
   persist(
     (set) => ({
       accent: 'blue-purple',
-      setAccent: (id) => {
-        set({ accent: id })
-        applyAccentToDom(id)
-      },
+      setAccent: (id) => set({ accent: id }),
     }),
     { name: 'portfolio-accent' }
   )
 )
 
 /** Applies CSS custom properties directly to :root — zero React re-renders */
-export function applyAccentToDom(id: AccentId) {
+export function applyAccentToDom(id: AccentId, theme: string = 'dark') {
   if (typeof document === 'undefined') return
   const p = ACCENT_PALETTES[id]
+  const isLight = theme === 'light'
   const root = document.documentElement
-  root.style.setProperty('--accent-primary', p.primary)
-  root.style.setProperty('--accent-secondary', p.secondary)
-  root.style.setProperty('--accent-glow', p.glow)
-  root.style.setProperty('--accent-glow-alt', p.glowAlt)
+  
+  root.style.setProperty('--accent-primary', isLight ? p.primaryLight : p.primary)
+  root.style.setProperty('--accent-secondary', isLight ? p.secondaryLight : p.secondary)
+  root.style.setProperty('--accent-glow', isLight ? p.glowLight : p.glow)
+  root.style.setProperty('--accent-glow-alt', isLight ? p.glowAltLight : p.glowAlt)
+  
+  // Update --primary / --ring so all Tailwind components follow the accent
+  root.style.setProperty('--primary', isLight ? p.primaryLight : p.primary)
+  root.style.setProperty('--ring', isLight ? p.primaryLight : p.primary)
   root.setAttribute('data-accent', id)
 }
 
@@ -110,16 +155,37 @@ export function applyAccentToDom(id: AccentId) {
 export function restoreAccent() {
   if (typeof window === 'undefined') return
   try {
-    const raw = localStorage.getItem('portfolio-accent')
-    if (raw) {
-      const { state } = JSON.parse(raw) as { state: { accent: AccentId } }
-      if (state?.accent) applyAccentToDom(state.accent)
+    let currentTheme = 'dark'
+    const rawTheme = localStorage.getItem('theme-storage')
+    if (rawTheme) {
+      const { state } = JSON.parse(rawTheme)
+      if (state?.theme) currentTheme = state.theme
+    }
+    
+    const rawAccent = localStorage.getItem('portfolio-accent')
+    if (rawAccent) {
+      const { state } = JSON.parse(rawAccent)
+      if (state?.accent) applyAccentToDom(state.accent, currentTheme)
     }
   } catch { /* ignore */ }
 }
 
-/** Convenience: get current palette object */
-export function useCurrentPalette(): AccentPalette {
+/** 
+ * Gets the current palette resolved for light/dark mode.
+ * Safe to use inside any React component (it reacts to both accent and theme changes).
+ */
+export function useCurrentPalette() {
   const accent = useAccentStore(s => s.accent)
-  return ACCENT_PALETTES[accent]
+  const theme = useThemeStore(s => s.theme)
+  const p = ACCENT_PALETTES[accent]
+  const isLight = theme === 'light'
+  
+  return {
+    id: p.id,
+    name: p.name,
+    threeA: isLight ? p.threeALight : p.threeA,
+    threeB: isLight ? p.threeBLight : p.threeB,
+    threeC: isLight ? p.threeCLight : p.threeC,
+    glow: isLight ? p.glowLight : p.glow,
+  }
 }
