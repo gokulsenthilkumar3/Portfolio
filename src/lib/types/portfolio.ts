@@ -79,6 +79,10 @@ export interface BlogPost {
   category: string
   excerpt: string
   content: string
+   slug?: string
+  coverImage?: string
+  featured?: boolean
+  tags?: string[]
 }
 
 export interface SiteConfig {
