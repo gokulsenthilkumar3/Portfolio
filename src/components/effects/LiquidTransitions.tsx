@@ -3,52 +3,64 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
+/**
+ * Page-load liquid wipe animation.
+ * Guards:
+ * - SSR: renders nothing on the server (dimensions unavailable).
+ * - prefers-reduced-motion: skipped entirely.
+ * - Mobile / narrow viewports: skipped (layout thrashing risk).
+ * - Bots / Lighthouse: skipped.
+ */
 export function LiquidTransitions() {
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [dimensions, setDimensions] = useState({ height: 0 })
+  const [height, setHeight]       = useState(0)
+  const [transitioning, setTrans] = useState(false)
+  const [skip, setSkip]           = useState(true)
 
   useEffect(() => {
-    // Disable transition on small screen sizes to prevent layout thrashing on load
-    if (window.innerWidth <= 768) return
+    // Evaluate all skip conditions on the client
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobile     = window.innerWidth <= 768
+    const isBot        = /Lighthouse|HeadlessChrome|bot|googlebot|crawler|spider|robot|crawling/i.test(
+      navigator.userAgent
+    )
+    if (reducedMotion || isMobile || isBot) return
 
-    // Disable for bots/Lighthouse
-    const isBot = /Lighthouse|HeadlessChrome|bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)
-    if (isBot) return
-
-    setDimensions({ height: window.innerHeight })
-    setIsTransitioning(true)
-    const timeout = setTimeout(() => setIsTransitioning(false), 1500)
-    return () => clearTimeout(timeout)
+    setSkip(false)
+    setHeight(window.innerHeight)
+    setTrans(true)
+    const t = setTimeout(() => setTrans(false), 1500)
+    return () => clearTimeout(t)
   }, [])
 
-  if (dimensions.height === 0 || window.innerWidth <= 768 || (typeof navigator !== 'undefined' && /Lighthouse|HeadlessChrome|bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent))) return null
+  // Never render on server or when skipped
+  if (skip || height === 0) return null
 
-  const initialPath = `M0 0 L100 0 L100 ${dimensions.height} Q50 ${dimensions.height + 200} 0 ${dimensions.height} Z`
-  const targetPath = `M0 0 L100 0 L100 0 Q50 0 0 0 Z`
+  const initial = `M0 0 L100 0 L100 ${height} Q50 ${height + 200} 0 ${height} Z`
+  const target  = `M0 0 L100 0 L100 0 Q50 0 0 0 Z`
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[100]">
+    <div className="fixed inset-0 pointer-events-none z-[100]" aria-hidden="true">
       <motion.svg
         className="absolute top-0 left-0 w-full h-full"
-        viewBox={`0 0 100 ${dimensions.height}`}
+        viewBox={`0 0 100 ${height}`}
         preserveAspectRatio="none"
         initial={{ y: 0 }}
-        animate={{ y: isTransitioning ? 0 : '-100%' }}
+        animate={{ y: transitioning ? 0 : '-100%' }}
         transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
       >
-        <motion.path
-          fill="url(#liquid-gradient)"
-          initial={{ d: initialPath }}
-          animate={{ d: targetPath }}
-          transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-        />
         <defs>
           <linearGradient id="liquid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#8b5cf6" />
-            <stop offset="50%" stopColor="#ec4899" />
+            <stop offset="0%"   stopColor="#8b5cf6" />
+            <stop offset="50%"  stopColor="#ec4899" />
             <stop offset="100%" stopColor="#3b82f6" />
           </linearGradient>
         </defs>
+        <motion.path
+          fill="url(#liquid-gradient)"
+          initial={{ d: initial }}
+          animate={{ d: target }}
+          transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+        />
       </motion.svg>
     </div>
   )

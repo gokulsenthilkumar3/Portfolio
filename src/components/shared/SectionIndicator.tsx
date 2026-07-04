@@ -1,94 +1,98 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 import { useThemeStore } from '@/lib/hooks/use-theme'
 
-interface Section {
-  id: string
-  label: string
-}
+interface Section { id: string; label: string }
+interface SectionIndicatorProps { sections: Section[]; className?: string }
 
-interface SectionIndicatorProps {
-  sections: Section[]
-  className?: string
-}
-
+/**
+ * Section dot navigator.
+ * Uses a single IntersectionObserver instead of a scroll event listener
+ * — zero scroll-handler overhead, no forced layout reads.
+ */
 export function SectionIndicator({ sections, className }: SectionIndicatorProps) {
-  const [activeSection, setActiveSection] = useState('')
+  const [active, setActive] = useState('')
+  const { layout } = useThemeStore()
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100
-
-      for (const section of sections) {
-        const element = document.getElementById(section.id)
-        if (element) {
-          const { offsetTop, offsetHeight } = element
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section.id)
-            break
-          }
+    if (!sections.length) return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter(e => e.isIntersecting)
+        if (visible.length) {
+          const best = visible.reduce((a, b) => a.intersectionRatio >= b.intersectionRatio ? a : b)
+          setActive(best.target.id)
         }
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
+      },
+      { threshold: 0.35 }
+    )
+    sections.forEach(s => {
+      const el = document.getElementById(s.id)
+      if (el) obs.observe(el)
+    })
+    return () => obs.disconnect()
   }, [sections])
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    element?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const { layout } = useThemeStore()
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   if (!layout.showIndicators) return null
 
   return (
-    <div className={cn('fixed right-4 top-1/2 transform -translate-y-1/2 z-40', className)}>
-      <div className="flex flex-col gap-3">
-        {sections.map((section) => (
-          <div key={section.id} className="group relative flex items-center justify-end">
-            {/* Dot */}
-            <button
-              onClick={() => scrollToSection(section.id)}
-              className="relative flex items-center justify-center w-5 h-5"
-              aria-label={`Go to ${section.label}`}
-            >
-              <motion.div
-                className={cn(
-                  'rounded-full border-2 border-primary transition-all duration-300',
-                  activeSection === section.id
-                    ? 'w-4 h-4 bg-primary shadow-[0_0_8px_rgba(99,102,241,0.8)]'
-                    : 'w-2.5 h-2.5 bg-transparent hover:bg-primary/40'
-                )}
-                whileHover={{ scale: 1.3 }}
-                whileTap={{ scale: 0.9 }}
-              />
-              <div className={cn(
-                "absolute right-6 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap pointer-events-none opacity-100"
-              )}>
-                <span className={cn(
-                  "px-2 py-1 rounded text-xs transition-colors shadow-sm",
-                  activeSection === section.id 
-                    ? "bg-primary text-primary-foreground font-semibold" 
-                    : "bg-background/80 text-foreground border border-border backdrop-blur-sm opacity-60 group-hover:opacity-100"
-                )}>
-                  {section.label}
+    <nav
+      aria-label="Page sections"
+      className={cn('fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden md:block', className)}
+    >
+      <ol className="flex flex-col gap-3">
+        {sections.map((s) => {
+          const isActive = active === s.id
+          return (
+            <li key={s.id} className="group relative flex items-center justify-end">
+              <button
+                onClick={() => scrollTo(s.id)}
+                aria-label={`Go to ${s.label}`}
+                aria-current={isActive ? 'true' : undefined}
+                className="relative flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+              >
+                <motion.span
+                  className={cn(
+                    'block rounded-full border-2 border-primary transition-all duration-300',
+                    isActive
+                      ? 'w-4 h-4 bg-primary shadow-[0_0_8px_rgba(99,102,241,0.8)]'
+                      : 'w-2.5 h-2.5 bg-transparent hover:bg-primary/40'
+                  )}
+                  whileHover={{ scale: 1.3 }}
+                  whileTap={{ scale: 0.9 }}
+                />
+                {/* Tooltip label */}
+                <span
+                  className={cn(
+                    'absolute right-6 top-1/2 -translate-y-1/2 whitespace-nowrap pointer-events-none',
+                    'px-2 py-0.5 rounded text-xs shadow-sm transition-all duration-200',
+                    'opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0',
+                    isActive
+                      ? 'bg-primary text-primary-foreground font-semibold opacity-100 translate-x-0'
+                      : 'bg-background/80 text-foreground border border-border backdrop-blur-sm'
+                  )}
+                >
+                  {s.label}
                 </span>
-              </div>
-              {/* GitHub specific - pulsing green dot */}
-              {section.id === 'github' && (
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
+                {/* Live dot for GitHub section */}
+                {s.id === 'github' && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"
+                  />
+                )}
+              </button>
+            </li>
+          )
+        })}
+      </ol>
+    </nav>
   )
 }
