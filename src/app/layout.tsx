@@ -131,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <AdminClientWrapper>
             <LiquidTransitionsWrapper />
-                        <ClientEffects /> />
+                        <ClientEffects />
                   <ProgressBar />
             <Navigation />
             <main id="main-content">{children}</main>
