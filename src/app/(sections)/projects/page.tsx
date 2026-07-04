@@ -117,7 +117,7 @@ export default function ProjectsPage() {
     const cats = new Set((allProjects as Project[]).map((p) => p.category))
     // Always show 'all' first, then only fullstack/web/testing in that order
     const order = ['fullstack', 'web', 'testing']
-    const filtered = order.filter((c) => cats.has(c))
+        const filtered = order.filter((c) => cats.has(c as Project['category']))
     return ['all', ...filtered]
   }, [])
 
