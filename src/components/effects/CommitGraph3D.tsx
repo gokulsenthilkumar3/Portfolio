@@ -1,6 +1,7 @@
 'use client'
 /* eslint-disable react/forbid-dom-props */
 import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useDeviceTier } from '@/hooks/use-device-tier'
 import { useCurrentPalette } from '@/lib/stores/theme-accent'
 
@@ -142,7 +143,8 @@ export function CommitGraph3D({ contributions, className, size = 280 }: CommitGr
         // Glow
         const grd = ctx.createRadialGradient(px, py, 0, px, py, baseRadius * 2.5)
         const col = intensity > 0.6 ? p.threeC : intensity > 0.3 ? p.threeA : p.threeB
-        grd.addColorStop(0, col + Math.round(alpha * 220).toString(16).padStart(2, '0'))
+        const alphaHex = Math.min(255, Math.max(0, Math.round(alpha * 220))).toString(16).padStart(2, '0')
+        grd.addColorStop(0, col + alphaHex)
         grd.addColorStop(1, col + '00')
         ctx.beginPath()
         ctx.arc(px, py, baseRadius * 2.5, 0, Math.PI * 2)
@@ -181,12 +183,16 @@ export function CommitGraph3D({ contributions, className, size = 280 }: CommitGr
   if (tier < 2) return null
 
   return (
-    <canvas
+    <motion.canvas
       ref={canvasRef}
       width={size}
       height={size}
       className={className}
       aria-hidden="true"
+      initial={{ opacity: 0, scale: 0.92, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
     />
   )
 }

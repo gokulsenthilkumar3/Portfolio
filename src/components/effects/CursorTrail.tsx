@@ -58,9 +58,6 @@ export function CursorTrail() {
     }
     window.addEventListener('mousemove', onMove, { passive: true })
 
-    // Hide default cursor only on non-interactive elements
-    document.documentElement.style.cursor = 'none'
-
     // Animation loop
     const draw = () => {
       rafRef.current = requestAnimationFrame(draw)
@@ -92,35 +89,21 @@ export function CursorTrail() {
       // Draw cursor dot at head
       if (trail.current.length > 0) {
         const head = trail.current[0]
-        // Outer ring
+        // Outer ring only (OS cursor acts as the dot)
         ctx.beginPath()
         ctx.arc(head.x, head.y, 14, 0, Math.PI * 2)
-        ctx.strokeStyle = p.threeA + '55'
+        ctx.strokeStyle = p.threeA + '40'
         ctx.lineWidth = 1.5
         ctx.stroke()
-        // Inner dot
-        ctx.beginPath()
-        ctx.arc(head.x, head.y, 4, 0, Math.PI * 2)
-        ctx.fillStyle = p.threeC + 'ee'
-        ctx.fill()
       }
     }
 
     draw()
 
-    // Restore cursor on interactive elements
-    const restoreCursor = () => (document.documentElement.style.cursor = '')
-    const hideCursor = () => (document.documentElement.style.cursor = 'none')
-    document.querySelectorAll('a, button, input, textarea, select, [role="button"]').forEach(el => {
-      el.addEventListener('mouseenter', restoreCursor)
-      el.addEventListener('mouseleave', hideCursor)
-    })
-
     return () => {
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMove)
-      document.documentElement.style.cursor = ''
     }
   }, [isMobile])
 

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useDeviceTier } from '@/hooks/use-device-tier'
 import { useCurrentPalette } from '@/lib/stores/theme-accent'
 
@@ -110,10 +111,13 @@ export function CodeRain({
   if (tier < 2) return null
 
   return (
-    <canvas
+    <motion.canvas
       ref={canvasRef}
       className={className ?? 'absolute inset-0 w-full h-full pointer-events-none'}
-      style={{ opacity }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 2.5, ease: 'easeOut' }}
       aria-hidden="true"
     />
   )
