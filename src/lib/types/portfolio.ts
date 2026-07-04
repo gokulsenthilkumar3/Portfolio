@@ -95,11 +95,11 @@ export interface BlogPost {
   title: string
   excerpt: string
   content: string
-  slug: string
+    slug?: string
   date: string
-  readingTime: number
-  tags: string[]
-  featured: boolean
+    readTime: string
+    category: string
+    featured?: boolean
   coverImage?: string
 }
 
