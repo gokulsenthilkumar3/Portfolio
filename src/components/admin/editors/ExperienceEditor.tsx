@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Trash2, Pencil, X, Check, Building2, Calendar } from 'lucide-react'
+import { Plus, Trash2, Pencil, X } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
 import { portfolioConfig } from '@/config/portfolio.config'
 
-type Experience = (typeof portfolioConfig.experiences)[0]
+import type { Experience } from '@/lib/types/portfolio'
 
 const BLANK: Experience = {
   id: '',
@@ -151,16 +151,16 @@ function ExperienceForm({
         </div>
 
         <div className="grid gap-3">
-          {[
+          {([
             { key: 'role', label: 'Role / Position' },
             { key: 'company', label: 'Company Name' },
             { key: 'location', label: 'Location' },
-          ].map(f => (
+          ] as const).map(f => (
             <div key={f.key}>
               <label htmlFor={`exp-${f.key}`} className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
               <input
                 id={`exp-${f.key}`}
-                value={(form as Record<string, string>)[f.key] || ''}
+                value={form[f.key] || ''}
                 placeholder={f.label}
                 onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"

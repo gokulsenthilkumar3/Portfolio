@@ -19,7 +19,7 @@ export const getProjectsByStatus = (projects: Project[], status: Project['status
 
 export const getProjectsByTech = (projects: Project[], tech: string) => {
   return projects.filter(project => 
-    project.tech.some(t => t.toLowerCase().includes(tech.toLowerCase()))
+    (project.tech || project.technologies || []).some(t => t.toLowerCase().includes(tech.toLowerCase()))
   )
 }
 
@@ -29,7 +29,7 @@ export const searchProjects = (projects: Project[], query: string) => {
     project.title.toLowerCase().includes(lowercaseQuery) ||
     project.description.toLowerCase().includes(lowercaseQuery) ||
     (project.tags || []).some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
-    (project.tech || []).some(t => t.toLowerCase().includes(lowercaseQuery))
+    (project.tech || project.technologies || []).some(t => t.toLowerCase().includes(lowercaseQuery))
   )
 }
 

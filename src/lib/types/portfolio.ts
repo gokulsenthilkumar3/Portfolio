@@ -63,6 +63,21 @@ export interface Experience {
   type?: 'full-time' | 'part-time' | 'freelance' | 'internship' | 'contract'
 }
 
+export interface Education {
+  id: string
+  institution: string
+  degree: string
+  field: string
+  period: {
+    start: string
+    end?: string
+    present?: boolean
+  }
+  grade?: string
+  location?: string
+  achievements?: string[]
+}
+
 export interface SocialLink {
   id?: string
   platform: string

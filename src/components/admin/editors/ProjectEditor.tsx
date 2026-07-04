@@ -6,7 +6,7 @@ import { Plus, Pencil, Trash2, ExternalLink, Github, X, Check, ChevronDown, Chev
 import { useAdmin } from '../AdminProvider'
 import { portfolioConfig } from '@/config/portfolio.config'
 
-type Project = (typeof portfolioConfig.projects)[0]
+import type { Project } from '@/lib/types/portfolio'
 
 const BLANK_PROJECT: Project = {
   id: '',
@@ -131,7 +131,7 @@ export function ProjectEditor() {
                   <div className="px-3 pb-3 text-[11px] text-gray-500 space-y-1 border-t border-white/5 pt-2">
                     <p className="line-clamp-2">{project.description}</p>
                     <div className="flex flex-wrap gap-1">
-                      {project.tech.slice(0, 4).map(t => (
+                      {(project.tech || []).slice(0, 4).map((t: string) => (
                         <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-gray-400">{t}</span>
                       ))}
                     </div>
@@ -213,16 +213,16 @@ function ProjectForm({
         </div>
 
         <div className="grid gap-3">
-          {[
-            { key: 'title', label: 'Project Title' },
+          {([
+            { key: 'title', label: 'Project Title', textarea: false },
             { key: 'description', label: 'Description', textarea: true },
-          ].map(f => (
+          ] as const).map(f => (
             <div key={f.key}>
               <label htmlFor={`proj-${f.key}`} className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
               {f.textarea ? (
                 <textarea
                   id={`proj-${f.key}`}
-                  value={(form as Record<string, string>)[f.key] || ''}
+                  value={form[f.key] as string || ''}
                   placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   rows={3}
@@ -231,7 +231,7 @@ function ProjectForm({
               ) : (
                 <input
                   id={`proj-${f.key}`}
-                  value={(form as Record<string, string>)[f.key] || ''}
+                  value={form[f.key] as string || ''}
                   placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
@@ -275,7 +275,7 @@ function ProjectForm({
             <label htmlFor="proj-tech" className="block text-[11px] text-gray-400 mb-1">Tech Stack (comma-separated)</label>
             <input
               id="proj-tech"
-              value={form.tech.join(', ')}
+              value={(form.tech || []).join(', ')}
               onChange={e => handleTechChange(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               placeholder="React, TypeScript, Node.js"

@@ -7,7 +7,7 @@ import { useAdmin } from '../AdminProvider'
 import { portfolioConfig } from '@/config/portfolio.config'
 import { motion } from 'framer-motion'
 
-type Education = (typeof portfolioConfig.education)[0]
+import type { Education } from '@/lib/types/portfolio'
 
 export function ResumeEditor() {
   const [mode, setMode] = useState<'experience' | 'education'>('experience')
@@ -50,7 +50,7 @@ export function ResumeEditor() {
                   degree: 'Degree Name',
                   field: 'Field of Study',
                   institution: 'University Name',
-                  period: { start: '2020', end: '2024' },
+                  period: { start: '2020', end: '2024', present: false },
                   location: 'City, Country',
                   grade: 'GPA/Grade'
                 }

@@ -16,7 +16,7 @@ import { useState, useEffect } from 'react'
 
 export type DeviceTier = 1 | 2 | 3
 
-function detectTier(): DeviceTier {
+export function detectTier(): DeviceTier {
   // Reduced motion always wins
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 1
 

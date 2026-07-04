@@ -132,6 +132,7 @@ export function ProjectsSection({ projects }: Props) {
             links: { github: repo.url },
             featured: false,
             date: repo.updatedAt,
+            images: [],
           }))
           setGithubProjects(mapped)
         }

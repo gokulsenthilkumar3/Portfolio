@@ -30,6 +30,8 @@ interface GitHubData {
 // Extend CSSProperties to allow CSS custom properties
 type CSSWithVars = React.CSSProperties & Record<`--${string}`, string | number>
 
+const inlineStyle = (style: React.CSSProperties | CSSWithVars) => ({ style } as any)
+
 const LANG_COLORS: Record<string, string> = {
   TypeScript: '#3178c6', JavaScript: '#f7df1e', Python: '#3776ab',
   React: '#61dafb', PHP: '#777bb4', HTML: '#e34f26', CSS: '#1572b6',
@@ -101,7 +103,7 @@ const ContributionHeatmap = memo(function ContributionHeatmap({
                   key={cell.date}
                   title={`${cell.date}: ${cell.count} contributions`}
                   className="w-3 h-3 rounded-[3px] cursor-pointer transition-transform hover:scale-125"
-                  style={{ backgroundColor: getColor(cell.count) }}
+                  {...inlineStyle({ backgroundColor: getColor(cell.count) })}
                 />
               ))}
             </div>
@@ -110,7 +112,7 @@ const ContributionHeatmap = memo(function ContributionHeatmap({
         <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
           <span>Less</span>
           {['rgba(150,150,150,0.1)','rgba(52,199,89,0.4)','rgba(52,199,89,0.6)','rgba(52,199,89,0.8)','rgba(52,199,89,1)'].map((c, i) => (
-            <div key={i} className="w-3 h-3 rounded-[3px]" style={{ backgroundColor: c }} />
+            <div key={i} className="w-3 h-3 rounded-[3px]" {...inlineStyle({ backgroundColor: c })} />
           ))}
           <span>More</span>
         </div>
@@ -132,14 +134,14 @@ const StatCard = memo(function StatCard({
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: `radial-gradient(circle at 50% 50%, ${color}15 0%, transparent 70%)` }}
+        {...inlineStyle({ background: `radial-gradient(circle at 50% 50%, ${color}15 0%, transparent 70%)` })}
       />
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl" style={{ backgroundColor: `${color}20` }}>
-          <Icon size={18} style={{ color } as React.CSSProperties} />
+        <div className="p-2.5 rounded-xl" {...inlineStyle({ backgroundColor: `${color}20` })}>
+          <Icon size={18} {...inlineStyle({ color })} />
         </div>
         <div>
-          <p className="text-2xl font-black font-display" style={{ color } as React.CSSProperties}>{value}</p>
+          <p className="text-2xl font-black font-display" {...inlineStyle({ color })}>{value}</p>
           <p className="text-xs text-muted-foreground font-medium">{label}</p>
         </div>
       </div>
@@ -219,7 +221,7 @@ export function GitHubSection() {
                 <div key={lang.name}>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                      <div className="w-2.5 h-2.5 rounded-full" {...inlineStyle({ backgroundColor: color })} />
                       <span className="text-xs font-medium">{lang.name}</span>
                     </div>
                     <span className="text-xs text-muted-foreground">{pct}%</span>
@@ -227,7 +229,7 @@ export function GitHubSection() {
                   <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ backgroundColor: color }}
+                      {...inlineStyle({ backgroundColor: color })}
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
                       transition={{ delay: 0.6 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
