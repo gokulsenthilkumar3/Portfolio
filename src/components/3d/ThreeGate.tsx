@@ -10,14 +10,11 @@ interface ThreeGateProps {
 }
 
 /**
- * ThreeGate
- *
- * A safety gate for heavy 3D WebGL scenes.
- * Features:
- * 1. Intersection Observer: Only mounts 3D canvas when in view.
- * 2. WebGL Detection: Safely falls back if WebGL is disabled or unsupported.
- * 3. Reduced Motion: Defaults to fallback if user prefers reduced motion.
- * 4. Suspense: Provides a loading state while heavy chunks load.
+ * ThreeGate — safety gate for heavy WebGL scenes.
+ * 1. Intersection Observer: only mounts when scrolled into view.
+ * 2. WebGL detection: falls back gracefully if WebGL is unavailable.
+ * 3. Reduced motion: skips WebGL entirely for users who prefer reduced motion.
+ * 4. Suspense: provides loading state while chunks stream in.
  */
 export function ThreeGate({
   children,
@@ -31,22 +28,31 @@ export function ThreeGate({
 }: ThreeGateProps) {
   const [shouldRender, setShouldRender] = useState(false)
   const [hasWebGL, setHasWebGL] = useState(true)
+  const [prefersReduced, setPrefersReduced] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Check WebGL
+    // Prefers-reduced-motion check
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    // WebGL availability check
     try {
       const canvas = document.createElement('canvas')
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
       if (!gl) setHasWebGL(false)
-    } catch (e) {
+    } catch {
       setHasWebGL(false)
     }
   }, [])
 
   useEffect(() => {
     if (!containerRef.current) return
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -56,10 +62,21 @@ export function ThreeGate({
       },
       { rootMargin }
     )
-
     observer.observe(containerRef.current)
     return () => observer.disconnect()
   }, [rootMargin])
+
+  if (prefersReduced) {
+    return (
+      <div className={className}>
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-background/50 to-accent/5 rounded-2xl">
+          <span className="text-muted-foreground/40 font-mono text-xs text-center px-4">
+            3D scene hidden (reduced motion preference)
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   if (!hasWebGL) {
     return (
@@ -79,9 +96,7 @@ export function ThreeGate({
         <Suspense fallback={fallback}>
           {children}
         </Suspense>
-      ) : (
-        fallback
-      )}
+      ) : fallback}
     </div>
   )
 }

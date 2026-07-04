@@ -1,14 +1,6 @@
 'use client'
 /* eslint-disable react/forbid-dom-props, react/forbid-component-props */
 
-/**
- * SkillsSection — inline expand/collapse with 3D sphere in expanded view
- * Bugs fixed:
- * 1. showAll toggle buttons now properly toggle (not always set true)
- * 2. Back button works correctly
- * 3. 3D Sphere shown in expanded view
- */
-
 import { useMemo, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -16,8 +8,6 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import Image from 'next/image'
 import { ArrowLeft, ChevronUp } from 'lucide-react'
 import type { Skill } from '@/lib/types/portfolio'
-
-
 
 const ICON_SLUG: Record<string, string> = {
   selenium:      'selenium',
@@ -55,10 +45,12 @@ const CATEGORY_META: Record<string, { label: string; order: number; accent: stri
 
 const PROFICIENCY_LABELS = ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced', 'Expert']
 
+// Extend CSSProperties to allow CSS custom properties
+type CSSWithVars = React.CSSProperties & Record<`--${string}`, string | number>
+
 function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
   const [imgError, setImgError] = useState(false)
   const slug = ICON_SLUG[skill.id]
-  // Use default brand color
   const iconUrl = slug ? `https://cdn.simpleicons.org/${slug}` : null
   const pct = (skill.proficiency / 5) * 100
 
@@ -69,7 +61,6 @@ function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
       transition={{ delay, duration: 0.3 }}
       className="flex items-center gap-3 py-2 border-b border-border/30 last:border-0 group"
     >
-      {/* Brand logo container */}
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
                    border border-black/10 dark:border-white/10 bg-white dark:bg-white/5
@@ -101,9 +92,10 @@ function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
           </span>
         </div>
         <div className="h-1 rounded-full bg-border/30 overflow-hidden">
+          {/* FIX: use proper typed CSS var instead of `as any` */}
           <div
             className="h-full rounded-full bg-primary/80 transition-all duration-700 w-[var(--skill-width)]"
-            {...({ style: { '--skill-width': `${pct}%` } } as any)}
+            style={{ '--skill-width': `${pct}%` } as CSSWithVars}
           />
         </div>
       </div>
@@ -128,7 +120,11 @@ function CategoryCard({
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold tracking-wide uppercase text-[var(--accent-color)]" {...({ style: { '--accent-color': meta.accent } } as any)}>
+        {/* FIX: use typed CSS var instead of `as any` */}
+        <h3
+          className="text-sm font-semibold tracking-wide uppercase"
+          style={{ color: 'var(--accent-color)', '--accent-color': meta.accent } as CSSWithVars}
+        >
           {meta.label}
         </h3>
         <span className="text-[10px] text-muted-foreground">{catSkills.length} skills</span>
@@ -157,7 +153,6 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
     })
   }, [skills])
 
-  // In collapsed view show only 2 categories; in expanded view show all
   const visibleGroups = showAll ? grouped : grouped.slice(0, 2)
 
   const handleBack = () => {
@@ -167,7 +162,6 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
 
   return (
     <div ref={sectionRef} id="skills" className="scroll-mt-20">
-      {/* Section header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           {showAll && (
@@ -190,11 +184,8 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
             </p>
           </div>
         </div>
-
-
       </div>
 
-      {/* Grid view */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {visibleGroups.map(([category, catSkills], gi) => (
           <CategoryCard
@@ -206,23 +197,13 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
         ))}
       </div>
 
-      {/* View All / Back toggle */}
       <div className="mt-6 flex justify-center">
         <button
-          onClick={() => {
-            if (showAll) {
-              handleBack()
-            } else {
-              setShowAll(true)
-            }
-          }}
+          onClick={() => showAll ? handleBack() : setShowAll(true)}
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border border-border/60 hover:border-border rounded-full px-5 py-2"
         >
           {showAll ? (
-            <>
-              <ArrowLeft className="w-4 h-4" />
-              Back to overview
-            </>
+            <><ArrowLeft className="w-4 h-4" />Back to overview</>
           ) : (
             <>View all skills &rarr;</>
           )}

@@ -17,7 +17,6 @@ const HeroScene = dynamic(() => import('@/components/3d/HeroScene').then(mod => 
   loading: () => <div className="absolute inset-0 bg-background/80 backdrop-blur-3xl" />
 })
 
-// Lazy-load heavy section components to reduce initial JS bundle
 const ProjectsSection = dynamic(() =>
   import('@/components/sections/ProjectsSection').then(mod => ({ default: mod.ProjectsSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
@@ -60,15 +59,12 @@ export default function Home() {
   const [terminalOpen, setTerminalOpen] = useState(false)
   const allow3D = use3DGate()
 
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
+  useEffect(() => { setIsClient(true) }, [])
 
   const currentProjects = (isAdmin && portfolioData.projects?.length > 0
     ? portfolioData.projects
     : staticProjects) as Project[]
 
-  // Unified type — no `as any` cast
   const currentSkills: Skill[] = (isAdmin && portfolioData.skills?.length > 0
     ? portfolioData.skills
     : staticSkills) as Skill[]
@@ -94,7 +90,7 @@ export default function Home() {
         />
       )}
 
-      {/* ─── HERO ──────────────────────────────────────────────────────────────── */}
+      {/* ─── HERO ──────────────────────────────────────────────── */}
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden bg-background">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b dark:from-background/80 dark:via-background/50 dark:to-background/20 from-background/40 via-background/20 to-transparent z-10 pointer-events-none" />
@@ -116,9 +112,7 @@ export default function Home() {
 
             <AnimatedSection animation="slideUp" delay={0.3}>
               <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display drop-shadow-xl dark:drop-shadow-none">
-                <span className="text-foreground">
-                  {currentPersonal.name.split(' ')[0]}
-                </span>
+                <span className="text-foreground">{currentPersonal.name.split(' ')[0]}</span>
                 {' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-indigo-500 to-pink-500">
                   {currentPersonal.name.split(' ').slice(1).join(' ')}
@@ -130,9 +124,7 @@ export default function Home() {
               <p className="text-xl md:text-3xl font-medium text-foreground/80 mb-6 tracking-tight max-w-3xl mx-auto">
                 {currentPersonal.title}
               </p>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed
-                            backdrop-blur-sm p-4 rounded-2xl
-                            bg-muted/40 border border-border/50">
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed backdrop-blur-sm p-4 rounded-2xl bg-muted/40 border border-border/50">
                 {currentPersonal.bio}
               </p>
             </AnimatedSection>
@@ -190,56 +182,57 @@ export default function Home() {
             </AnimatedSection>
           </div>
         </EditableSection>
-        
+
         <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
       </section>
 
-      {/* ─── LIVE DATA: GITHUB & LINKEDIN ─────────────────────────────────────── */}
+      {/* ─── ABOUT / LINKEDIN ─────────────────────────────────── */}
+      {/* FIX: removed duplicate id="about" — Section wrapper should not repeat the id
+          that the inner component already provides for anchor nav */}
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-          <MorphingBlob className="absolute -top-20 -right-20 opacity-30" size={500} />
-
+        <MorphingBlob className="absolute -top-20 -right-20 opacity-30" size={500} />
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="space-y-6">
-              <AnimatedSection animation="fadeIn" delay={0.2}>
-                <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-[#0a66c2]/10 text-[#0a66c2] border border-[#0a66c2]/20">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                  </div>
-                  Professional Sync
-                </h2>
-                <p className="text-muted-foreground">Experience & education timeline.</p>
-              </AnimatedSection>
-              <AnimatedSection animation="slideLeft" delay={0.4}>
-                <LinkedInSection />
-              </AnimatedSection>
-              <AnimatedSection animation="slideLeft" delay={0.5}>
-                <CertificationsSection />
-              </AnimatedSection>
-              <AnimatedSection animation="slideLeft" delay={0.6}>
-                <LanguagesSection />
-              </AnimatedSection>
-            </div>
+            <AnimatedSection animation="fadeIn" delay={0.2}>
+              <h2 className="text-3xl font-bold mb-2 font-display flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-[#0a66c2]/10 text-[#0a66c2] border border-[#0a66c2]/20">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </div>
+                Professional Sync
+              </h2>
+              <p className="text-muted-foreground">Experience & education timeline.</p>
+            </AnimatedSection>
+            <AnimatedSection animation="slideLeft" delay={0.4}>
+              <LinkedInSection />
+            </AnimatedSection>
+            <AnimatedSection animation="slideLeft" delay={0.5}>
+              <CertificationsSection />
+            </AnimatedSection>
+            <AnimatedSection animation="slideLeft" delay={0.6}>
+              <LanguagesSection />
+            </AnimatedSection>
           </div>
+        </div>
       </Section>
 
-      {/* ─── SKILLS ────────────────────────────────────────────────────────────── */}
-      {/* NOTE: id="skills" lives inside SkillsSection itself — no duplicate here */}
-      <Section id="skills">
+      {/* ─── SKILLS ───────────────────────────────────────────── */}
+      {/* FIX: id="skills" is already set inside SkillsSection — outer Section gets no id to avoid duplicates */}
+      <Section>
         <EditableSection label="Skills" onEdit={() => openPanel('skills')}>
           <SkillsSection skills={currentSkills} />
         </EditableSection>
       </Section>
 
-      {/* ─── PROJECTS ─────────────────────────────────────────────────────────── */}
-      {/* NOTE: id="projects" lives inside ProjectsSection itself — no duplicate here */}
-      <Section id="projects" background="muted">
+      {/* ─── PROJECTS ─────────────────────────────────────────── */}
+      {/* FIX: id="projects" is already set inside ProjectsSection — outer Section gets no id */}
+      <Section background="muted">
         <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
           <ProjectsSection projects={currentProjects} />
         </EditableSection>
       </Section>
-        
-      {/* ─── GITHUB ACTIVITY ────────────────────────────────────────────────── */}
+
+      {/* ─── GITHUB ───────────────────────────────────────────── */}
       <Section id="github" background="muted">
         <div className="max-w-6xl mx-auto px-4 pb-12 mt-10">
           <AnimatedSection animation="fadeIn" delay={0.2}>
@@ -256,21 +249,21 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* ─── BLOG & INSIGHTS ─────────────────────────────────────────────────── */}
+      {/* ─── BLOG ─────────────────────────────────────────────── */}
       <Section id="insights">
         <EditableSection label="Blog" onEdit={() => openPanel('blog')}>
-                              <BlogSection posts={((isAdmin && (portfolioData?.blog?.length ?? 0) > 0) ? portfolioData.blog! : (staticBlog || [])) as import('@/lib/types/portfolio').BlogPost[]} />
+          <BlogSection posts={((isAdmin && (portfolioData?.blog?.length ?? 0) > 0) ? portfolioData.blog! : (staticBlog || [])) as import('@/lib/types/portfolio').BlogPost[]} />
         </EditableSection>
       </Section>
 
-      {/* ─── CONTACT ─────────────────────────────────────────────────────────── */}
+      {/* ─── CONTACT ──────────────────────────────────────────── */}
       <Section id="contact" background="muted">
         <EditableSection label="Contact" onEdit={() => openPanel('personal')}>
           <ContactSection
             heading={currentAbout.contactHeading}
             desc={currentAbout.contactDesc}
             email={currentPersonal.email}
-            emailZoho={(currentPersonal as any).emailZoho}
+            emailZoho={(currentPersonal as Record<string, unknown>).emailZoho as string | undefined}
             linkedin={currentPersonal.linkedin}
             github={currentPersonal.github}
             twitter={currentPersonal.twitter}
