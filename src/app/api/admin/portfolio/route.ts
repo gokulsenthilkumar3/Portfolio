@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing section or data' }, { status: 400 })
     }
 
-    const allowedSections = ['personal', 'stats', 'projects', 'skills', 'experiences', 'socialLinks', 'seo']
+    const allowedSections = ['personal', 'stats', 'projects', 'skills', 'experiences', 'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'about']
     if (!allowedSections.includes(section)) {
       return NextResponse.json({ error: 'Invalid section' }, { status: 400 })
     }

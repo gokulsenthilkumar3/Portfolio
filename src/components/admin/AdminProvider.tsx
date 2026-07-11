@@ -13,10 +13,6 @@ import {
 } from '@/lib/types/portfolio'
 
 const STORAGE_KEY = 'portfolio_data_v1'
-const SESSION_KEY = 'portfolio_admin_session'
-// SHA-256 hash of your chosen PIN/passphrase
-// To regenerate: node -e "const crypto=require('crypto'); console.log(crypto.createHash('sha256').update('YOUR_PASSPHRASE').digest('hex'))"
-const PIN_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
 
 interface PortfolioData {
   personal: SiteConfig
@@ -60,12 +56,7 @@ const defaultData: PortfolioData = {
   microblogs: portfolioConfig.microblogs as Microblog[],
 }
 
-async function sha256(message: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode(message)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-}
+
 
 function loadFromStorage(): Partial<PortfolioData> {
   if (typeof window === 'undefined') return {}
@@ -99,33 +90,73 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(defaultData)
   const [isSaving, setIsSaving] = useState(false)
 
-  // Load saved data and session on mount
+  // Load saved data and check session on mount
   useEffect(() => {
     const stored = loadFromStorage()
     if (Object.keys(stored).length > 0) {
       setPortfolioData(prev => ({ ...prev, ...stored }))
     }
-    // Check session
-    const session = sessionStorage.getItem(SESSION_KEY)
-    if (session === 'active') {
-      setIsAdmin(true)
-    }
+
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+    fetch(`${basePath}/api/admin/portfolio`.replace(/\/+/g, '/'))
+      .then(res => {
+        if (res.ok) {
+          setIsAdmin(true)
+          return res.json()
+        }
+        return null
+      })
+      .then(serverData => {
+        if (serverData) {
+          setPortfolioData(prev => {
+            const updated = { ...prev, ...serverData }
+            saveToStorage(updated)
+            return updated
+          })
+        }
+      })
+      .catch(console.error)
   }, [])
 
   const verifyPinFunc = useCallback(async (pin: string): Promise<boolean> => {
-    const hash = await sha256(pin)
-    console.log('DEBUG: Comparing', { input: pin, hash, target: PIN_HASH })
-    return hash.toLowerCase() === PIN_HASH.toLowerCase()
+    try {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+      const res = await fetch(`${basePath}/api/admin/auth`.replace(/\/+/g, '/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin }),
+      })
+      return res.ok
+    } catch {
+      return false
+    }
   }, [])
 
   const activate = useCallback(() => {
     setIsAdmin(true)
-    sessionStorage.setItem(SESSION_KEY, 'active')
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+    fetch(`${basePath}/api/admin/portfolio`.replace(/\/+/g, '/'))
+      .then(res => res.ok ? res.json() : null)
+      .then(serverData => {
+        if (serverData) {
+          setPortfolioData(prev => {
+            const updated = { ...prev, ...serverData }
+            saveToStorage(updated)
+            return updated
+          })
+        }
+      })
+      .catch(console.error)
   }, [])
 
   const deactivate = useCallback(() => {
     setIsAdmin(false)
-    sessionStorage.removeItem(SESSION_KEY)
+    try {
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+      fetch(`${basePath}/api/admin/logout`.replace(/\/+/g, '/'), { method: 'POST' }).catch(console.error)
+    } catch (e) {
+      console.error('Logout failed', e)
+    }
   }, [])
 
   const updateSection = useCallback(async (section: keyof PortfolioData, data: unknown) => {
