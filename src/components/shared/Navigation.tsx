@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, Code2, Sun, Moon, Download,
-  LayoutGrid, Cpu, Briefcase, Github, Lightbulb, Mail, Home,
+  LayoutGrid, Cpu, Briefcase, Github, Lightbulb, Mail, Home, MessageSquare
 } from 'lucide-react'
 import { portfolioConfig } from '@/config/portfolio.config'
 import { useThemeStore } from '@/lib/hooks/use-theme'
@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { label: 'About',    href: '/#about',    Icon: Briefcase  },
   { label: 'GitHub',   href: '/#github',   Icon: Github    },
   { label: 'Insights', href: '/#insights', Icon: Lightbulb },
+  { label: 'Guestbook',href: '/guestbook', Icon: MessageSquare },
   { label: 'Contact',  href: '/#contact',  Icon: Mail      },
 ] as const
 

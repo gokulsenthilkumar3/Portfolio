@@ -35,3 +35,5 @@ export const education = portfolioConfig.education
 export const certifications = portfolioConfig.certifications
 export const languages = portfolioConfig.languages
 export const blog = portfolioConfig.blog
+export const giscus = portfolioConfig.giscus
+export const microblogs = portfolioConfig.microblogs

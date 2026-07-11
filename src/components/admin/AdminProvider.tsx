@@ -8,7 +8,8 @@ import {
   Skill, 
   Experience, 
   SiteConfig,
-  SocialLink
+  SocialLink,
+  Microblog
 } from '@/lib/types/portfolio'
 
 const STORAGE_KEY = 'portfolio_data_v1'
@@ -28,6 +29,7 @@ interface PortfolioData {
   socialLinks: SocialLink[]
   seo: typeof portfolioConfig.seo
   blog: typeof portfolioConfig.blog
+  microblogs: Microblog[]
 }
 
 interface AdminContextType {
@@ -55,6 +57,7 @@ const defaultData: PortfolioData = {
   socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
   seo: portfolioConfig.seo,
   blog: portfolioConfig.blog,
+  microblogs: portfolioConfig.microblogs as Microblog[],
 }
 
 async function sha256(message: string): Promise<string> {

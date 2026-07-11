@@ -114,6 +114,11 @@ export function ContactSection({
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           <h3 className="text-lg font-semibold mb-4 relative z-10">Send a Message</h3>
           <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+            <div aria-live="polite" className="sr-only">
+              {status === 'sending' && 'Sending message...'}
+              {status === 'sent' && 'Message sent successfully!'}
+              {status === 'error' && 'Failed to send message. Please try again.'}
+            </div>
             <div>
               <label htmlFor="contact-name" className="text-sm text-muted-foreground mb-1 block">Your Name</label>
               <input
@@ -208,6 +213,7 @@ export function ContactSection({
                     onClick={(e) => handleCopy(e, copyText, label)}
                     className="absolute right-3 p-2 rounded-lg hover:bg-primary/20 text-muted-foreground hover:text-primary opacity-0 group-hover/item:opacity-100 transition-all"
                     title={`Copy ${label}`}
+                    aria-label={`Copy ${label}`}
                     type="button"
                   >
                     {copiedLabel === label

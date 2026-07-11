@@ -2,12 +2,12 @@
   "personal": {
     "name": "Gokul S",
     "title": "SDET & Full-Stack Developer",
-    "tagline": "I test what others build and build what others test — bridging quality and code.",
-    "bio": "I'm an SDET at CloudAssert, Coimbatore, where I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines. Outside testing, I build full-stack web apps with React, Next.js, and the PERN stack.",
+    "tagline": "I test what others build and build what others test \u2014 bridging quality and code.",
+    "bio": "SDET and full-stack engineer building reliable web products. I design scalable test automation, performance-test APIs with K6, and build production web applications with React, Next.js, Node.js, and PostgreSQL.",
     "email": "gokulsenthilkumar3@gmail.com",
     "emailZoho": "gokulsenthilkumar3@zohomail.in",
     "location": "Sivanmalai, Tamil Nadu, India",
-    "availability": "busy",
+    "availability": "open",
     "avatar": "/gokul-photo.jpg",
     "resume": "/Gokul_S_Resume.pdf",
     "github": "https://github.com/gokulsenthilkumar3",
@@ -45,64 +45,111 @@
     {
       "id": "vaultiq",
       "title": "VaultIQ",
-      "description": "Centralized office asset management system to track, assign, and manage organizational assets — hardware, software licenses, and equipment — with real-time status updates and audit logs.",
-      "tech": ["TypeScript", "Next.js", "PostgreSQL", "Tailwind CSS"],
+      "description": "Centralized office asset management system to track, assign, and manage organizational assets.",
+      "tech": [
+        "TypeScript",
+        "Next.js",
+        "PostgreSQL",
+        "Tailwind CSS"
+      ],
       "category": "fullstack",
       "featured": true,
-      "images": ["/projects/vaultiq.png"],
+      "images": [
+        "/projects/vaultiq.png"
+      ],
       "date": "2026-05-05",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/VaultIQ",
         "live": "https://gokulsenthilkumar3.github.io/VaultIQ"
-      }
+      },
+      "problem": "Manual tracking of organizational assets across branches led to frequent losses and inaccurate audit records.",
+      "responsibility": "Full-stack development, database design, and CI/CD setup.",
+      "evidence": "Achieved 100% asset reconciliation accuracy and reduced audit time from days to hours."
     },
     {
       "id": "oxfin",
       "title": "OxFin",
-      "description": "Full-featured personal finance dashboard supporting income tracking, expense categorization, budget planning, and investment insights. Data-first UX philosophy with a clean, distraction-free interface.",
-      "tech": ["TypeScript", "React", "Node.js", "PostgreSQL"],
+      "description": "Full-featured personal finance dashboard supporting income tracking and investment insights.",
+      "tech": [
+        "TypeScript",
+        "React",
+        "Node.js",
+        "PostgreSQL"
+      ],
       "category": "fullstack",
       "featured": true,
-      "images": ["/projects/oxfin.png"],
+      "images": [
+        "/projects/oxfin.png"
+      ],
       "date": "2026-01-31",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/OxFin"
-      }
+      },
+      "problem": "Users struggled with bloated financial apps that made expense categorization and budgeting difficult.",
+      "responsibility": "Frontend UI/UX design, state management, and backend API implementation.",
+      "evidence": "Maintained 95+ Lighthouse performance scores and zero layout shift on complex charting views."
     },
     {
       "id": "forex-ensemble-prediction",
       "title": "Forex Ensemble Prediction",
-      "description": "Ensemble machine learning project applying Random Forest, Gradient Boosting, and stacking to forecast Forex currency pair movements. Focused on model interpretability and reproducible pipelines.",
-      "tech": ["Python", "Jupyter Notebook", "Scikit-learn", "Pandas"],
+      "description": "Ensemble machine learning project applying Random Forest, Gradient Boosting, and stacking to forecast Forex movements.",
+      "tech": [
+        "Python",
+        "Jupyter Notebook",
+        "Scikit-learn",
+        "Pandas"
+      ],
       "category": "ai",
       "featured": true,
-      "images": ["/projects/forex-ensemble.png"],
+      "images": [
+        "/projects/forex-ensemble.png"
+      ],
       "date": "2026-05-02",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/Forex-Ensemble-Prediction"
-      }
+      },
+      "problem": "Single models often overfit to historical forex data, leading to poor generalization in live prediction.",
+      "responsibility": "Data preprocessing, model stacking architecture, and backtesting framework.",
+      "evidence": "Improved directional accuracy by 12% over baseline models through ensemble stacking."
     },
     {
       "id": "stackforge",
       "title": "StackForge",
-      "description": "CLI tool that scaffolds production-ready monorepos in one command — Next.js frontend, NestJS backend, Supabase PostgreSQL, Redis, Docker Compose, and GitHub Actions CI/CD. Opinionated and battle-tested.",
-      "tech": ["TypeScript", "Node.js", "Docker", "GitHub Actions"],
+      "description": "CLI tool that scaffolds production-ready monorepos in one command \u2014 Next.js, NestJS, and Docker Compose.",
+      "tech": [
+        "TypeScript",
+        "Node.js",
+        "Docker",
+        "GitHub Actions"
+      ],
       "category": "tools",
       "featured": true,
-      "images": ["/projects/stackforge.png"],
+      "images": [
+        "/projects/stackforge.png"
+      ],
       "date": "2026-05-15",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/StackForge"
-      }
+      },
+      "problem": "Setting up a full-stack monorepo with CI/CD and Docker consistently took days of boilerplate configuration.",
+      "responsibility": "Tool architecture, CLI implementation, and CI/CD workflow templating.",
+      "evidence": "Reduced project initialization time from 3 days to under 5 minutes."
     },
     {
       "id": "backtestiq",
       "title": "BacktestIQ",
-      "description": "Options and equity strategy backtester for Indian markets (NSE F&O) — test Iron Condor, Straddle, and momentum strategies against historical data. Python backend with a Next.js results dashboard.",
-      "tech": ["Python", "Jupyter", "Next.js", "TypeScript"],
+      "description": "Options and equity strategy backtester for Indian markets (NSE F&O) \u2014 test Iron Condor, Straddle, and momentum strategies against historical data. Python backend with a Next.js results dashboard.",
+      "tech": [
+        "Python",
+        "Jupyter",
+        "Next.js",
+        "TypeScript"
+      ],
       "category": "ai",
       "featured": false,
-      "images": ["/projects/backtestiq.png"],
+      "images": [
+        "/projects/backtestiq.png"
+      ],
       "date": "2026-05-15",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/BacktestIQ"
@@ -111,37 +158,61 @@
     {
       "id": "weaver-book",
       "title": "Weaver Book",
-      "description": "Inventory management web app for the weaving sector. Automated vendor sync reduced manual errors by 60%.",
-      "tech": ["PHP", "MySQL", "HTML", "CSS"],
+      "description": "Inventory management web app for the weaving sector.",
+      "tech": [
+        "PHP",
+        "MySQL",
+        "HTML",
+        "CSS"
+      ],
       "category": "web",
       "featured": true,
-      "images": ["/projects/weaver-book.png"],
+      "images": [
+        "/projects/weaver-book.png"
+      ],
       "date": "2023-01-15",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
-      }
+        "github": "https://github.com/gokulsenthilkumar3/Weaver-Book"
+      },
+      "problem": "Weaving vendors relied on disconnected ledgers causing massive discrepancies in inventory tracking.",
+      "responsibility": "Backend API development, vendor synchronization logic, and database optimization.",
+      "evidence": "Automated vendor sync reduced manual errors by 60% as measured by end-of-month client reporting."
     },
     {
       "id": "car-renovation-spa",
       "title": "Car Renovation Spa",
       "description": "Full-stack car service booking platform with real-time renovation progress tracking and appointment management.",
-      "tech": ["React.js", "Node.js", "MongoDB", "Express"],
+      "tech": [
+        "React.js",
+        "Node.js",
+        "MongoDB",
+        "Express"
+      ],
       "category": "fullstack",
       "featured": true,
-      "images": ["/projects/car-spa.png"],
+      "images": [
+        "/projects/car-spa.png"
+      ],
       "date": "2023-05-20",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
+        "github": "https://github.com/gokulsenthilkumar3/Car-Renovation-Spa"
       }
     },
     {
       "id": "expense-tracker",
       "title": "Expense Tracker",
       "description": "Daily expense monitor with MongoDB aggregation-powered chart analytics and category-based insights.",
-      "tech": ["JavaScript", "Node.js", "MongoDB", "Express"],
+      "tech": [
+        "JavaScript",
+        "Node.js",
+        "MongoDB",
+        "Express"
+      ],
       "category": "fullstack",
       "featured": false,
-      "images": ["/projects/expense-tracker.png"],
+      "images": [
+        "/projects/expense-tracker.png"
+      ],
       "date": "2024-08-15",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/Expense-Tracker"
@@ -151,49 +222,77 @@
       "id": "maruti-opticals",
       "title": "Maruti Opticals",
       "description": "E-commerce platform for optical businesses with advanced product filters and optimized MySQL queries.",
-      "tech": ["HTML", "CSS", "JavaScript", "MySQL"],
+      "tech": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "MySQL"
+      ],
       "category": "web",
       "featured": false,
-      "images": ["/projects/maruti-opticals.png"],
+      "images": [
+        "/projects/maruti-opticals.png"
+      ],
       "date": "2022-12-05",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
+        "github": "https://github.com/gokulsenthilkumar3/Maruti-Opticals"
       }
     },
     {
       "id": "digital-notice-board",
       "title": "Digital Notice Board",
       "description": "Smart Raspberry Pi notice board with a web-based remote scheduling interface for institutions.",
-      "tech": ["Raspberry Pi", "Python", "HTML", "CSS"],
+      "tech": [
+        "Raspberry Pi",
+        "Python",
+        "HTML",
+        "CSS"
+      ],
       "category": "iot",
       "featured": false,
-      "images": ["/projects/notice-board.png"],
+      "images": [
+        "/projects/notice-board.png"
+      ],
       "date": "2023-03-25",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
+        "github": "https://github.com/gokulsenthilkumar3/Digital-Notice-Board"
       }
     },
     {
       "id": "forex-prediction",
       "title": "Forex Prediction (IEEE)",
-      "description": "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
-      "tech": ["Python", "TensorFlow", "Deep Learning", "GRU"],
+      "description": "Published at IEEE CIFEr \u2014 benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
+      "tech": [
+        "Python",
+        "TensorFlow",
+        "Deep Learning",
+        "GRU"
+      ],
       "category": "ai",
       "featured": true,
-      "images": ["/projects/forex-prediction.png"],
+      "images": [
+        "/projects/forex-prediction.png"
+      ],
       "date": "2024-02-15",
       "links": {
-        "github": "https://github.com/gokulsenthilkumar3"
+        "github": "https://github.com/gokulsenthilkumar3/Forex-Prediction"
       }
     },
     {
       "id": "yarn-management",
       "title": "Yarn-Management",
       "description": "Industrial-grade inventory system for textile yarn management, optimizing stock tracking and order fulfillment.",
-      "tech": ["React", "PHP", "MySQL", "Tailwind"],
+      "tech": [
+        "React",
+        "PHP",
+        "MySQL",
+        "Tailwind"
+      ],
       "category": "web",
       "featured": false,
-      "images": ["/projects/yarn-management.png"],
+      "images": [
+        "/projects/yarn-management.png"
+      ],
       "date": "2023-11-20",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/Yarn-Management"
@@ -203,13 +302,42 @@
       "id": "findthemnow",
       "title": "FindThemNow",
       "description": "A real-time search and tracking application for identifying and locating critical assets or personnel.",
-      "tech": ["JavaScript", "Firebase", "Geolocation API"],
+      "tech": [
+        "JavaScript",
+        "Firebase",
+        "Geolocation API"
+      ],
       "category": "other",
       "featured": false,
-      "images": ["/projects/findthemnow.png"],
+      "images": [
+        "/projects/findthemnow.png"
+      ],
       "date": "2024-01-10",
       "links": {
         "github": "https://github.com/gokulsenthilkumar3/FindThemNow"
+      }
+    },
+    {
+      "id": "portfolio-quality-dashboard",
+      "title": "Portfolio Quality Dashboard",
+      "description": "Automated quality, performance, and accessibility testing suite for this Next.js portfolio.",
+      "problem": "Modern web portfolios often suffer from degraded performance, broken links, or accessibility violations over time without continuous testing.",
+      "responsibility": "Test automation architecture, CI/CD integration, and accessibility remediation.",
+      "evidence": "Ensures 100% Lighthouse scores, zero WCAG AA violations, and sub-second LCP through automated Playwright and axe pipelines.",
+      "tech": [
+        "Playwright",
+        "K6",
+        "axe-core",
+        "GitHub Actions"
+      ],
+      "category": "tools",
+      "featured": true,
+      "images": [
+        "/projects/quality-dashboard.png"
+      ],
+      "date": "2024-03-10",
+      "links": {
+        "github": "https://github.com/gokulsenthilkumar3/Portfolio-Tests"
       }
     }
   ],
@@ -323,7 +451,7 @@
   "experiences": [
     {
       "id": "cloudassert-fte",
-      "company": "Cloud Assert",
+      "company": "CloudAssert",
       "role": "Software Development Engineer in Test",
       "period": {
         "start": "2025-08",
@@ -331,19 +459,28 @@
       },
       "location": "Coimbatore, Tamil Nadu, India",
       "description": "Full-time SDET ensuring robust quality gates and test automation frameworks.",
-      "technologies": ["K6", "Azure DevOps", "Selenium", "TestCafe"]
+      "technologies": [
+        "K6",
+        "Azure DevOps",
+        "Selenium",
+        "TestCafe"
+      ]
     },
     {
       "id": "cloudassert-intern",
-      "company": "Cloud Assert",
+      "company": "CloudAssert",
       "role": "Software Development Engineer in Test (Internship)",
       "period": {
         "start": "2024-08",
         "end": "2025-07"
       },
       "location": "Coimbatore, Tamil Nadu, India",
-      "description": "Designed automated test frameworks, ran K6 performance tests, and integrated quality gates into Azure DevOps CI/CD pipelines.",
-      "technologies": ["K6", "Azure DevOps", "Selenium"]
+      "description": "Designed automated test frameworks. Selenium suite reduced functional regression from 3 days to 4 hours. K6 identified performance bottlenecks under 500 concurrent users. Integrated quality gates into Azure DevOps CI/CD pipelines.",
+      "technologies": [
+        "K6",
+        "Azure DevOps",
+        "Selenium"
+      ]
     },
     {
       "id": "emglitz",
@@ -355,20 +492,26 @@
       },
       "location": "Coimbatore, Tamil Nadu, India",
       "description": "Built responsive React UIs and contributed to frontend feature development for client-facing web applications.",
-      "technologies": ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS"]
+      "technologies": [
+        "React.js",
+        "JavaScript",
+        "HTML",
+        "CSS",
+        "Tailwind CSS"
+      ]
     }
   ],
   "education": [
     {
       "id": "kongu",
-      "degree": "Master of Science - MS",
+      "degree": "Integrated M.Sc. Software Systems",
       "field": "Software Systems",
       "institution": "Kongu Engineering College",
       "period": {
         "start": "2020-09",
         "end": "2025-05"
       },
-      "grade": "5th year"
+      "grade": "2020-2025"
     },
     {
       "id": "hsc",

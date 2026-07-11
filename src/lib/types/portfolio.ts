@@ -30,10 +30,13 @@ export interface Project {
     demo?: string
   }
   featured: boolean
-  category: 'web' | 'mobile' | '3d' | 'ai' | 'fullstack' | 'iot' | 'testing' | 'other'
+  category: 'web' | 'mobile' | '3d' | 'ai' | 'fullstack' | 'iot' | 'testing' | 'other' | 'tools'
   tags?: string[]
   date?: string
   status?: 'completed' | 'in-progress' | 'planned'
+  problem?: string
+  responsibility?: string
+  evidence?: string
 }
 
 export interface Skill {
@@ -145,4 +148,18 @@ export interface AboutConfig {
   secondarySkills: string[]
   contactHeading: string
   contactDesc: string
+}
+
+export interface Microblog {
+  id: string
+  text: string
+  date: string
+}
+
+export interface GiscusConfig {
+  repo: string
+  repoId: string
+  category: string
+  categoryId: string
+  mapping: string
 }

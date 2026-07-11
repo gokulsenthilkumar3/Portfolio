@@ -310,18 +310,17 @@ export function GitHubSection() {
           <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
             <div className="flex items-center gap-2">
               <Activity size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Activity</h3>
-              {data.profile.created_at && (
-                <span className="text-[10px] text-muted-foreground/60 font-mono">
-                  synced since {new Date(data.profile.created_at).toLocaleDateString('en', { month: 'short', year: 'numeric' })}
-                </span>
-              )}
+              <h3 className="font-semibold text-sm">GitHub contribution activity</h3>
+              <span className="text-[10px] text-muted-foreground/60 font-mono">
+                (all-time)
+              </span>
             </div>
             <motion.button
               onClick={() => setGameOpen(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               title="Play Commit City"
+              aria-label="Play Commit City 3D Game"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#e94560]/40 bg-[#e94560]/10 text-[#e94560] text-[10px] font-bold font-mono tracking-wider hover:bg-[#e94560]/20 transition-all"
             >
               <Gamepad2 size={12} />

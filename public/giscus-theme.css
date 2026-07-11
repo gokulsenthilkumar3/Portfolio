@@ -1,0 +1,105 @@
+/*! Custom Giscus Theme for Gokul.dev */
+main {
+  --color-canvas-default: transparent;
+  --color-canvas-subtle: rgba(255, 255, 255, 0.02);
+  --color-canvas-overlay: rgba(15, 20, 30, 0.9);
+  
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-muted: rgba(255, 255, 255, 0.05);
+  
+  --color-accent-fg: #3b82f6; /* Blue-500 to match primary */
+  --color-accent-emphasis: #2563eb;
+  --color-accent-muted: rgba(59, 130, 246, 0.2);
+  --color-accent-subtle: rgba(59, 130, 246, 0.1);
+
+  --color-fg-default: #f3f4f6; /* Gray-100 */
+  --color-fg-muted: #9ca3af; /* Gray-400 */
+  --color-fg-subtle: #6b7280; /* Gray-500 */
+
+  --color-btn-text: #ffffff;
+  --color-btn-bg: rgba(255, 255, 255, 0.05);
+  --color-btn-border: rgba(255, 255, 255, 0.1);
+  --color-btn-hover-bg: rgba(255, 255, 255, 0.1);
+  --color-btn-hover-border: rgba(255, 255, 255, 0.15);
+  
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #3b82f6;
+  --color-btn-primary-border: #2563eb;
+  --color-btn-primary-hover-bg: #2563eb;
+  --color-btn-primary-hover-border: #1d4ed8;
+
+  /* Typography */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Chat bubble style for comments */
+.timeline-comment {
+  background-color: var(--color-canvas-subtle) !important;
+  border: 1px solid var(--color-border-default) !important;
+  border-radius: 20px !important;
+  padding: 4px;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.timeline-comment-header {
+  background-color: transparent !important;
+  border-bottom: 1px dashed var(--color-border-muted) !important;
+  padding: 12px 16px !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+
+.timeline-comment .comment-body {
+  padding: 16px !important;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Reply thread line */
+.timeline-item::before {
+  background-color: var(--color-border-muted) !important;
+  width: 2px !important;
+}
+
+/* Input Box Styling */
+.discussion-custom-reply-form,
+.previewable-comment-form {
+  border-radius: 20px !important;
+  border: 1px solid var(--color-border-default) !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+}
+
+.previewable-comment-form textarea {
+  background-color: transparent !important;
+  color: var(--color-fg-default) !important;
+  padding: 16px !important;
+}
+
+.form-actions {
+  background-color: transparent !important;
+  border-top: 1px solid var(--color-border-muted) !important;
+  padding: 12px 16px !important;
+}
+
+/* Rounded avatars */
+.avatar {
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px var(--color-canvas-default), 0 0 0 3px var(--color-accent-subtle) !important;
+}
+
+/* Reactions */
+.reaction-button {
+  border-radius: 20px !important;
+  background-color: var(--color-canvas-subtle) !important;
+  border: 1px solid var(--color-border-muted) !important;
+  transition: all 0.2s ease;
+}
+
+.reaction-button:hover {
+  background-color: var(--color-btn-hover-bg) !important;
+  border-color: var(--color-btn-hover-border) !important;
+  transform: translateY(-1px);
+}

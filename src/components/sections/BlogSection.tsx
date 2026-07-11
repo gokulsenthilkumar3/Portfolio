@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import { cn } from '@/lib/utils/cn'
-import { Clock, Calendar, ChevronRight, X } from 'lucide-react'
+import { Clock, Calendar, ChevronRight, X, MessageSquareQuote } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import type { BlogPost } from '@/lib/types/portfolio'
+import { giscus, microblogs } from '@/lib/data/content'
+import Giscus from '@giscus/react'
 
 export function BlogSection({ posts }: { posts: BlogPost[] }) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
@@ -17,14 +18,36 @@ export function BlogSection({ posts }: { posts: BlogPost[] }) {
     <section id="insights" className="py-20 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 relative z-10">
         <AnimatedSection animation="fadeIn">
-          <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-4 font-display">Insights & Articles</h2>
-            <p className="text-muted-foreground max-w-2xl">
-              Thoughts, learnings, and deep dives into test engineering, automation frameworks, and CI/CD pipelines.
-            </p>
+          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <h2 className="text-4xl font-bold mb-4 font-display">Insights & Articles</h2>
+              <p className="text-muted-foreground max-w-2xl">
+                Thoughts, learnings, and deep dives into test engineering, automation frameworks, and CI/CD pipelines.
+              </p>
+            </div>
           </div>
         </AnimatedSection>
 
+        {microblogs && microblogs.length > 0 && (
+          <div className="mb-16">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 font-display text-primary">
+              <MessageSquareQuote size={20} />
+              Quick Thoughts
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {microblogs.map((mb, i) => (
+                <AnimatedSection key={mb.id} animation="fadeIn" delay={0.05 * i}>
+                  <div className="bg-white/5 dark:bg-black/20 border border-white/10 p-5 rounded-2xl h-full shadow-lg backdrop-blur-sm">
+                    <p className="text-sm text-foreground/90 leading-relaxed mb-3">{mb.text}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">{mb.date}</p>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <h3 className="text-2xl font-bold mb-6 font-display">In-Depth Articles</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {posts.map((post, i) => (
             <AnimatedSection key={post.id} animation="slideUp" delay={0.1 * i}>
@@ -102,8 +125,28 @@ export function BlogSection({ posts }: { posts: BlogPost[] }) {
                   <span className="flex items-center gap-2"><Clock size={16} /> {selectedPost.readTime}</span>
                 </div>
                 
-                <div className="prose prose-slate dark:prose-invert prose-headings:font-display prose-a:text-primary max-w-none">
+                <div className="prose prose-slate dark:prose-invert prose-headings:font-display prose-a:text-primary max-w-none mb-12">
                   <ReactMarkdown>{selectedPost.content}</ReactMarkdown>
+                </div>
+                
+                {/* Comments Section */}
+                <div className="mt-8 pt-8 border-t border-border/50">
+                  <h3 className="text-xl font-bold mb-6 font-display">Comments</h3>
+                  <Giscus
+                    id="comments"
+                    repo={giscus.repo as `${string}/${string}`}
+                    repoId={giscus.repoId}
+                    category={giscus.category}
+                    categoryId={giscus.categoryId}
+                    mapping="specific"
+                    term={selectedPost.id}
+                    reactionsEnabled="1"
+                    emitMetadata="0"
+                    inputPosition="top"
+                    theme={typeof window !== 'undefined' ? `${window.location.origin}/giscus-theme.css` : 'preferred_color_scheme'}
+                    lang="en"
+                    loading="lazy"
+                  />
                 </div>
               </div>
             </motion.div>

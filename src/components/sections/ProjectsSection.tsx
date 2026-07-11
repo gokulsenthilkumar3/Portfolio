@@ -95,7 +95,22 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 )}
               </div>
               {project.description && (
-                <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
+                <p className="text-xs text-muted-foreground">{project.description}</p>
+              )}
+              {project.problem && (
+                <div className="text-[11px] text-muted-foreground mt-2">
+                  <strong className="text-foreground/80">Problem:</strong> {project.problem}
+                </div>
+              )}
+              {project.responsibility && (
+                <div className="text-[11px] text-muted-foreground">
+                  <strong className="text-foreground/80">Responsibility:</strong> {project.responsibility}
+                </div>
+              )}
+              {project.evidence && (
+                <div className="text-[11px] text-muted-foreground">
+                  <strong className="text-foreground/80">Evidence:</strong> {project.evidence}
+                </div>
               )}
               {project.technologies && project.technologies.length > 0 && (
                 <div className="flex flex-wrap gap-1">
@@ -113,14 +128,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 <a href={project.links.github} target="_blank" rel="noopener noreferrer"
                   className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
                 >
-                  <Github className="w-3.5 h-3.5" /> Code
+                  <Github className="w-3.5 h-3.5" /> Source
                 </a>
               )}
               {project.links?.live && (
                 <a href={project.links.live} target="_blank" rel="noopener noreferrer"
                   className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'flex-1 gap-1.5 text-xs')}
                 >
-                  <ExternalLink className="w-3.5 h-3.5" /> Live
+                  <ExternalLink className="w-3.5 h-3.5" /> Live Demo
                 </a>
               )}
             </div>
@@ -201,7 +216,7 @@ export function ProjectsSection({ projects }: Props) {
             'hidden sm:flex gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer shrink-0'
           )}
         >
-          {showAll ? 'Show less' : 'View all'}
+          {showAll ? 'Show less' : 'View all projects'}
         </button>
       </AnimatedSection>
 
