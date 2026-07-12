@@ -26,15 +26,22 @@ export async function verifyPin(pin: string): Promise<boolean> {
 
 export function generateToken(): string {
   return jwt.sign(
-    { role: 'admin', iat: Date.now() },
+    { role: 'admin' },
     requireSecret(),
-    { expiresIn: TOKEN_EXPIRY }
+    { 
+      expiresIn: TOKEN_EXPIRY,
+      issuer: 'gokul-portfolio',
+      audience: 'admin-panel'
+    }
   )
 }
 
 export function verifyToken(token: string): boolean {
   try {
-    jwt.verify(token, requireSecret())
+    jwt.verify(token, requireSecret(), {
+      issuer: 'gokul-portfolio',
+      audience: 'admin-panel'
+    })
     return true
   } catch {
     return false

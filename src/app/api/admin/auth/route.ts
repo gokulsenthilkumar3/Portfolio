@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPin, generateToken, getCookieName } from '@/lib/admin/auth'
+import { rateLimit } from '@/lib/admin/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    const { success } = await rateLimit(`admin-auth:${ip}`, 5, 60000) // 5 attempts per minute
+    if (!success) {
+      return NextResponse.json({ error: 'Too many attempts. Please try again later.' }, { status: 429 })
+    }
+
     const { pin } = await request.json()
 
     if (!pin || typeof pin !== 'string') {

@@ -1,5 +1,21 @@
 import { NextResponse } from 'next/server'
 
+interface GitHubUser {
+  login: string; name: string; avatar_url: string; bio: string;
+  public_repos: number; followers: number; following: number;
+  location: string; blog: string; created_at: string;
+}
+
+interface GitHubRepo {
+  id: number; name: string; description: string; html_url: string;
+  stargazers_count: number; forks_count: number; language: string;
+  updated_at: string; topics: string[];
+}
+
+interface GitHubEvent {
+  created_at: string;
+}
+
 const GITHUB_USERNAME = 'gokulsenthilkumar3'
 const GITHUB_API = 'https://api.github.com'
 
@@ -34,12 +50,12 @@ export async function GET() {
     }
 
     const [user, repos, events] = await Promise.all([
-      fetchGitHub(`/users/${GITHUB_USERNAME}`),
-      fetchGitHub(`/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`),
-      fetchGitHub(`/users/${GITHUB_USERNAME}/events/public?per_page=100`),
+      fetchGitHub(`/users/${GITHUB_USERNAME}`) as Promise<GitHubUser>,
+      fetchGitHub(`/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`) as Promise<GitHubRepo[]>,
+      fetchGitHub(`/users/${GITHUB_USERNAME}/events/public?per_page=100`) as Promise<GitHubEvent[]>,
     ])
 
-    const allRepos = [...(repos as any[])]
+    const allRepos = [...repos]
       .sort((a, b) => b.stargazers_count - a.stargazers_count)
       .map((r) => ({
         id: r.id,
@@ -68,14 +84,14 @@ export async function GET() {
       }
     } catch {
       // Fallback: derive from events
-      ;(events as any[]).forEach((event) => {
-        const date: string = event.created_at?.substring(0, 10)
+      events.forEach((event) => {
+        const date = event.created_at?.substring(0, 10)
         if (date) contributionMap[date] = (contributionMap[date] ?? 0) + 1
       })
     }
 
     const langMap: Record<string, number> = {}
-    ;(repos as any[]).forEach((r) => {
+    repos.forEach((r) => {
       if (r.language) langMap[r.language] = (langMap[r.language] ?? 0) + 1
     })
     const languages = Object.entries(langMap)
@@ -85,22 +101,22 @@ export async function GET() {
 
     const data = {
       profile: {
-        login: (user as any).login,
-        name: (user as any).name,
-        avatar_url: (user as any).avatar_url,
-        bio: (user as any).bio,
-        public_repos: (user as any).public_repos,
-        followers: (user as any).followers,
-        following: (user as any).following,
-        location: (user as any).location,
-        blog: (user as any).blog,
-        created_at: (user as any).created_at,
+        login: user.login,
+        name: user.name,
+        avatar_url: user.avatar_url,
+        bio: user.bio,
+        public_repos: user.public_repos,
+        followers: user.followers,
+        following: user.following,
+        location: user.location,
+        blog: user.blog,
+        created_at: user.created_at,
       },
       stats: {
-        totalRepos: (user as any).public_repos,
-        totalStars: (repos as any[]).reduce((a, r) => a + r.stargazers_count, 0),
-        totalForks: (repos as any[]).reduce((a, r) => a + r.forks_count, 0),
-        followers: (user as any).followers,
+        totalRepos: user.public_repos,
+        totalStars: repos.reduce((a, r) => a + r.stargazers_count, 0),
+        totalForks: repos.reduce((a, r) => a + r.forks_count, 0),
+        followers: user.followers,
       },
       allRepos,
       languages,

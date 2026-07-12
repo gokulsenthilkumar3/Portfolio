@@ -523,10 +523,20 @@ async function analyzeRepo(owner: string, repo: string): Promise<RepoAnalysis | 
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
 
+let cache: { data: any; ts: number; owner: string } | null = null
+const CACHE_TTL = 60 * 60 * 1000 // 1 hour
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const owner = searchParams.get('owner') ?? 'gokulsenthilkumar3'
   const singleRepo = searchParams.get('repo')
+
+  // Return from cache if valid and no single repo is requested
+  if (!singleRepo && cache && cache.owner === owner && Date.now() - cache.ts < CACHE_TTL) {
+    return NextResponse.json(cache.data, {
+      headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600' },
+    })
+  }
 
   // Single repo analysis
   if (singleRepo) {
@@ -558,11 +568,17 @@ export async function GET(req: NextRequest) {
 
   results.sort((a, b) => b.overallScore - a.overallScore)
 
-  return NextResponse.json({
+  const data = {
     owner,
     analyzedAt: new Date().toISOString(),
     totalRepos: results.length,
     averageScore: Math.round(results.reduce((acc, r) => acc + r.overallScore, 0) / results.length),
     repos: results,
+  }
+
+  cache = { data, ts: Date.now(), owner }
+
+  return NextResponse.json(data, {
+    headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600' },
   })
 }

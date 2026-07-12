@@ -22,7 +22,7 @@ export function ContactSection({
   github?: string
   twitter?: string
 }) {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '', honeypot: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null)
 
@@ -36,6 +36,14 @@ export function ContactSection({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (status === 'sending') return
+    
+    // Honeypot check: If the hidden field is filled, silently ignore it
+    if (form.honeypot) {
+      toast.success('Message sent! I\'ll reply within 24h. 🎉')
+      setForm({ name: '', email: '', subject: '', message: '', honeypot: '' })
+      return
+    }
+
     setStatus('sending')
 
     try {
@@ -49,7 +57,7 @@ export function ContactSection({
 
       if (res.ok && data.ok) {
         setStatus('sent')
-        setForm({ name: '', email: '', subject: '', message: '' })
+        setForm({ name: '', email: '', subject: '', message: '', honeypot: '' })
         toast.success(data.message || 'Message sent! I\'ll reply within 24h. 🎉')
         setTimeout(() => setStatus('idle'), 4000)
       } else if (data.fallback) {
@@ -166,6 +174,17 @@ export function ContactSection({
                 onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                 placeholder="How can I help you?"
                 className="w-full bg-background/60 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none shadow-inner"
+              />
+            </div>
+            {/* Honeypot hidden field */}
+            <div style={{ display: 'none' }} aria-hidden="true">
+              <input
+                type="text"
+                name="honeypot"
+                tabIndex={-1}
+                autoComplete="off"
+                value={form.honeypot}
+                onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))}
               />
             </div>
             <button

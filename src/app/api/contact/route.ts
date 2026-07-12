@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { rateLimit } from '@/lib/admin/rate-limit'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Contact Form API route using EmailJS REST API
@@ -40,6 +41,12 @@ function validatePayload(body: unknown): body is ContactPayload {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') || 'unknown'
+  const { success } = await rateLimit(`contact:${ip}`, 3, 3600000) // 3 emails per hour
+  if (!success) {
+    return NextResponse.json({ ok: false, message: 'Too many messages sent. Please try again later.' }, { status: 429 })
+  }
+
   // Check env vars are configured
   if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY || !EMAILJS_PRIVATE_KEY) {
     console.warn('[contact] EmailJS env vars not configured — falling back to mailto')

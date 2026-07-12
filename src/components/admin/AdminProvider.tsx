@@ -38,6 +38,7 @@ interface AdminContextType {
   exportConfig: () => string
   verifyPin: (pin: string) => Promise<boolean>
   persistData: () => Promise<boolean>
+  hasUnsavedChanges: boolean
 }
 
 export type { PortfolioData }
@@ -83,12 +84,14 @@ const AdminContext = createContext<AdminContextType>({
   exportConfig: () => '',
   verifyPin: async () => false,
   persistData: async () => false,
+  hasUnsavedChanges: false,
 })
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(defaultData)
   const [isSaving, setIsSaving] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   // Load saved data and check session on mount
   useEffect(() => {
@@ -165,6 +168,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const updated = { ...portfolioData, [section]: data }
       setPortfolioData(updated)
       saveToStorage(updated)
+      setHasUnsavedChanges(true)
     } finally {
       setTimeout(() => setIsSaving(false), 500)
     }
@@ -193,6 +197,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         return false
       }
       toast.success('Saved to server successfully!')
+      setHasUnsavedChanges(false)
       return true
     } catch (e) {
       console.error('Error persisting data', e)
@@ -213,6 +218,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         exportConfig,
         verifyPin: verifyPinFunc,
         persistData,
+        hasUnsavedChanges,
       }}
     >
       {children}

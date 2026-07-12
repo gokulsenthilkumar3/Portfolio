@@ -33,7 +33,16 @@ const tabs = [
 
 export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState(initialTab)
-  const { isSaving, persistData } = useAdmin()
+  const { isSaving, persistData, hasUnsavedChanges } = useAdmin()
+
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      if (!window.confirm('You have unsaved changes. Are you sure you want to close?')) {
+        return;
+      }
+    }
+    onClose();
+  }
 
   return (
     <AnimatePresence>
@@ -46,7 +55,7 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9990]"
             style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}
-            onClick={onClose}
+            onClick={handleClose}
           />
 
           {/* Panel */}
@@ -82,7 +91,7 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
                 </button>
                 
                 <button 
-                  onClick={onClose}
+                  onClick={handleClose}
                   title="Close editor"
                   className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors"
                 >

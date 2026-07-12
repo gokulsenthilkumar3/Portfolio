@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
 import { readPortfolioData, updatePortfolioSection } from '@/lib/admin/storage'
 import { portfolioConfig } from '@/config/portfolio.config'
+import { z } from 'zod'
+
+const SectionSchema = z.enum([
+  'personal', 'stats', 'projects', 'skills', 'experiences', 
+  'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'about'
+])
+
+const PayloadSchema = z.object({
+  section: SectionSchema,
+  data: z.any() // Basic validation to ensure it exists
+})
 
 function isAuthenticated(request: NextRequest): boolean {
   const cookieHeader = request.headers.get('cookie')
@@ -24,6 +35,10 @@ export async function GET(request: NextRequest) {
     experiences: storedData.experiences || portfolioConfig.experiences,
     socialLinks: storedData.socialLinks || portfolioConfig.socialLinks,
     seo: storedData.seo || portfolioConfig.seo,
+    blog: storedData.blog || portfolioConfig.blog,
+    microblogs: storedData.microblogs || portfolioConfig.microblogs,
+    education: storedData.education || portfolioConfig.education,
+    about: storedData.about || portfolioConfig.about,
   }
 
   return NextResponse.json(merged)
@@ -36,15 +51,16 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { section, data } = body
-
-    if (!section || !data) {
-      return NextResponse.json({ error: 'Missing section or data' }, { status: 400 })
+    const parsed = PayloadSchema.safeParse(body)
+    
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid payload schema' }, { status: 400 })
     }
 
-    const allowedSections = ['personal', 'stats', 'projects', 'skills', 'experiences', 'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'about']
-    if (!allowedSections.includes(section)) {
-      return NextResponse.json({ error: 'Invalid section' }, { status: 400 })
+    const { section, data } = parsed.data
+
+    if (data === null || data === undefined) {
+      return NextResponse.json({ error: 'Missing data' }, { status: 400 })
     }
 
     await updatePortfolioSection(section, data)
