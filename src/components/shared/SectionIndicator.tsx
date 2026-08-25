@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 import { useThemeStore } from '@/lib/hooks/use-theme'
+import Link from 'next/link'
 
 interface Section { id: string; label: string }
 interface SectionIndicatorProps { sections: Section[]; className?: string }
@@ -36,10 +37,6 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
     return () => obs.disconnect()
   }, [sections])
 
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
-
   if (!layout.showIndicators) return null
 
   return (
@@ -52,8 +49,8 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
           const isActive = active === s.id
           return (
             <li key={s.id} className="group relative flex items-center justify-end">
-              <button
-                onClick={() => scrollTo(s.id)}
+              <Link
+                href={`#${s.id}`}
                 aria-label={`Go to ${s.label}`}
                 aria-current={isActive ? 'true' : undefined}
                 className="relative flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
@@ -88,7 +85,7 @@ export function SectionIndicator({ sections, className }: SectionIndicatorProps)
                     className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"
                   />
                 )}
-              </button>
+              </Link>
             </li>
           )
         })}

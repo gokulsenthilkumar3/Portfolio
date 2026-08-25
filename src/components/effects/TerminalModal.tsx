@@ -3,6 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Terminal as TerminalIcon } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+const CodeRain = dynamic(() => 
+  import('@/components/effects/CodeRain').then(mod => ({ default: mod.CodeRain })),
+  { ssr: false }
+)
 
 interface TerminalModalProps {
   isOpen: boolean
@@ -139,6 +145,7 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
             exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
             className="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-2xl bg-[#1e1e1e] rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col h-[60vh] max-h-[600px] cursor-move"
           >
+            <CodeRain className="absolute inset-0 pointer-events-none mix-blend-screen" opacity={0.08} />
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] border-b border-white/5 select-none">
               <div className="flex items-center gap-2">
@@ -156,7 +163,7 @@ export function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
 
             {/* Terminal Body */}
             <div 
-              className="flex-1 p-4 font-mono text-sm overflow-y-auto text-green-400/90"
+              className="flex-1 p-4 font-mono text-sm overflow-y-auto text-green-400/90 relative z-10"
               onClick={() => inputRef.current?.focus()}
             >
               <div className="mb-4 text-green-400/60">

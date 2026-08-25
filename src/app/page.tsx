@@ -1,21 +1,19 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { Section } from '@/components/shared/Section'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import dynamic from 'next/dynamic'
-import { TextReveal } from '@/components/effects/TextReveal'
 import { MagneticButton } from '@/components/effects/MagneticButton'
-const MorphingBlob = dynamic(() => import('@/components/effects/MorphingBlob').then(m => ({ default: m.MorphingBlob })), { ssr: false })
+import Image from 'next/image'
+import { TypewriterEffect } from '@/components/effects/TypewriterEffect'
+import { StatsCounter } from '@/components/effects/StatsCounter'
 
-const HeroScene = dynamic(() => import('@/components/3d/HeroScene').then(mod => mod.HeroScene), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-background/80 backdrop-blur-3xl" />
-})
+const MorphingBlob = dynamic(() =>
+  import('@/components/effects/MorphingBlob').then(mod => ({ default: mod.MorphingBlob })),
+  { ssr: false }
+)
 
 const ProjectsSection = dynamic(() =>
   import('@/components/sections/ProjectsSection').then(mod => ({ default: mod.ProjectsSection })),
@@ -25,10 +23,12 @@ const SkillsSection = dynamic(() =>
   import('@/components/sections/SkillsSection').then(mod => ({ default: mod.SkillsSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
 )
+
 const ContactSection = dynamic(() =>
   import('@/components/sections/ContactSection').then(mod => ({ default: mod.ContactSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
 )
+
 const BlogSection = dynamic<{ posts: import('@/lib/types/portfolio').BlogPost[] }>(() =>
   import('@/components/sections/BlogSection').then(mod => ({ default: mod.BlogSection })),
   { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-muted/40" /> }
@@ -38,7 +38,7 @@ import { GitHubSection } from '@/components/shared/GitHubSection'
 import { LinkedInSection } from '@/components/shared/LinkedInSection'
 import { CertificationsSection } from '@/components/shared/CertificationsSection'
 import { LanguagesSection } from '@/components/shared/LanguagesSection'
-import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout, blog as staticBlog } from '@/lib/data/content'
+import { projects as staticProjects, siteConfig, skills as staticSkills, about as staticAbout, blog as staticBlog, stats as staticStats } from '@/lib/data/content'
 import { getFeaturedProjects, getTopSkills, getTechIcon } from '@/lib/utils/content-helpers'
 import type { Project, Skill } from '@/lib/types/portfolio'
 import Link from 'next/link'
@@ -49,7 +49,6 @@ import { EditableSection } from '@/components/admin/EditableSection'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { TerminalModal } from '@/components/effects/TerminalModal'
 import { Terminal } from 'lucide-react'
-import { use3DGate } from '@/hooks/use3DGate'
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
@@ -57,7 +56,6 @@ export default function Home() {
   const [adminPanelTab, setAdminPanelTab] = useState('personal')
   const [isClient, setIsClient] = useState(false)
   const [terminalOpen, setTerminalOpen] = useState(false)
-  const allow3D = use3DGate()
 
   useEffect(() => { setIsClient(true) }, [])
 
@@ -71,9 +69,19 @@ export default function Home() {
 
   const currentPersonal = isAdmin ? portfolioData.personal : siteConfig
   const currentAbout = isAdmin ? portfolioData.about : staticAbout
+  const currentStats = (isAdmin && portfolioData.stats ? portfolioData.stats : staticStats) as any[]
 
   const featuredProjects = getFeaturedProjects(currentProjects)
   const topSkills = getTopSkills(currentSkills, 8)
+  const heroNameParts = currentPersonal.name.split(' ')
+  const heroPrimary = heroNameParts[0] ?? currentPersonal.name
+  const heroSecondary = heroNameParts.slice(1).join(' ')
+  const quickFacts = [
+    { label: 'Focus', value: currentPersonal.title },
+    { label: 'Location', value: currentPersonal.location },
+    { label: 'Status', value: currentPersonal.availability === 'busy' ? 'Heads-down on core work' : 'Open for collaboration' },
+  ]
+  const spotlightSkills = topSkills.slice(0, 4)
 
   const openPanel = (tab: string) => {
     setAdminPanelTab(tab)
@@ -92,94 +100,170 @@ export default function Home() {
 
       {/* ─── HERO ──────────────────────────────────────────────── */}
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden bg-background">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b dark:from-background/80 dark:via-background/50 dark:to-background/20 from-background/40 via-background/20 to-transparent z-10 pointer-events-none" />
-          {allow3D && <HeroScene className="w-full h-full" />}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_hsl(var(--primary)/0.16),_transparent_35%),radial-gradient(circle_at_top_right,_hsl(var(--accent)/0.12),_transparent_30%),radial-gradient(circle_at_center,_hsl(var(--foreground)/0.04),_transparent_35%),linear-gradient(to_bottom,_transparent,_hsl(var(--background))_82%)] pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none" />
+        
+        <div className="absolute left-1/2 top-24 -translate-x-1/2 pointer-events-none z-0">
+          <MorphingBlob size={600} opacity={0.12} />
         </div>
 
-        <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full pt-20">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
+        <EditableSection label="Hero" onEdit={() => openPanel('personal')} className="relative z-10 w-full pt-28 pb-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start">
+              <div className="max-w-3xl">
+                <AnimatedSection animation="fadeIn" delay={0.08}>
+                  <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/75 backdrop-blur-md px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground shadow-sm">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,0.5)]" />
+                    {currentPersonal.availability === 'busy' ? 'Deep focus mode' : 'Available for select collaborations'}
+                  </div>
+                </AnimatedSection>
 
-            <AnimatedSection animation="fadeIn" delay={0.1}>
-              <div className="mb-8 inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-md text-primary uppercase tracking-widest drop-shadow-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                {currentPersonal.availability === 'busy' ? 'Currently focusing on core projects' : 'Open to SDET and quality-engineering collaborations'}
+                <AnimatedSection animation="slideUp" delay={0.16}>
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-border/70 shadow-lg shrink-0 hidden sm:block">
+                      <Image src={currentPersonal.avatar || "/gokul-photo.jpg"} alt={currentPersonal.name} fill className="object-cover" />
+                    </div>
+                    <div className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-muted-foreground flex-1 min-w-0">
+                      <TypewriterEffect 
+                        words={[
+                          "Software Development Engineer in Test",
+                          "Full-Stack Web Developer",
+                          "Test Automation Architect",
+                          "Product-Minded Engineer"
+                        ]} 
+                        className="font-medium"
+                      />
+                    </div>
+                  </div>
+                  <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[7.8rem] font-black tracking-tighter mb-6 leading-[0.9] font-display flex flex-col items-start">
+                    <span className="block text-foreground">{heroPrimary}</span>
+                    <span className="flex items-center flex-wrap gap-4">
+                      <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-500 to-fuchsia-500">
+                        {heroSecondary || 'Senthilkumar'}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-[10px] md:text-xs font-bold text-blue-400 uppercase tracking-widest shadow-sm shrink-0 mt-2 lg:mt-0">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        IEEE Published
+                      </span>
+                    </span>
+                  </h1>
+                </AnimatedSection>
+
+                <AnimatedSection animation="slideUp" delay={0.28}>
+                  <p className="text-lg md:text-2xl font-medium text-foreground/80 max-w-2xl leading-relaxed">
+                    {currentPersonal.title}
+                  </p>
+                  <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl leading-8">
+                    {currentPersonal.bio}
+                  </p>
+                </AnimatedSection>
+
+                <AnimatedSection animation="slideUp" delay={0.38}>
+                  <div className="grid sm:grid-cols-3 gap-3 mt-10 max-w-3xl">
+                    {quickFacts.map(fact => (
+                      <div key={fact.label} className="rounded-3xl border border-border/70 bg-card/80 p-4 shadow-sm">
+                        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">{fact.label}</div>
+                        <div className="text-sm md:text-base font-medium text-foreground leading-snug">{fact.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </AnimatedSection>
+
+                <AnimatedSection animation="slideUp" delay={0.5}>
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-3 mt-10">
+                    <MagneticButton>
+                      <Link
+                        href="#contact"
+                        className={cn(
+                          buttonVariants({ size: 'lg' }),
+                          'w-full sm:w-auto px-7 h-14 rounded-2xl bg-primary text-primary-foreground shadow-[0_14px_40px_hsl(var(--primary)/0.28)] hover:shadow-[0_22px_65px_hsl(var(--primary)/0.38)] border-0'
+                        )}
+                      >
+                        Start a conversation
+                      </Link>
+                    </MagneticButton>
+                    <MagneticButton>
+                      <Link
+                        href="#projects"
+                        className={cn(
+                          buttonVariants({ variant: 'outline', size: 'lg' }),
+                          'w-full sm:w-auto px-7 h-14 rounded-2xl border-border/70 bg-background/75 backdrop-blur-sm'
+                        )}
+                      >
+                        View selected work
+                      </Link>
+                    </MagneticButton>
+                    <MagneticButton>
+                      <Link
+                        href={currentPersonal.resume || '/Gokul_S_Resume.pdf'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          buttonVariants({ variant: 'outline', size: 'lg' }),
+                          'w-full sm:w-auto px-7 h-14 rounded-2xl border-border/70 bg-background/75 backdrop-blur-sm'
+                        )}
+                      >
+                        Download CV
+                      </Link>
+                    </MagneticButton>
+                  </div>
+                </AnimatedSection>
               </div>
-            </AnimatedSection>
 
-            <AnimatedSection animation="slideUp" delay={0.3}>
-              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter mb-4 leading-none font-display drop-shadow-xl dark:drop-shadow-none">
-                <span className="text-foreground">{currentPersonal.name.split(' ')[0]}</span>
-                {' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-indigo-500 to-pink-500">
-                  {currentPersonal.name.split(' ').slice(1).join(' ')}
-                </span>
-              </h1>
-            </AnimatedSection>
+              <AnimatedSection animation="fadeIn" delay={0.22}>
+                <div className="relative">
+                  <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-transparent to-fuchsia-500/10 blur-2xl" />
+                  <div className="relative rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-2xl p-6 md:p-8 shadow-[0_30px_90px_-40px_rgba(0,0,0,0.48)]">
+                    <div className="flex items-center justify-between gap-4 mb-6">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground mb-2">Portfolio summary</div>
+                        <div className="text-2xl font-semibold">{currentPersonal.name}</div>
+                      </div>
+                      <button
+                        onClick={() => setTerminalOpen(true)}
+                        className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-border/70 bg-background/80 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                        title="Open Developer Terminal"
+                      >
+                        <Terminal className="w-4 h-4 text-primary" />
+                      </button>
+                    </div>
 
-            <AnimatedSection animation="slideUp" delay={0.5}>
-              <p className="text-xl md:text-3xl font-medium text-foreground/80 mb-6 tracking-tight max-w-3xl mx-auto">
-                {currentPersonal.title}
-              </p>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed backdrop-blur-sm p-4 rounded-2xl bg-muted/40 border border-border/50">
-                {currentPersonal.bio}
-              </p>
-            </AnimatedSection>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {featuredProjects.slice(0, 4).map((project, index) => (
+                        <div key={project.id} className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">
+                                Featured {index + 1}
+                              </div>
+                              <div className="font-medium text-sm md:text-base">{project.title}</div>
+                            </div>
+                            <div className="text-[11px] text-muted-foreground capitalize">{project.category}</div>
+                          </div>
+                          {project.description && (
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
 
-            <AnimatedSection animation="slideUp" delay={0.7}>
-              <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 w-full sm:w-auto">
-                <MagneticButton>
-                  <Link
-                    href="#contact"
-                    className={cn(
-                      buttonVariants({ size: 'lg' }),
-                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:-translate-y-1 bg-gradient-to-r from-primary to-indigo-600 border-none text-white'
-                    )}
-                  >
-                    Get In Touch
-                  </Link>
-                </MagneticButton>
-                <MagneticButton>
-                  <Link
-                    href="#projects"
-                    className={cn(
-                      buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
-                    )}
-                  >
-                    Explore Projects
-                  </Link>
-                </MagneticButton>
-                <MagneticButton>
-                  <Link
-                    href={currentPersonal.resume || '/Gokul_S_Resume.pdf'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'w-full sm:w-auto px-10 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm'
-                    )}
-                  >
-                    Download CV
-                  </Link>
-                </MagneticButton>
-                <MagneticButton>
-                  <button
-                    onClick={() => setTerminalOpen(true)}
-                    className={cn(
-                      buttonVariants({ variant: 'outline', size: 'lg' }),
-                      'w-full sm:w-auto px-6 h-14 text-base font-bold rounded-2xl transition-all hover:-translate-y-1 bg-background/50 backdrop-blur-sm group flex items-center justify-center'
-                    )}
-                    title="Open Developer Terminal"
-                  >
-                    <Terminal className="w-5 h-5 group-hover:text-primary transition-colors" />
-                  </button>
-                </MagneticButton>
-              </div>
-            </AnimatedSection>
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                      {spotlightSkills.map(skill => (
+                        <div key={skill.id} className="rounded-2xl border border-border/60 bg-background/60 px-4 py-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="font-medium text-sm">{skill.name}</div>
+                            <div className="text-xs text-muted-foreground">{skill.proficiency}/5</div>
+                          </div>
+                          <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div className="h-full rounded-full bg-gradient-to-r from-primary to-fuchsia-500" style={{ width: `${(skill.proficiency / 5) * 100}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </AnimatedSection>
+            </div>
           </div>
         </EditableSection>
 
@@ -189,7 +273,10 @@ export default function Home() {
       {/* ─── PROJECTS ─────────────────────────────────────────── */}
       {/* REORDER: Projects moved directly after Hero — visitors decide to keep scrolling
           based on proof of work, not career history. id="projects" is set inside ProjectsSection. */}
-      <Section background="muted">
+      <Section background="muted" className="pt-20">
+        <div className="max-w-7xl mx-auto px-4 mb-8">
+          <StatsCounter stats={currentStats} />
+        </div>
         <EditableSection label="Projects" onEdit={() => openPanel('projects')}>
           <ProjectsSection projects={currentProjects} />
         </EditableSection>
@@ -207,7 +294,6 @@ export default function Home() {
       {/* REORDER: experience/education timeline now comes after the proof-of-work sections */}
       <Section id="about" background="muted" className="relative z-10 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-        <MorphingBlob className="absolute -top-20 -right-20 opacity-30" size={500} />
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="space-y-6">
             <AnimatedSection animation="fadeIn" delay={0.2}>

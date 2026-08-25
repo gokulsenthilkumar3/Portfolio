@@ -24,6 +24,7 @@ export interface Project {
   tech?: string[]
   technologies?: string[]
   images: string[]
+  icon?: string
   links: {
     live?: string
     github?: string

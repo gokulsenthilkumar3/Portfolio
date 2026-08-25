@@ -14,6 +14,13 @@ import {
 
 const STORAGE_KEY = 'portfolio_data_v1'
 
+function buildApiPath(path: string) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+  const normalizedBase = basePath.replace(/\/+$/, '')
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${normalizedBase}${normalizedPath}` || normalizedPath
+}
+
 interface PortfolioData {
   personal: SiteConfig
   about: typeof portfolioConfig.about
@@ -99,9 +106,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (Object.keys(stored).length > 0) {
       setPortfolioData(prev => ({ ...prev, ...stored }))
     }
-
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-    fetch(`${basePath}/api/admin/portfolio`.replace(/\/+/g, '/'))
+    fetch(buildApiPath('/api/admin/portfolio'))
       .then(res => {
         if (res.ok) {
           setIsAdmin(true)
@@ -123,8 +128,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const verifyPinFunc = useCallback(async (pin: string): Promise<boolean> => {
     try {
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-      const res = await fetch(`${basePath}/api/admin/auth`.replace(/\/+/g, '/'), {
+      const res = await fetch(buildApiPath('/api/admin/auth'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin }),
@@ -137,8 +141,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const activate = useCallback(() => {
     setIsAdmin(true)
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-    fetch(`${basePath}/api/admin/portfolio`.replace(/\/+/g, '/'))
+    fetch(buildApiPath('/api/admin/portfolio'))
       .then(res => res.ok ? res.json() : null)
       .then(serverData => {
         if (serverData) {
@@ -155,8 +158,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const deactivate = useCallback(() => {
     setIsAdmin(false)
     try {
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-      fetch(`${basePath}/api/admin/logout`.replace(/\/+/g, '/'), { method: 'POST' }).catch(console.error)
+      fetch(buildApiPath('/api/admin/logout'), { method: 'POST' }).catch(console.error)
     } catch (e) {
       console.error('Logout failed', e)
     }
@@ -181,12 +183,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // Persist data to server (development only)
   const persistData = useCallback(async (): Promise<boolean> => {
     try {
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-      const apiPath = `${basePath}/api/admin/save`.replace(/\/+/g, '/')
-      
-      console.log('DEBUG: Persisting data to', apiPath)
-      
-      const res = await fetch(apiPath, {
+      const res = await fetch(buildApiPath('/api/admin/save'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(portfolioData),

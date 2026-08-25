@@ -1,6 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
-import { useIsMobile } from '@/hooks/use-device-tier'
+import { useEffect, useRef, useState } from 'react'
 import { useCurrentPalette } from '@/lib/stores/theme-accent'
 
 /**
@@ -24,8 +23,12 @@ interface TrailPoint {
 }
 
 export function CursorTrail() {
-  const isMobile = useIsMobile()
+  const [hasPointer, setHasPointer] = useState(false)
   const palette = useCurrentPalette()
+
+  useEffect(() => {
+    setHasPointer(window.matchMedia('(pointer: fine)').matches)
+  }, [])
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const trail = useRef<TrailPoint[]>([])
@@ -37,7 +40,7 @@ export function CursorTrail() {
   useEffect(() => { paletteRef.current = palette }, [palette])
 
   useEffect(() => {
-    if (isMobile) return
+    if (!hasPointer) return
 
     const canvas = canvasRef.current
     if (!canvas) return
@@ -52,68 +55,58 @@ export function CursorTrail() {
     resize()
     window.addEventListener('resize', resize, { passive: true })
 
-    // Track mouse
     const onMove = (e: MouseEvent) => {
       mouse.current = { x: e.clientX, y: e.clientY }
     }
     window.addEventListener('mousemove', onMove, { passive: true })
 
-    // Animation loop
-    const draw = () => {
-      rafRef.current = requestAnimationFrame(draw)
+      // Animation loop
+      const draw = () => {
+        rafRef.current = requestAnimationFrame(draw)
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Push current mouse position to trail head
-      trail.current.unshift({ x: mouse.current.x, y: mouse.current.y })
-      if (trail.current.length > TRAIL_LENGTH) trail.current.length = TRAIL_LENGTH
+        // Push current mouse position to trail head
+        trail.current.unshift({ x: mouse.current.x, y: mouse.current.y })
+        if (trail.current.length > TRAIL_LENGTH) trail.current.length = TRAIL_LENGTH
 
-      const p = paletteRef.current
+        const p = paletteRef.current
 
-      // Draw trail points with decreasing size + alpha
-      for (let i = 0; i < trail.current.length; i++) {
-        const t = 1 - i / trail.current.length
-        const radius = POINT_RADIUS_MAX * t
-        const alpha = t * t * FADE_ALPHA
-        const pt = trail.current[i]
+        // Draw trail points with decreasing size + alpha
+        for (let i = 0; i < trail.current.length; i++) {
+          const t = 1 - i / trail.current.length
+          const radius = POINT_RADIUS_MAX * t
+          const alpha = t * t * FADE_ALPHA
+          const pt = trail.current[i]
 
-        // Alternate between primary and secondary color along trail
-        const color = i % 3 === 0 ? p.threeB : p.threeA
+          // Alternate between primary and secondary color along trail
+          const color = i % 3 === 0 ? p.threeB : p.threeA
 
-        ctx.beginPath()
-        ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2)
-        ctx.fillStyle = color + Math.round(alpha * 255).toString(16).padStart(2, '0')
-        ctx.fill()
+          ctx.beginPath()
+          ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2)
+          ctx.fillStyle = color + Math.round(alpha * 255).toString(16).padStart(2, '0')
+          ctx.fill()
+        }
+
+        // (No extra circle at head, just the trail)
       }
 
-      // Draw cursor dot at head
-      if (trail.current.length > 0) {
-        const head = trail.current[0]
-        // Outer ring only (OS cursor acts as the dot)
-        ctx.beginPath()
-        ctx.arc(head.x, head.y, 14, 0, Math.PI * 2)
-        ctx.strokeStyle = p.threeA + '40'
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+      draw()
+
+      return () => {
+        cancelAnimationFrame(rafRef.current)
+        window.removeEventListener('resize', resize)
+        window.removeEventListener('mousemove', onMove)
       }
-    }
+    }, [hasPointer])
 
-    draw()
+    if (!hasPointer) return null
 
-    return () => {
-      cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', onMove)
-    }
-  }, [isMobile])
-
-  if (isMobile) return null
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-[9998]"
-      aria-hidden="true"
-    />
-  )
-}
+    return (
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none fixed inset-0 z-[9999]"
+        aria-hidden="true"
+      />
+    )
+  }

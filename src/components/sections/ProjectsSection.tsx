@@ -2,15 +2,37 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { ExternalLink, Github, ArrowRight, ChevronUp, ImageOff } from 'lucide-react'
+import { ExternalLink, Github, ArrowRight, ChevronUp, ImageOff, BookOpen, Car, Factory, Wallet, TestTube, ShieldCheck, AppWindow, Code2 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+
+const iconMap: Record<string, React.ElementType> = {
+  BookOpen,
+  Car,
+  Factory,
+  Wallet,
+  TestTube,
+  ShieldCheck,
+  AppWindow,
+  Code2
+}
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { buttonVariants } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import type { Project } from '@/lib/types/portfolio'
+
+const categoryColors: Record<string, { bg: string; border: string }> = {
+  web: { bg: 'from-blue-500/20 to-cyan-500/10', border: 'bg-blue-500' },
+  fullstack: { bg: 'from-purple-500/20 to-fuchsia-500/10', border: 'bg-purple-500' },
+  testing: { bg: 'from-emerald-500/20 to-teal-500/10', border: 'bg-emerald-500' },
+  tools: { bg: 'from-orange-500/20 to-amber-500/10', border: 'bg-orange-500' },
+  other: { bg: 'from-gray-500/20 to-slate-500/10', border: 'bg-gray-500' },
+}
+
+const getCategoryColor = (category?: string) => {
+  return category && categoryColors[category] ? categoryColors[category] : categoryColors.other
+}
 
 interface Props {
   projects: Project[]
@@ -28,7 +50,6 @@ interface GitHubRepo {
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const [imgError, setImgError] = useState(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 300, damping: 30 })
@@ -63,23 +84,29 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className="h-full"
       >
-        <Card className="h-full flex flex-col group transition-all duration-500 bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_30px_60px_-15px_rgba(139,92,246,0.3)] hover:-translate-y-2">
+        <Card className="h-full flex flex-col group transition-all duration-500 bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_30px_60px_-15px_rgba(139,92,246,0.3)] hover:-translate-y-2 relative">
+          {/* Left accent border */}
+          <div className={cn(
+            "absolute inset-y-0 left-0 w-1 opacity-70 group-hover:opacity-100 transition-opacity z-20",
+            getCategoryColor(project.category).border
+          )} />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
 
           {/* Thumbnail */}
-          <div className="relative w-full aspect-video overflow-hidden bg-muted/60 shrink-0">
-            {project.images && project.images.length > 0 && !imgError ? (
-              <Image
-                src={project.images[0]}
-                alt={`${project.title} preview`}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={() => setImgError(true)}
-              />
+          <div className={cn(
+            "relative w-full aspect-video overflow-hidden shrink-0 border-b border-border/40 flex items-center justify-center transition-colors duration-500",
+            "bg-gradient-to-br", getCategoryColor(project.category).bg
+          )}>
+            {project.icon && iconMap[project.icon] ? (
+              <div className="p-4 rounded-2xl bg-primary/10 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:bg-primary/20">
+                {(() => {
+                  const Icon = iconMap[project.icon as string] as any;
+                  return <Icon className="w-12 h-12" />;
+                })()}
+              </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
-                <ImageOff className="w-8 h-8" />
+              <div className="p-4 rounded-2xl bg-muted text-muted-foreground/40 transition-transform duration-500 group-hover:scale-110">
+                <Code2 className="w-12 h-12" />
               </div>
             )}
           </div>
@@ -169,6 +196,7 @@ export function ProjectsSection({ projects }: Props) {
             featured: false,
             date: repo.updatedAt,
             images: [],
+            icon: 'Code2'
           }))
           setGithubProjects(mapped)
         }

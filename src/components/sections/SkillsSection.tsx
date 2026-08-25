@@ -1,150 +1,39 @@
 'use client'
-/* eslint-disable react/forbid-dom-props, react/forbid-component-props */
 
-import { useMemo, useState, useRef } from 'react'
-import dynamic from 'next/dynamic'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useMemo, useState } from 'react'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import Image from 'next/image'
-import { ArrowLeft, ChevronUp } from 'lucide-react'
+import { Badge } from '@/components/ui/Badge'
+import dynamic from 'next/dynamic'
 import type { Skill } from '@/lib/types/portfolio'
 
-const ICON_SLUG: Record<string, string> = {
-  selenium:      'selenium',
-  playwright:    '',
-  k6:            'k6',
-  jest:          'jest',
-  cypress:       'cypress',
-  react:         'react',
-  nextjs:        'nextdotjs',
-  typescript:    'typescript',
-  tailwind:      'tailwindcss',
-  javascript:    'javascript',
-  html:          'html5',
-  css:           'css3',
-  nodejs:        'nodedotjs',
-  postgresql:    'postgresql',
-  mongodb:       'mongodb',
-  express:       'express',
-  python:        'python',
-  java:          'openjdk',
-  'azure-devops': '',
-  git:           'git',
-  docker:        'docker',
-  github:        'github',
-  nginx:         'nginx',
-  linux:         'linux',
+const GeometricGrid = dynamic(() => 
+  import('@/components/effects/GeometricGrid').then(mod => ({ default: mod.GeometricGrid })),
+  { ssr: false }
+)
+
+const CATEGORY_META: Record<string, { label: string; tone: string; order: number }> = {
+  testing: { label: 'Test Engineering', tone: 'from-emerald-500/10 to-emerald-500/5', order: 0 },
+  frontend: { label: 'Frontend', tone: 'from-cyan-500/10 to-cyan-500/5', order: 1 },
+  backend: { label: 'Backend', tone: 'from-orange-500/10 to-orange-500/5', order: 2 },
+  devops: { label: 'DevOps & CI/CD', tone: 'from-violet-500/10 to-violet-500/5', order: 3 },
+  'soft-skills': { label: 'Collaboration', tone: 'from-pink-500/10 to-pink-500/5', order: 4 },
+  design: { label: 'Design', tone: 'from-rose-500/10 to-rose-500/5', order: 5 },
+  tools: { label: 'Tools', tone: 'from-slate-500/10 to-slate-500/5', order: 6 },
 }
 
-const CATEGORY_META: Record<string, { label: string; order: number; accent: string }> = {
-  testing:  { label: 'Test Engineering', order: 0, accent: '#43B02A' },
-  frontend: { label: 'Frontend',          order: 1, accent: '#61DAFB' },
-  backend:  { label: 'Backend',           order: 2, accent: '#339933' },
-  devops:   { label: 'DevOps & CI/CD',    order: 3, accent: '#0078D4' },
-}
-
-const PROFICIENCY_LABELS = ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced', 'Expert']
-
-// Extend CSSProperties to allow CSS custom properties
-type CSSWithVars = React.CSSProperties & Record<`--${string}`, string | number>
-
-function SkillRow({ skill, delay }: { skill: Skill; delay: number }) {
-  const [imgError, setImgError] = useState(false)
-  const slug = ICON_SLUG[skill.id]
-  const iconUrl = slug ? `https://cdn.simpleicons.org/${slug}` : null
-  const pct = (skill.proficiency / 5) * 100
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, duration: 0.3 }}
-      className="flex items-center gap-3 py-2 border-b border-border/30 last:border-0 group"
-    >
-      <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-                   border border-black/10 dark:border-white/10 bg-white dark:bg-white/5
-                   transition-all duration-300
-                   group-hover:border-black/20 dark:group-hover:border-white/25 group-hover:bg-gray-50 dark:group-hover:bg-white/10"
-      >
-        {iconUrl && !imgError ? (
-          <Image
-            src={iconUrl}
-            alt={`${skill.name} icon`}
-            width={18}
-            height={18}
-            className="transition-all duration-300 opacity-90 group-hover:opacity-100 group-hover:scale-110"
-            onError={() => setImgError(true)}
-            unoptimized
-          />
-        ) : (
-          <span className="text-[9px] font-bold text-muted-foreground">
-            {skill.name.slice(0, 2).toUpperCase()}
-          </span>
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-0.5">
-          <span className="text-xs font-medium truncate">{skill.name}</span>
-          <span className="text-[10px] text-muted-foreground ml-2 flex-shrink-0">
-            {PROFICIENCY_LABELS[skill.proficiency]}
-          </span>
-        </div>
-        <div className="h-1 rounded-full bg-border/30 overflow-hidden">
-          {/* FIX: use proper typed CSS var instead of `as any` */}
-          <div
-            className="h-full rounded-full bg-primary/80 transition-all duration-700 w-[var(--skill-width)]"
-            style={{ '--skill-width': `${pct}%` } as CSSWithVars}
-          />
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function CategoryCard({
-  category,
-  catSkills,
-  groupIndex,
-}: {
-  category: string
-  catSkills: Skill[]
-  groupIndex: number
-}) {
-  const meta = CATEGORY_META[category] ?? { label: category, order: 99, accent: '#6366f1' }
-  return (
-    <AnimatedSection
-      delay={groupIndex * 0.08}
-      className="relative rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden group"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      <div className="flex items-center justify-between mb-4">
-        {/* FIX: use typed CSS var instead of `as any` */}
-        <h3
-          className="text-sm font-semibold tracking-wide uppercase"
-          style={{ color: 'var(--accent-color)', '--accent-color': meta.accent } as CSSWithVars}
-        >
-          {meta.label}
-        </h3>
-        <span className="text-[10px] text-muted-foreground">{catSkills.length} skills</span>
-      </div>
-      {catSkills.map((skill, i) => (
-        <SkillRow key={skill.id} skill={skill} delay={groupIndex * 0.08 + i * 0.04} />
-      ))}
-    </AnimatedSection>
-  )
+function proficiencyLabel(level: number) {
+  return ['', 'Beginner', 'Familiar', 'Proficient', 'Advanced', 'Expert'][level] ?? 'Unknown'
 }
 
 export function SkillsSection({ skills }: { skills: Skill[] }) {
   const [showAll, setShowAll] = useState(false)
-  const sectionRef = useRef<HTMLDivElement>(null)
 
   const grouped = useMemo(() => {
     const map = new Map<string, Skill[]>()
     for (const skill of skills) {
-      if (!map.has(skill.category)) map.set(skill.category, [])
-      map.get(skill.category)!.push(skill)
+      const next = map.get(skill.category) ?? []
+      next.push(skill)
+      map.set(skill.category, next)
     }
     return Array.from(map.entries()).sort(([a], [b]) => {
       const ao = CATEGORY_META[a]?.order ?? 99
@@ -153,60 +42,84 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
     })
   }, [skills])
 
-  const visibleGroups = showAll ? grouped : grouped.slice(0, 2)
-
-  const handleBack = () => {
-    setShowAll(false)
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  const visibleGroups = showAll ? grouped : grouped.slice(0, 3)
+  const topSkills = [...skills].sort((a, b) => b.proficiency - a.proficiency).slice(0, 6)
 
   return (
-    <div ref={sectionRef} id="skills" className="scroll-mt-20">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          {showAll && (
-            <motion.button
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              onClick={handleBack}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors border border-border/60 hover:border-primary/50 rounded-full px-3 py-1.5 hover:bg-primary/5 group"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-              Back
-            </motion.button>
-          )}
-          <div>
-            <h2 className="text-2xl font-bold">{showAll ? 'All Skills' : 'Skills'}</h2>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {showAll
-                ? `All ${skills.length} technologies across ${grouped.length} categories`
-                : 'Technologies I work with every day'}
-            </p>
-          </div>
+    <div className="relative space-y-8">
+      <GeometricGrid className="absolute inset-[-10%] z-[-1] opacity-30 pointer-events-none" />
+      <AnimatedSection className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-2xl">
+          <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground mb-3">Capabilities</p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Skills designed for delivery, not decoration.</h2>
+          <p className="mt-3 text-muted-foreground leading-7">
+            A curated skill set focused on test automation, modern web delivery, reliability, and practical engineering depth.
+          </p>
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          {topSkills.map(skill => (
+            <Badge key={skill.id} variant="outline" className="rounded-full px-3 py-1.5 bg-background/60">
+              {skill.name}
+            </Badge>
+          ))}
+        </div>
+      </AnimatedSection>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {visibleGroups.map(([category, catSkills], index) => {
+          const meta = CATEGORY_META[category] ?? { label: category, tone: 'from-slate-500/10 to-slate-500/5', order: 99 }
+          return (
+            <AnimatedSection
+              key={category}
+              delay={index * 0.06}
+              className={`rounded-3xl border border-border/70 bg-gradient-to-br ${meta.tone} p-6`}
+            >
+              <div className="flex items-center justify-between gap-3 mb-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">Category</p>
+                  <h3 className="text-xl font-semibold">{meta.label}</h3>
+                </div>
+                <span className="text-xs text-muted-foreground">{catSkills.length} skills</span>
+              </div>
+
+              <div className="space-y-3">
+                {catSkills
+                  .sort((a, b) => b.proficiency - a.proficiency)
+                  .map(skill => {
+                    const pct = Math.max(0, Math.min(100, (skill.proficiency / 5) * 100))
+                    return (
+                      <div key={skill.id} className="rounded-2xl border border-border/60 bg-background/60 p-4">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div>
+                            <div className="font-medium">{skill.name}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">{proficiencyLabel(skill.proficiency)}</div>
+                          </div>
+                          <span className="text-xs tabular-nums text-muted-foreground">{pct}%</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                          <div className="h-full rounded-full bg-gradient-to-r from-primary to-fuchsia-500" style={{ width: `${pct}%` }} />
+                        </div>
+                        {skill.yearsOfExperience && (
+                          <p className="mt-2 text-[11px] text-muted-foreground">
+                            {skill.yearsOfExperience}+ years in practice
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
+              </div>
+            </AnimatedSection>
+          )
+        })}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {visibleGroups.map(([category, catSkills], gi) => (
-          <CategoryCard
-            key={category}
-            category={category}
-            catSkills={catSkills}
-            groupIndex={gi}
-          />
-        ))}
-      </div>
-
-      <div className="mt-6 flex justify-center">
+      <div className="flex justify-center">
         <button
-          onClick={() => showAll ? handleBack() : setShowAll(true)}
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border border-border/60 hover:border-border rounded-full px-5 py-2"
+          onClick={() => setShowAll(v => !v)}
+          className="rounded-full border border-border/70 bg-background/70 px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          {showAll ? (
-            <><ArrowLeft className="w-4 h-4" />Back to overview</>
-          ) : (
-            <>View all skills &rarr;</>
-          )}
+          {showAll ? 'Show fewer categories' : 'Show all categories'}
         </button>
       </div>
     </div>

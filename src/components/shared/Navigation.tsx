@@ -48,6 +48,13 @@ export function Navigation() {
 
   // Single IntersectionObserver for all sections
   useEffect(() => {
+    const updateFromHash = () => {
+      const hash = window.location.hash.replace('#', '')
+      if (hash) setActive(hash)
+    }
+
+    updateFromHash()
+
     const ids = NAV_LINKS.map(l => l.href.split('#')[1]).filter(Boolean)
     const obs = new IntersectionObserver(
       entries => {
@@ -61,7 +68,11 @@ export function Navigation() {
       { threshold: 0.25, rootMargin: '-60px 0px 0px 0px' }
     )
     ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el) })
-    return () => obs.disconnect()
+    window.addEventListener('hashchange', updateFromHash)
+    return () => {
+      obs.disconnect()
+      window.removeEventListener('hashchange', updateFromHash)
+    }
   }, [])
 
   // ESC closes mobile drawer

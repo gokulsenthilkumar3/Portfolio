@@ -54,6 +54,7 @@
       ],
       "category": "fullstack",
       "featured": true,
+      "priority": 1,
       "images": [
         "/projects/vaultiq.png"
       ],
@@ -78,6 +79,7 @@
       ],
       "category": "fullstack",
       "featured": true,
+      "priority": 2,
       "images": [
         "/projects/oxfin.png"
       ],
@@ -101,6 +103,7 @@
       ],
       "category": "ai",
       "featured": true,
+      "priority": 5,
       "images": [
         "/projects/forex-ensemble.png"
       ],
@@ -124,6 +127,7 @@
       ],
       "category": "tools",
       "featured": true,
+      "priority": 3,
       "images": [
         "/projects/stackforge.png"
       ],
@@ -167,6 +171,7 @@
       ],
       "category": "web",
       "featured": true,
+      "priority": 7,
       "images": [
         "/projects/weaver-book.png"
       ],
@@ -190,6 +195,7 @@
       ],
       "category": "fullstack",
       "featured": true,
+      "priority": 8,
       "images": [
         "/projects/car-spa.png"
       ],
@@ -270,6 +276,7 @@
       ],
       "category": "ai",
       "featured": true,
+      "priority": 4,
       "images": [
         "/projects/forex-prediction.png"
       ],
@@ -332,6 +339,7 @@
       ],
       "category": "tools",
       "featured": true,
+      "priority": 6,
       "images": [
         "/projects/quality-dashboard.png"
       ],
@@ -446,6 +454,34 @@
       "category": "tools",
       "proficiency": 3,
       "color": "#2496ed"
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "category": "tools",
+      "proficiency": 4,
+      "color": "#2ead33"
+    },
+    {
+      "id": "jest",
+      "name": "Jest",
+      "category": "tools",
+      "proficiency": 4,
+      "color": "#c21325"
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "category": "backend",
+      "proficiency": 4,
+      "color": "#336791"
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "category": "backend",
+      "proficiency": 3,
+      "color": "#47a248"
     }
   ],
   "experiences": [

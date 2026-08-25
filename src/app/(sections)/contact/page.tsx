@@ -15,6 +15,7 @@ export default function ContactPage() {
     available:       { color: 'bg-green-500',  dot: 'bg-green-400',  text: 'Available for work' },
     busy:            { color: 'bg-yellow-500', dot: 'bg-yellow-400', text: 'Currently busy' },
     'open-to-offers':{ color: 'bg-blue-500',   dot: 'bg-blue-400',   text: 'Open to offers' },
+    open:            { color: 'bg-green-500',  dot: 'bg-green-400',  text: 'Open to opportunities' },
   }
   const status = availabilityStatus[siteConfig.availability as keyof typeof availabilityStatus]
   const emailZoho = (personal as any).emailZoho as string | undefined

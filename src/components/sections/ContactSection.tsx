@@ -28,7 +28,9 @@ export function ContactSection({
 
   const handleCopy = (e: React.MouseEvent, text: string, label: string) => {
     e.preventDefault()
-    navigator.clipboard.writeText(text)
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {})
+    }
     setCopiedLabel(label)
     setTimeout(() => setCopiedLabel(null), 2000)
   }
@@ -82,15 +84,30 @@ export function ContactSection({
   const socials = [
     { icon: Mail, label: 'Email', href: `mailto:${email}`, copyText: email, color: 'text-red-400' },
     ...(emailZoho ? [{ icon: Mail, label: 'Zoho Mail', href: `mailto:${emailZoho}`, copyText: emailZoho, color: 'text-indigo-400' }] : []),
-    { icon: Github, label: 'GitHub', href: github || 'https://github.com/gokulsenthilkumar3', copyText: github || 'https://github.com/gokulsenthilkumar3', color: 'text-gray-300' },
-    { icon: Linkedin, label: 'LinkedIn', href: linkedin || '#', copyText: linkedin || '#', color: 'text-blue-400' },
+    {
+      icon: Github,
+      label: 'GitHub',
+      href: github || 'https://github.com/gokulsenthilkumar3',
+      copyText: github || 'https://github.com/gokulsenthilkumar3',
+      color: 'text-gray-300',
+    },
+    {
+      icon: Linkedin,
+      label: 'LinkedIn',
+      href: linkedin || '#',
+      copyText: linkedin || '#',
+      color: 'text-blue-400',
+    },
     ...(twitter ? [{ icon: Twitter, label: 'Twitter', href: twitter, copyText: twitter, color: 'text-sky-400' }] : []),
   ]
 
   const subLabel = (label: string) => {
     if (label === 'Email') return email
     if (label === 'Zoho Mail') return emailZoho
-    return `@gokulsenthilkumar3`
+    if (label === 'GitHub') return github?.replace('https://github.com/', '@')
+    if (label === 'LinkedIn') return linkedin?.replace('https://linkedin.com/in/', '@')
+    if (label === 'Twitter') return twitter?.replace('https://x.com/', '@') || twitter?.replace('https://twitter.com/', '@')
+    return ''
   }
 
   return (
