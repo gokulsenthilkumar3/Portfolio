@@ -1,17 +1,14 @@
 import type { Metadata, Viewport } from 'next'
+import 'lenis/dist/lenis.css'
 import '../styles/globals.css'
+import '../styles/cinematic.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { Navigation } from '@/components/shared/Navigation'
-import { Footer } from '@/components/shared/Footer'
-import { ProgressBar } from '@/components/shared/ProgressBar'
-import { ScrollToTop } from '@/components/shared/ScrollToTop'
-import { SectionIndicator } from '@/components/shared/SectionIndicator'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
-import { LiquidTransitionsWrapper } from '@/components/effects/LiquidTransitionsWrapper'
 import { Analytics } from '@vercel/analytics/react'
-import { ClientEffects } from '@/components/shared/ClientEffects'
+import { ExperienceShell } from '@/components/portfolio/ExperienceShell'
 
 // BASE_URL must always be set via NEXT_PUBLIC_SITE_URL env var in production.
 // The personal.website fallback is for local dev only — never use a Vercel preview URL here.
@@ -33,18 +30,17 @@ export const metadata: Metadata = {
     type: 'website',
     url: seo.siteUrl,
     siteName: seo.author,
-    images: [{ url: `${BASE_URL}/og-image.png`, width: 1200, height: 630, alt: `${seo.author} — SDET & Full-Stack Developer` }],
+    images: [{ url: `${BASE_URL}/og.png`, width: 1200, height: 630, alt: `${seo.author} — I build things that feel inevitable.` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: seo.title,
     description: seo.description,
     creator: '@GokulKangeyanS',
-    images: [`${BASE_URL}/og-image.png`],
+    images: [`${BASE_URL}/og.png`],
   },
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
   },
 }
 
@@ -53,20 +49,10 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+    { media: '(prefers-color-scheme: light)', color: '#080808' },
+    { media: '(prefers-color-scheme: dark)', color: '#080808' },
   ],
 }
-
-const sections = [
-  { id: 'home',     label: 'Home'     },
-  { id: 'projects', label: 'Projects' },
-  { id: 'skills',   label: 'Skills'   },
-  { id: 'about',    label: 'About'    },
-  { id: 'github',   label: 'GitHub'   },
-  { id: 'insights', label: 'Insights' },
-  { id: 'contact',  label: 'Contact'  },
-]
 
 // JSON-LD structured data — Person schema for Google rich results
 const jsonLd = {
@@ -105,11 +91,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link
           rel="preload"
           as="style"
-          href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap"
         />
         <link
           rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=boska@400,500,700&f[]=satoshi@300,400,500,700&display=swap"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap"
         />
         {/* JSON-LD structured data for Google Search rich results */}
         <script
@@ -127,14 +113,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <ThemeProvider>
           <AdminClientWrapper>
-            <LiquidTransitionsWrapper />
-            <ClientEffects />
-            <ProgressBar />
+            <ExperienceShell />
             <Navigation />
             <main id="main-content">{children}</main>
-            <Footer />
-            <ScrollToTop />
-            <SectionIndicator sections={sections} />
             {/* Toaster lives here so it's available to all sections */}
             <Toaster position="bottom-right" richColors closeButton />
           </AdminClientWrapper>
