@@ -2,10 +2,16 @@
 
 import { useAdmin } from '../AdminProvider'
 import { motion } from 'framer-motion'
-import { LayoutDashboard, FolderGit2, Wrench, Briefcase, Activity, Clock, ShieldCheck } from 'lucide-react'
+import { FolderGit2, Wrench, Briefcase, Activity, ShieldCheck } from 'lucide-react'
 
 export function AdminDashboard() {
-  const { portfolioData } = useAdmin()
+  const { portfolioData, sourceSync } = useAdmin()
+  const sourceLabel = (status: typeof sourceSync.github) => {
+    if (status === 'ok') return 'Connected'
+    if (status === 'loading') return 'Syncing…'
+    if (status === 'not_configured') return 'Token required'
+    return 'Unavailable'
+  }
 
   const stats = [
     { label: 'Projects', value: portfolioData.projects?.length || 0, icon: FolderGit2, color: 'text-blue-400' },
@@ -45,42 +51,20 @@ export function AdminDashboard() {
             <ShieldCheck size={16} className="text-primary" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white">System Status</h4>
-            <p className="text-[10px] text-gray-400">All modules synchronized</p>
+            <h4 className="text-sm font-bold text-white">Online sources</h4>
+            <p className="text-[10px] text-gray-400">Live status from connected profiles</p>
           </div>
         </div>
         
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="text-gray-500 font-medium">Session Stability</span>
-            <span className="text-green-400 font-bold">99.9%</span>
+        <div className="space-y-2 text-[10px]">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500 font-medium">GitHub</span>
+            <span className={sourceSync.github === 'ok' ? 'text-green-400 font-bold' : 'text-gray-400 font-bold'}>{sourceLabel(sourceSync.github)}</span>
           </div>
-          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: '99.9%' }}
-              className="h-full bg-primary"
-            />
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500 font-medium">LinkedIn</span>
+            <span className={sourceSync.linkedIn === 'ok' ? 'text-green-400 font-bold' : 'text-gray-400 font-bold'}>{sourceLabel(sourceSync.linkedIn)}</span>
           </div>
-        </div>
-      </div>
-
-      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock size={14} className="text-gray-500" />
-          <h4 className="text-xs font-bold text-gray-300">Recent Activity</h4>
-        </div>
-        <div className="space-y-3">
-          {[
-            { action: 'Updated project "OxFin"', time: '2h ago' },
-            { action: 'Added "Next.js" to skills', time: '5h ago' },
-            { action: 'Modified bio in Personal', time: '1d ago' },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center justify-between border-l-2 border-primary/20 pl-3">
-              <span className="text-[11px] text-gray-400">{item.action}</span>
-              <span className="text-[9px] text-gray-600 font-mono">{item.time}</span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

@@ -17,22 +17,25 @@ interface AboutStoryProps {
   bio: string
   portrait: string
   name: string
+  location: string
   stats: StatLike[]
   projectCount: number
 }
 
 const manifesto = 'I obsess over the 1% of details users never consciously notice — but always feel.'
 
-export function AboutStory({ bio, portrait, name, stats, projectCount }: AboutStoryProps) {
+export function AboutStory({ bio, portrait, name, location, stats, projectCount }: AboutStoryProps) {
   const root = useRef<HTMLElement>(null)
   const portraitFrame = useRef<HTMLElement>(null)
   const portraitImage = useRef<HTMLDivElement>(null)
 
   const statItems = [
-    { value: Number(stats[0]?.value ?? 2), suffix: '+', label: 'Years engineering quality' },
-    { value: projectCount, suffix: '+', label: 'Products and systems built' },
-    { value: 200, suffix: '+', label: 'Automated test cases' },
+    { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '+', label: 'Years engineering quality' },
+    { value: projectCount, suffix: stats.find((stat) => stat.label === 'Projects Built')?.suffix ?? '+', label: 'Products and systems built' },
+    { value: Number(stats.find((stat) => stat.label === 'Tests Written')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Tests Written')?.suffix ?? '+', label: 'Automated test cases' },
   ]
+
+  const place = location.split(',')[0]?.trim() || location
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -137,7 +140,7 @@ export function AboutStory({ bio, portrait, name, stats, projectCount }: AboutSt
             <Image src={portrait} alt={`Portrait of ${name}`} fill sizes="(max-width: 900px) 90vw, 34vw" />
           </div>
           <figcaption>
-            <span>Based in Tamil Nadu</span>
+            <span>Based in {place}</span>
             <span>Building for everywhere</span>
           </figcaption>
         </figure>

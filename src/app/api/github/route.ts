@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { portfolioConfig } from '@/config/portfolio.config'
 
 interface GitHubUser {
   login: string; name: string; avatar_url: string; bio: string;
@@ -16,7 +17,8 @@ interface GitHubEvent {
   created_at: string;
 }
 
-const GITHUB_USERNAME = 'gokulsenthilkumar3'
+const CONFIGURED_USERNAME = portfolioConfig.personal.github?.split('/').filter(Boolean).pop() ?? ''
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME ?? CONFIGURED_USERNAME
 const GITHUB_API = 'https://api.github.com'
 
 // Server-side in-memory cache — 5 min TTL (was 1 min, causing rate-limit hammering)

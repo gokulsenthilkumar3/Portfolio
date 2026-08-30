@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { portfolioConfig } from '@/config/portfolio.config'
 
 const GH = 'https://api.github.com'
-const OWNER = process.env.GITHUB_USERNAME ?? 'gokulsenthilkumar3'
+const CONFIGURED_OWNER = portfolioConfig.personal.github?.split('/').filter(Boolean).pop() ?? ''
+const OWNER = process.env.GITHUB_USERNAME ?? CONFIGURED_OWNER
 const TOKEN = process.env.GITHUB_TOKEN ?? ''
 
 function ghHeaders() {

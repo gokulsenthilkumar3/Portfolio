@@ -8,7 +8,6 @@ import { CinematicHero } from '@/components/portfolio/CinematicHero'
 import { AboutStory } from '@/components/portfolio/AboutStory'
 import { SkillsMarquee } from '@/components/portfolio/SkillsMarquee'
 import { ProjectsGallery } from '@/components/portfolio/ProjectsGallery'
-import { ExperienceTimeline } from '@/components/portfolio/ExperienceTimeline'
 import { ContactInvitation } from '@/components/portfolio/ContactInvitation'
 import { LinkedInSection } from '@/components/shared/LinkedInSection'
 
@@ -48,6 +47,7 @@ export default function Home() {
           bio={personal.bio}
           portrait={personal.avatar || '/gokul-photo.jpg'}
           name={personal.name}
+          location={personal.location}
           stats={stats}
           projectCount={uniqueProjectCount}
         />
@@ -61,11 +61,7 @@ export default function Home() {
         <ProjectsGallery projects={projects} />
       </EditableSection>
 
-      <EditableSection label="Experience" onEdit={() => openPanel('experience')}>
-        <ExperienceTimeline experiences={experiences} resume={personal.resume || '/Gokul_S_Resume.pdf'} />
-      </EditableSection>
-
-      <EditableSection label="Profile" onEdit={() => openPanel('personal')}>
+      <EditableSection label="Profile" onEdit={() => openPanel('experience')}>
         <LinkedInSection personal={personal} experiences={experiences} education={education} />
       </EditableSection>
 

@@ -68,7 +68,8 @@ export async function GET() {
 
   // Extract GitHub username from the profile URL in config
   // e.g. "https://github.com/gokulsenthilkumar3" → "gokulsenthilkumar3"
-  const githubUsername = personal.github?.split('/').pop() ?? ''
+  const configuredGithubUsername = personal.github?.split('/').filter(Boolean).pop() ?? ''
+  const githubUsername = process.env.GITHUB_USERNAME ?? configuredGithubUsername
 
   // Fetch live GitHub data
   const github = await fetchGitHubStats(githubUsername)
@@ -99,7 +100,7 @@ export async function GET() {
     {
       label: 'GitHub Repos',
       // Live from GitHub API; fallback to config static value if API fails
-      value: github?.repos ?? portfolioConfig.stats.find(s => s.label === 'GitHub Repos')?.value ?? 13,
+      value: github?.repos ?? portfolioConfig.stats.find(s => s.label === 'GitHub Repos')?.value ?? 0,
       suffix: '+',
       duration: 2400,
       source: github ? 'github_api' : 'config_fallback',
@@ -107,7 +108,7 @@ export async function GET() {
     {
       label: 'Tests Written',
       // No public API for this — kept as a manually curated signal
-      value: portfolioConfig.stats.find(s => s.label === 'Tests Written')?.value ?? 100,
+      value: portfolioConfig.stats.find(s => s.label === 'Tests Written')?.value ?? 0,
       suffix: '+',
       duration: 2600,
       source: 'config',

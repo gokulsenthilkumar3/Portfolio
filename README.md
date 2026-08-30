@@ -28,6 +28,7 @@ Personal portfolio of **Gokul Senthilkumar** ([@gokulsenthilkumar3](https://gith
 - **Skills** — 2D/3D toggle, category filtering, proficiency bars
 - **Projects** — searchable/filterable gallery with detail views
 - **GitHub** — live API stats, contribution heatmap, Commit City mini-game
+- **Profile sync** — GitHub identity/repository metadata is enriched at runtime; LinkedIn basic profile and eligible current-role/education fields sync through an authenticated server token
 - **Insights** — blog/articles section
 - **Contact** — validated form with toast feedback
 - **Theme System** — Dark, Light, Neon, Pastel, Cyberpunk with live switching
@@ -92,8 +93,13 @@ Create `.env.local`:
 
 ```env
 GITHUB_TOKEN=ghp_your_token   # Optional — raises GitHub API rate limit
+GITHUB_USERNAME=gokulsenthilkumar3
+LINKEDIN_ACCESS_TOKEN=         # Optional LinkedIn OAuth token for your own member profile
+LINKEDIN_API_VERSION=202510.03 # Optional identityMe API version
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 ```
+
+The LinkedIn public profile URL cannot be scraped for experience data. Current role and education are available only when the LinkedIn app has the matching approved product/scopes; otherwise the curated profile history remains the fallback.
 
 ---
 

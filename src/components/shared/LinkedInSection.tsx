@@ -25,14 +25,17 @@ function formatPeriod(start?: string, end?: string) {
  * and education card — matching the reference site's rich profile layout.
  */
 export function LinkedInSection({ personal, experiences, education }: LinkedInSectionProps) {
-  const currentRole = experiences[0]
-  const latestEducation = education[0]
+  const currentRole = experiences.find((experience) => experience.period.present) ?? experiences[0]
+  const latestEducation = education.reduce<typeof education[number] | undefined>((latest, item) => {
+    if (!latest) return item
+    return item.period.start > latest.period.start ? item : latest
+  }, undefined)
 
   return (
     <section id="profile" className="portfolio-section linkedin-profile" aria-labelledby="profile-title">
       <SectionHeading
         id="profile-title"
-        index="05"
+        index="04"
         eyebrow="Profile"
         title="The person behind the systems."
         description="A closer, more human view of the work — the kind of context a polished professional profile should make easy to scan."
@@ -86,7 +89,7 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
                 const summary = Array.isArray(exp.description) ? exp.description.join(' ') : exp.description
 
                 return (
-                  <div key={`${exp.company}-${exp.role}`} className="linkedin-profile__exp-item">
+                  <div key={exp.id} className="linkedin-profile__exp-item">
                     <div className="linkedin-profile__exp-line">
                       <div className="linkedin-profile__exp-dot" />
                       <div className="linkedin-profile__exp-connector" />
@@ -126,7 +129,7 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
             </div>
 
             {education.map((edu) => (
-              <p key={edu.institution} className="linkedin-profile__education">
+              <p key={edu.id} className="linkedin-profile__education">
                 <GraduationCap aria-hidden="true" />
                 <span>
                   <strong>{edu.degree}{edu.field ? ` · ${edu.field}` : ''}</strong>
@@ -140,4 +143,3 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
     </section>
   )
 }
-

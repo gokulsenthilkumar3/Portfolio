@@ -1,8 +1,10 @@
 /**
  * 🎯 CENTRALIZED PORTFOLIO CONFIG
  *
- * Single source of truth for all portfolio data.
- * Edit this file to update your portfolio content.
+ * Curated baseline for portfolio content.
+ * Runtime profile fields and GitHub metadata are enriched from live APIs
+ * when available; this file remains the safe fallback for fields those APIs
+ * do not expose (for example, historical work details and authored metrics).
  *
  * careerStart: Set this to the start date of your FIRST professional role.
  * This is used by /api/stats to calculate "Years Experience" dynamically —
@@ -64,7 +66,6 @@ export const portfolioConfig = {
     { label: "About", id: "about" },
     { label: "Skills", id: "skills" },
     { label: "Work", id: "projects" },
-    { label: "Journey", id: "experience" },
     { label: "Profile", id: "profile" },
     { label: "Contact", id: "contact" },
   ],
@@ -232,7 +233,7 @@ export const portfolioConfig = {
       technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/oxfin.png"],
+      images: ["/projects/oxfin.webp"],
       icon: "Wallet",
       date: "2024-06-01",
       links: { github: "https://github.com/gokulsenthilkumar3/OxFin" }
@@ -289,7 +290,7 @@ export const portfolioConfig = {
       technologies: ["Python", "TensorFlow", "Deep Learning", "GRU"],
       category: "ai",
       featured: true,
-      images: ["/projects/forex-prediction.png"],
+      images: ["/projects/forex-prediction.webp"],
       icon: "Brain",
       date: "2024-02-15",
       links: { github: "https://github.com/gokulsenthilkumar3/Forex-Prediction" }

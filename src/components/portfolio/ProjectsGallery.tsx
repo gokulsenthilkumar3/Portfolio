@@ -3,36 +3,13 @@
 import Image from 'next/image'
 import { createPortal } from 'react-dom'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ArrowUpRight, Github, X } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Github, X } from 'lucide-react'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import type { Project } from '@/lib/types/portfolio'
 import { SectionHeading } from './SectionHeading'
-
-const projectVisuals: Record<string, string> = {
-  vaultiq: '/projects/portfolio.webp',
-  oxfin: '/projects/oxfin.webp',
-  stackforge: '/projects/selenium-framework.webp',
-  'forex-ensemble-prediction': '/projects/forex-prediction.webp',
-  'forex-prediction': '/projects/forex-prediction.webp',
-  'portfolio-quality-dashboard': '/projects/portfolio.webp',
-  'weaver-book': '/projects/weaver-book.webp',
-  'car-renovation-spa': '/projects/car-spa.webp',
-  'yarn-management': '/projects/yarn-management.webp',
-  'selenium-framework': '/projects/selenium-framework.webp',
-  'portfolio-v4': '/projects/portfolio.webp',
-}
-
-const projectOrder = [
-  'oxfin',
-  'selenium-framework',
-  'forex-prediction',
-  'yarn-management',
-  'weaver-book',
-  'car-renovation-spa',
-]
 
 function projectYear(project: Project) {
   if (!project.date) return '—'
@@ -96,7 +73,7 @@ function ProjectCard({ project, index, selected, setRef, onOpen }: ProjectCardPr
 
         <div className="project-card__image">
           <Image
-            src={projectVisuals[project.id] || '/projects/portfolio.webp'}
+            src={project.images?.[0] || '/projects/portfolio.webp'}
             alt={`${project.title} project preview`}
             fill
             sizes="(max-width: 900px) 88vw, 62vw"
@@ -115,7 +92,11 @@ function ProjectCard({ project, index, selected, setRef, onOpen }: ProjectCardPr
         onClick={(event) => onOpen(project, event.currentTarget)}
         aria-label={`View details for ${project.title}`}
         data-cursor="view"
-      />
+      >
+        <span className="project-card__open-label">
+          View <ArrowUpRight aria-hidden="true" />
+        </span>
+      </button>
 
       <div className="project-card__links">
         {project.links.github && (
@@ -156,7 +137,7 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
 
         <div className="project-expanded__visual">
           <Image
-            src={projectVisuals[project.id] || '/projects/portfolio.webp'}
+            src={project.images?.[0] || '/projects/portfolio.webp'}
             alt={`${project.title} project preview`}
             fill
             priority
@@ -210,10 +191,7 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
   const lastTrigger = useRef<HTMLButtonElement | null>(null)
 
   const featuredProjects = useMemo(() => {
-    const ordered = projectOrder
-      .map((id) => projects.find((project) => project.id === id))
-      .filter((project): project is Project => Boolean(project))
-    return ordered.length >= 4 ? ordered.slice(0, 6) : projects.filter((project) => project.featured).slice(0, 6)
+    return projects.filter((project) => project.featured).slice(0, 6)
   }, [projects])
 
   useGSAP(() => {
@@ -233,7 +211,9 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
         scrollTrigger: {
           trigger: rootElement,
           start: 'top top',
-          end: () => `+=${distance() + window.innerWidth * 0.72}`,
+          // Move through the complete track without forcing visitors to spend
+          // one full vertical viewport on every card.
+          end: () => `+=${Math.max(window.innerHeight * 2.4, distance() * 0.55)}`,
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
@@ -323,6 +303,9 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
           title="Proof, not promises."
           description="A curated set of products, automation systems, and research built to solve real problems."
         />
+        <a href="#profile" className="projects-gallery__skip" data-cursor="link">
+          Skip to profile <ArrowDownRight aria-hidden="true" />
+        </a>
       </div>
 
       <div ref={track} className="projects-gallery__track">

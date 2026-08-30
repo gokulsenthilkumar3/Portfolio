@@ -4,11 +4,22 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useAdmin } from '@/components/admin/AdminProvider'
 import { navigation } from '@/lib/data/content'
 
 const links = navigation
 
 export function Navigation() {
+  const { portfolioData } = useAdmin()
+  const { personal } = portfolioData
+  const identity = personal.name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part, index) => index === 0 ? part : part[0])
+    .join(' ')
+  const resumeHref = personal.resume
+
   // Keep the primary wayfinding visible at the top of the page. Once the
   // reader moves beyond the hero it follows the original quiet interaction:
   // hide while scrolling down, reveal on scroll-up.
@@ -73,6 +84,15 @@ export function Navigation() {
     return () => window.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [menuOpen])
+
   const shown = visible || menuOpen
 
   return (
@@ -86,7 +106,7 @@ export function Navigation() {
         {/* Logo / Identity */}
         <Link href="/#home" className="minimal-nav__identity" data-cursor="link" data-magnetic>
           <span className="minimal-nav__logo-icon" aria-hidden="true">&lt;/&gt;</span>
-          Gokul S.
+          {identity}
         </Link>
 
         {/* Center links */}
@@ -107,15 +127,11 @@ export function Navigation() {
 
         {/* Right-side CTAs */}
         <div className="minimal-nav__actions">
-          <a
-            href="/Gokul_S_Resume.pdf"
-            download
-            className="minimal-nav__resume"
-            data-cursor="link"
-            data-no-transition
-          >
-            ↓ Resume
-          </a>
+          {resumeHref && (
+            <a href={resumeHref} download className="minimal-nav__resume" data-cursor="link" data-no-transition>
+              ↓ Resume
+            </a>
+          )}
           <a
             href="/#contact"
             className="minimal-nav__hire"
@@ -169,14 +185,11 @@ export function Navigation() {
               transition={{ delay: links.length * 0.035 + 0.05 }}
               style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}
             >
-              <a
-                href="/Gokul_S_Resume.pdf"
-                download
-                className="minimal-nav__resume"
-                onClick={() => setMenuOpen(false)}
-              >
-                ↓ Resume
-              </a>
+              {resumeHref && (
+                <a href={resumeHref} download className="minimal-nav__resume" onClick={() => setMenuOpen(false)}>
+                  ↓ Resume
+                </a>
+              )}
               <a
                 href="/#contact"
                 className="minimal-nav__hire"

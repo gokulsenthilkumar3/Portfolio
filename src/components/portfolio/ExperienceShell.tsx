@@ -79,10 +79,9 @@ function CustomCursor() {
   useEffect(() => {
     const dot = dotRef.current
     const ring = ringRef.current
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const forcedColors = window.matchMedia('(forced-colors: active)').matches
-    if (!dot || !ring || !fine || reduced || forcedColors) return
+    if (!dot || !ring || reduced || forcedColors) return
 
     document.documentElement.classList.add('custom-cursor-ready')
     document.documentElement.dataset.cursorReady = 'true'
@@ -90,11 +89,12 @@ function CustomCursor() {
     const dotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'power3.out' })
     const ringX = gsap.quickTo(ring, 'x', { duration: 0.24, ease: 'power3.out' })
     const ringY = gsap.quickTo(ring, 'y', { duration: 0.24, ease: 'power3.out' })
-    // Keep opacity at 0 until first pointermove — prevents cursor flashing at
-    // center screen on page load. The CSS parks elements at -9999px as a fallback.
+    // Keep the cursor parked until movement is detected, then reveal it
+    // immediately. Mouse fallback matters in embedded browser shells where
+    // PointerEvent support or pointer media queries can be incomplete.
 
-
-    const onMove = (event: PointerEvent) => {
+    const onMove = (event: MouseEvent) => {
+      if ('pointerType' in event && (event as PointerEvent).pointerType === 'touch') return
       const target = event.target as Element | null
       const context = target?.closest<HTMLElement>('[data-cursor], a, button, input, textarea')
       const explicitMode = context?.dataset.cursor
@@ -110,19 +110,23 @@ function CustomCursor() {
       ringY(y)
       ring.dataset.mode = mode
       ring.dataset.label = mode === 'view' ? 'View' : ''
-      gsap.to([dot, ring], { opacity: 1, duration: 0.18, overwrite: true })
+      gsap.set([dot, ring], { opacity: 1 })
     }
 
-    const onEnter = (event: PointerEvent) => onMove(event)
+    const onEnter = (event: MouseEvent) => onMove(event)
     const onLeave = () => gsap.to([dot, ring], { opacity: 0, duration: 0.18, overwrite: true })
     window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('pointerenter', onEnter, { passive: true })
-    document.documentElement.addEventListener('mouseleave', onLeave)
+    window.addEventListener('mouseenter', onEnter, { passive: true })
+    window.addEventListener('mouseleave', onLeave)
 
     return () => {
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('mousemove', onMove)
       window.removeEventListener('pointerenter', onEnter)
-      document.documentElement.removeEventListener('mouseleave', onLeave)
+      window.removeEventListener('mouseenter', onEnter)
+      window.removeEventListener('mouseleave', onLeave)
       document.documentElement.classList.remove('custom-cursor-ready')
       delete document.documentElement.dataset.cursorReady
     }
