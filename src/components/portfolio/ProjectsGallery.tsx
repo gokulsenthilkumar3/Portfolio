@@ -12,8 +12,12 @@ import type { Project } from '@/lib/types/portfolio'
 import { SectionHeading } from './SectionHeading'
 
 const projectVisuals: Record<string, string> = {
+  vaultiq: '/projects/portfolio.webp',
   oxfin: '/projects/oxfin.webp',
+  stackforge: '/projects/selenium-framework.webp',
+  'forex-ensemble-prediction': '/projects/forex-prediction.webp',
   'forex-prediction': '/projects/forex-prediction.webp',
+  'portfolio-quality-dashboard': '/projects/portfolio.webp',
   'weaver-book': '/projects/weaver-book.webp',
   'car-renovation-spa': '/projects/car-spa.webp',
   'yarn-management': '/projects/yarn-management.webp',

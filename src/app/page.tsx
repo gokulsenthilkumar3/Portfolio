@@ -10,6 +10,7 @@ import { SkillsMarquee } from '@/components/portfolio/SkillsMarquee'
 import { ProjectsGallery } from '@/components/portfolio/ProjectsGallery'
 import { ExperienceTimeline } from '@/components/portfolio/ExperienceTimeline'
 import { ContactInvitation } from '@/components/portfolio/ContactInvitation'
+import { LinkedInSection } from '@/components/shared/LinkedInSection'
 
 export default function Home() {
   const { isAdmin, portfolioData } = useAdmin()
@@ -21,7 +22,7 @@ export default function Home() {
     setAdminPanelOpen(true)
   }
 
-  const { personal, projects, skills, experiences, stats } = portfolioData
+  const { personal, projects, skills, experiences, education, stats } = portfolioData
   const uniqueProjectCount = new Set(projects.map((project) => project.id)).size
 
   return (
@@ -62,6 +63,10 @@ export default function Home() {
 
       <EditableSection label="Experience" onEdit={() => openPanel('experience')}>
         <ExperienceTimeline experiences={experiences} resume={personal.resume || '/Gokul_S_Resume.pdf'} />
+      </EditableSection>
+
+      <EditableSection label="Profile" onEdit={() => openPanel('personal')}>
+        <LinkedInSection personal={personal} experiences={experiences} education={education} />
       </EditableSection>
 
       <EditableSection label="Contact" onEdit={() => openPanel('personal')}>

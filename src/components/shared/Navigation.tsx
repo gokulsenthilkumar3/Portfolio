@@ -4,17 +4,15 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { navigation } from '@/lib/data/content'
 
-const links = [
-  { label: 'About', id: 'about' },
-  { label: 'Skills', id: 'skills' },
-  { label: 'Work', id: 'projects' },
-  { label: 'Journey', id: 'experience' },
-  { label: 'Contact', id: 'contact' },
-] as const
+const links = navigation
 
 export function Navigation() {
-  const [visible, setVisible] = useState(false)
+  // Keep the primary wayfinding visible at the top of the page. Once the
+  // reader moves beyond the hero it follows the original quiet interaction:
+  // hide while scrolling down, reveal on scroll-up.
+  const [visible, setVisible] = useState(true)
   const [bordered, setBordered] = useState(false)
   const [active, setActive] = useState('home')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -28,7 +26,7 @@ export function Navigation() {
       setBordered(y > 100)
 
       if (y < heroBoundary) {
-        setVisible(false)
+        setVisible(true)
       } else if (lastY.current < heroBoundary || delta < -5) {
         setVisible(true)
       } else if (delta > 7) {
@@ -40,7 +38,7 @@ export function Navigation() {
 
     lastY.current = window.scrollY
     setBordered(window.scrollY > 100)
-    if (window.scrollY >= window.innerHeight * 0.72) setVisible(true)
+    setVisible(true)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -85,10 +83,13 @@ export function Navigation() {
       onFocusCapture={() => setVisible(true)}
     >
       <nav aria-label="Primary navigation" className="minimal-nav__inner">
+        {/* Logo / Identity */}
         <Link href="/#home" className="minimal-nav__identity" data-cursor="link" data-magnetic>
+          <span className="minimal-nav__logo-icon" aria-hidden="true">&lt;/&gt;</span>
           Gokul S.
         </Link>
 
+        {/* Center links */}
         <div className="minimal-nav__links">
           {links.map((link) => (
             <Link
@@ -104,6 +105,27 @@ export function Navigation() {
           ))}
         </div>
 
+        {/* Right-side CTAs */}
+        <div className="minimal-nav__actions">
+          <a
+            href="/Gokul_S_Resume.pdf"
+            download
+            className="minimal-nav__resume"
+            data-cursor="link"
+            data-no-transition
+          >
+            ↓ Resume
+          </a>
+          <a
+            href="/#contact"
+            className="minimal-nav__hire"
+            data-cursor="link"
+          >
+            Hire Me
+          </a>
+        </div>
+
+        {/* Mobile hamburger */}
         <button
           type="button"
           className="minimal-nav__menu"
@@ -140,6 +162,29 @@ export function Navigation() {
                 </Link>
               </motion.div>
             ))}
+            {/* Mobile CTAs */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: links.length * 0.035 + 0.05 }}
+              style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}
+            >
+              <a
+                href="/Gokul_S_Resume.pdf"
+                download
+                className="minimal-nav__resume"
+                onClick={() => setMenuOpen(false)}
+              >
+                ↓ Resume
+              </a>
+              <a
+                href="/#contact"
+                className="minimal-nav__hire"
+                onClick={() => setMenuOpen(false)}
+              >
+                Hire Me
+              </a>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -37,3 +37,4 @@ export const languages = portfolioConfig.languages
 export const blog = portfolioConfig.blog
 export const giscus = portfolioConfig.giscus
 export const microblogs = portfolioConfig.microblogs
+export const navigation = portfolioConfig.navigation

@@ -1,174 +1,143 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import Image from 'next/image'
-import { Linkedin, ExternalLink, Briefcase, MapPin, Building2, GraduationCap } from 'lucide-react'
-import { portfolioConfig } from '@/config/portfolio.config'
-const { experiences, education, personal } = portfolioConfig
-import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Linkedin, MapPin } from 'lucide-react'
+import type { Education, Experience, SiteConfig } from '@/lib/types/portfolio'
+import { SectionHeading } from '@/components/portfolio/SectionHeading'
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return ''
-  const [year, month] = dateStr.split('-')
-  const date = new Date(parseInt(year), parseInt(month) - 1)
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+interface LinkedInSectionProps {
+  personal: SiteConfig
+  experiences: Experience[]
+  education: Education[]
 }
 
-export function LinkedInSection() {
-  return (
-    <div className="space-y-8">
-      {/* LinkedIn Profile Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="rounded-3xl border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] group"
-      >
-        <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-          <Linkedin size={120} />
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-6 items-start relative z-10">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#0a66c2]/30 shadow-lg shrink-0">
-            <Image src={personal.avatar} alt={personal.name} width={96} height={96} className="w-full h-full object-cover" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-3 flex-wrap mb-2">
-              <h3 className="text-2xl font-bold font-display">{personal.name}</h3>
-              <Badge className="bg-[#0a66c2]/20 text-[#0a66c2] hover:bg-[#0a66c2]/30 border-none rounded-full px-3">
-                <Linkedin size={12} className="mr-1.5 inline" /> Profile
-              </Badge>
-            </div>
-            <p className="text-lg text-foreground/90 font-medium mb-3 max-w-2xl">{personal.title}</p>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-              <span className="flex items-center gap-1.5"><MapPin size={14} /> {personal.location}</span>
-              <span className="flex items-center gap-1.5">{experiences[0] && <><Building2 size={14} /> {experiences[0].company}</>}</span>
-              <span className="flex items-center gap-1.5">{education[0] && <><GraduationCap size={14} /> {education[0].institution}</>}</span>
-            </div>
-            <Link 
-              href={personal.linkedin} 
-              target="_blank" 
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#0a66c2] hover:text-[#0a66c2]/80 transition-colors bg-[#0a66c2]/10 px-4 py-2 rounded-lg"
-            >
-              Connect on LinkedIn <ExternalLink size={14} />
-            </Link>
-          </div>
-        </div>
-      </motion.div>
+function formatPeriod(start?: string, end?: string) {
+  const fmt = (val?: string) => {
+    if (!val) return 'Present'
+    const d = new Date(val)
+    return d.toLocaleDateString('en', { month: 'short', year: 'numeric', timeZone: 'UTC' })
+  }
+  return `${fmt(start)} — ${fmt(end)}`
+}
 
-      {/* Experience Timeline */}
-      <div>
-        <div className="flex items-center gap-2 mb-6">
-          <Briefcase size={20} className="text-[#0a66c2]" />
-          <h4 className="text-xl font-bold font-display">Experience</h4>
+/**
+ * Full LinkedIn-inspired profile: cover + avatar header, experience timeline,
+ * and education card — matching the reference site's rich profile layout.
+ */
+export function LinkedInSection({ personal, experiences, education }: LinkedInSectionProps) {
+  const currentRole = experiences[0]
+  const latestEducation = education[0]
+
+  return (
+    <section id="profile" className="portfolio-section linkedin-profile" aria-labelledby="profile-title">
+      <SectionHeading
+        id="profile-title"
+        index="05"
+        eyebrow="Profile"
+        title="The person behind the systems."
+        description="A closer, more human view of the work — the kind of context a polished professional profile should make easy to scan."
+      />
+
+      <div className="linkedin-profile__surface">
+        {/* Cover gradient */}
+        <div className="linkedin-profile__cover" aria-hidden="true" />
+
+        {/* Header: avatar + identity */}
+        <div className="linkedin-profile__header">
+          <div className="linkedin-profile__avatar">
+            <Image src={personal.avatar || '/gokul-photo.jpg'} alt={personal.name} width={128} height={128} />
+          </div>
+
+          <div className="linkedin-profile__identity">
+            <div className="linkedin-profile__name-row">
+              <h3>{personal.name}</h3>
+              <span className="linkedin-profile__badge"><Linkedin aria-hidden="true" /> Profile view</span>
+            </div>
+            <p className="linkedin-profile__title">{personal.title}</p>
+            <div className="linkedin-profile__meta">
+              <span><MapPin aria-hidden="true" /> {personal.location}</span>
+              {currentRole && <span><BriefcaseBusiness aria-hidden="true" /> {currentRole.company}</span>}
+              {latestEducation && <span><GraduationCap aria-hidden="true" /> {latestEducation.institution}</span>}
+            </div>
+            {personal.linkedin && (
+              <a
+                href={personal.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="linkedin-profile__connect"
+                data-no-transition
+                data-cursor="link"
+              >
+                Connect on LinkedIn <ArrowUpRight aria-hidden="true" />
+              </a>
+            )}
+          </div>
         </div>
-        
-        <div className="space-y-6">
-          {experiences.map((exp, index) => (
-            <AnimatedSection key={exp.id} animation="slideUp" delay={0.1 * index}>
-              <div className="relative pl-8 md:pl-0">
-                <div className="hidden md:block absolute left-[8.5rem] top-2 bottom-[-24px] w-px bg-white/10 last:hidden"></div>
-                
-                <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                  <div className="md:w-32 shrink-0 md:text-right pt-1 hidden md:block">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {formatDate(exp.period.start)} - 
-                      {exp.period.present ? ' Present' : exp.period.end ? formatDate(exp.period.end) : ''}
-                    </p>
-                  </div>
-                  
-                  <div className="absolute left-0 md:static mt-1 md:mt-0 z-10 w-4 h-4 rounded-full bg-[#0a66c2] border-4 border-background flex items-center justify-center shadow-[0_0_10px_rgba(10,102,194,0.5)] shrink-0" />
-                  
-                  <Card className="flex-1 relative border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:border-[#0a66c2]/30 transition-colors rounded-3xl overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0a66c2]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                    <CardContent className="p-5">
-                      <div className="md:hidden text-xs text-muted-foreground mb-2">
-                        {formatDate(exp.period.start)} - 
-                        {exp.period.present ? ' Present' : exp.period.end ? formatDate(exp.period.end) : ''}
-                      </div>
-                      <h5 className="text-lg font-bold">{exp.role}</h5>
-                      <p className="text-[#0a66c2] font-medium text-sm mb-3">{exp.company}</p>
-                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{exp.description}</p>
-                      
-                      {exp.achievements && exp.achievements.length > 0 && (
-                        <ul className="mb-4 space-y-1.5">
-                          {exp.achievements.map((ach, i) => (
-                            <li key={i} className="text-sm flex items-start gap-2">
-                              <span className="text-[#0a66c2] mt-0.5">•</span>
-                              <span className="text-foreground/80">{ach}</span>
-                            </li>
-                          ))}
+
+        {/* Body: experience timeline left, education + snapshot right */}
+        <div className="linkedin-profile__body">
+          {/* Experience timeline */}
+          <div className="linkedin-profile__chapter">
+            <p className="linkedin-profile__label">Experience</p>
+
+            <div className="linkedin-profile__exp-list">
+              {experiences.map((exp) => {
+                const bullets = Array.isArray(exp.description) ? exp.description : []
+                const summary = Array.isArray(exp.description) ? exp.description.join(' ') : exp.description
+
+                return (
+                  <div key={`${exp.company}-${exp.role}`} className="linkedin-profile__exp-item">
+                    <div className="linkedin-profile__exp-line">
+                      <div className="linkedin-profile__exp-dot" />
+                      <div className="linkedin-profile__exp-connector" />
+                    </div>
+                    <div className="linkedin-profile__exp-content">
+                      <p className="linkedin-profile__exp-period">
+                        {formatPeriod(exp.period?.start, exp.period?.end)}
+                      </p>
+                      <p className="linkedin-profile__exp-role">{exp.role}</p>
+                      <p className="linkedin-profile__exp-company">{exp.company} · {exp.location}</p>
+                      {bullets.length > 1 ? (
+                        <ul className="linkedin-profile__exp-bullets">
+                          {bullets.slice(0, 3).map((b, i) => <li key={i}>{b}</li>)}
                         </ul>
+                      ) : (
+                        <p className="linkedin-profile__exp-desc">{summary}</p>
                       )}
-                      
-                      <div className="flex flex-wrap gap-1.5 mt-4">
-                        {exp.technologies?.map(tech => (
-                          <Badge key={tech} variant="secondary" className="bg-white/5 text-xs font-normal">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </AnimatedSection>
-          ))}
+                      {exp.technologies?.length > 0 && (
+                        <div className="linkedin-profile__exp-tags">
+                          {exp.technologies.slice(0, 6).map((t) => <span key={t}>{t}</span>)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Snapshot + Education */}
+          <aside className="linkedin-profile__snapshot" aria-label="Professional snapshot">
+            <p className="linkedin-profile__label">Snapshot</p>
+            <div className="linkedin-profile__metrics">
+              <div><strong>{experiences.length}</strong><span>roles shipped</span></div>
+              <div><strong>{education.length}</strong><span>learning chapters</span></div>
+              <div><strong>{currentRole ? new Date(currentRole.period.start).getFullYear() : '—'}</strong><span>career start</span></div>
+            </div>
+
+            {education.map((edu) => (
+              <p key={edu.institution} className="linkedin-profile__education">
+                <GraduationCap aria-hidden="true" />
+                <span>
+                  <strong>{edu.degree}{edu.field ? ` · ${edu.field}` : ''}</strong>
+                  <small>{edu.institution}</small>
+                </span>
+              </p>
+            ))}
+          </aside>
         </div>
       </div>
-      
-      {/* Education Timeline */}
-      <div className="mt-12">
-        <div className="flex items-center gap-2 mb-6">
-          <GraduationCap size={20} className="text-[#0a66c2]" />
-          <h4 className="text-xl font-bold font-display">Education</h4>
-        </div>
-        
-        <div className="space-y-6">
-          {education.map((edu, index) => (
-            <AnimatedSection key={edu.id} animation="slideUp" delay={0.1 * index}>
-              <div className="relative pl-8 md:pl-0">
-                <div className="hidden md:block absolute left-[8.5rem] top-2 bottom-[-24px] w-px bg-white/10 last:hidden"></div>
-                
-                <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                  <div className="md:w-32 shrink-0 md:text-right pt-1 hidden md:block">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {formatDate(edu.period.start)} – {edu.period.present ? 'Present' : formatDate(edu.period.end ?? '')}
-                    </p>
-                  </div>
-                  
-                  <div className="absolute left-0 md:static mt-1 md:mt-0 z-10 w-4 h-4 rounded-full bg-muted-foreground border-4 border-background flex items-center justify-center shrink-0" />
-                  
-                  <Card className="flex-1 relative border border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/20 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_20px_40px_-10px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_-10px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                    <CardContent className="p-5">
-                      <div className="md:hidden text-xs text-muted-foreground mb-2">
-                        {formatDate(edu.period.start)} – {edu.period.present ? 'Present' : formatDate(edu.period.end ?? '')}
-                      </div>
-                      <h5 className="text-lg font-bold">{edu.degree} in {edu.field}</h5>
-                      <p className="text-foreground/80 font-medium text-sm mb-2">{edu.institution}</p>
-                      {edu.grade && <Badge variant="outline" className="text-xs">{edu.grade}</Badge>}
-                      {edu.achievements && edu.achievements.length > 0 && (
-                        <ul className="mt-3 space-y-1">
-                          {edu.achievements.map((ach, i) => (
-                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                              <span className="text-muted-foreground/60 mt-0.5">•</span>
-                              {ach}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </AnimatedSection>
-          ))}
-        </div>
-      </div>
-    </div>
+    </section>
   )
 }
+

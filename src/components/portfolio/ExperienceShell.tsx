@@ -85,10 +85,14 @@ function CustomCursor() {
     if (!dot || !ring || !fine || reduced || forcedColors) return
 
     document.documentElement.classList.add('custom-cursor-ready')
+    document.documentElement.dataset.cursorReady = 'true'
     const dotX = gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'power3.out' })
     const dotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'power3.out' })
     const ringX = gsap.quickTo(ring, 'x', { duration: 0.24, ease: 'power3.out' })
     const ringY = gsap.quickTo(ring, 'y', { duration: 0.24, ease: 'power3.out' })
+    // Keep opacity at 0 until first pointermove — prevents cursor flashing at
+    // center screen on page load. The CSS parks elements at -9999px as a fallback.
+
 
     const onMove = (event: PointerEvent) => {
       const target = event.target as Element | null
@@ -109,14 +113,18 @@ function CustomCursor() {
       gsap.to([dot, ring], { opacity: 1, duration: 0.18, overwrite: true })
     }
 
+    const onEnter = (event: PointerEvent) => onMove(event)
     const onLeave = () => gsap.to([dot, ring], { opacity: 0, duration: 0.18, overwrite: true })
     window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerenter', onEnter, { passive: true })
     document.documentElement.addEventListener('mouseleave', onLeave)
 
     return () => {
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerenter', onEnter)
       document.documentElement.removeEventListener('mouseleave', onLeave)
       document.documentElement.classList.remove('custom-cursor-ready')
+      delete document.documentElement.dataset.cursorReady
     }
   }, [])
 

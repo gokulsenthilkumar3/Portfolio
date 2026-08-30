@@ -53,10 +53,21 @@ export const portfolioConfig = {
     defaultTheme: "dark" as "dark" | "light" | "neon" | "pastel" | "cyberpunk",
     enableCustomizationPanel: true,
     enableThemeSelector: true,
-    enableProgressBar: true,
-    enableSectionIndicators: true,
+    enableProgressBar: false,
+    enableSectionIndicators: false,
     enableScrollToTop: true
   },
+
+  // ─── PRIMARY NAVIGATION ───────────────────────────────────────────────────
+  // Keep the visible navigation aligned with the sections rendered on the home page.
+  navigation: [
+    { label: "About", id: "about" },
+    { label: "Skills", id: "skills" },
+    { label: "Work", id: "projects" },
+    { label: "Journey", id: "experience" },
+    { label: "Profile", id: "profile" },
+    { label: "Contact", id: "contact" },
+  ],
 
   // ─── STATS (static fallbacks — live values come from /api/stats) ────────────
   //
@@ -95,7 +106,7 @@ export const portfolioConfig = {
     title: "Gokul Senthilkumar | SDET & Full-Stack Developer",
     description: "Portfolio of Gokul Senthilkumar — Software Development Engineer in Test and Full-Stack Developer.",
     keywords: ["SDET", "QA", "Automation", "Full Stack", "React", "Next.js", "TypeScript"],
-    ogImage: "/og-image.png",
+    ogImage: "/og.png",
     siteUrl: "https://portfolio-ten-plum-98.vercel.app",
         author: "Gokul Senthilkumar",
   },
@@ -203,7 +214,7 @@ export const portfolioConfig = {
       technologies: ["TypeScript", "Next.js", "PostgreSQL", "Tailwind CSS"],
       category: "fullstack",
       featured: true,
-      images: ["/projects/vaultiq.png"],
+      images: ["/projects/portfolio.webp"],
       icon: "AppWindow",
       date: "2026-05-05",
       links: { github: "https://github.com/gokulsenthilkumar3/VaultIQ", live: "https://gokulsenthilkumar3.github.io/VaultIQ" },
@@ -236,7 +247,7 @@ export const portfolioConfig = {
       technologies: ["TypeScript", "Node.js", "Docker", "GitHub Actions"],
       category: "tools",
       featured: true,
-      images: ["/projects/stackforge.png"],
+      images: ["/projects/selenium-framework.webp"],
       icon: "Terminal",
       date: "2026-05-15",
       links: { github: "https://github.com/gokulsenthilkumar3/StackForge" }
@@ -251,7 +262,7 @@ export const portfolioConfig = {
       technologies: ["Python", "Jupyter Notebook", "Scikit-learn", "Pandas"],
       category: "ai",
       featured: true,
-      images: ["/projects/forex-ensemble.png"],
+      images: ["/projects/forex-prediction.webp"],
       icon: "Brain",
       date: "2026-05-02",
       links: { github: "https://github.com/gokulsenthilkumar3/Forex-Ensemble-Prediction" }
@@ -266,7 +277,7 @@ export const portfolioConfig = {
       technologies: ["Playwright", "K6", "axe-core", "GitHub Actions"],
       category: "tools",
       featured: true,
-      images: ["/projects/quality-dashboard.png"],
+      images: ["/projects/portfolio.webp"],
       icon: "ShieldCheck",
       date: "2024-03-10",
       links: { github: "https://github.com/gokulsenthilkumar3/Portfolio-Tests" }
@@ -336,21 +347,6 @@ export const portfolioConfig = {
       icon: "TestTube",
       date: "2024-09-01",
       links: { github: "https://github.com/gokulsenthilkumar3/Selenium-Test-Framework" }
-    },
-    {
-      id: "portfolio-quality-dashboard",
-      title: "Portfolio Quality Dashboard",
-      description: "Automated quality, performance, and accessibility testing suite for this Next.js portfolio.",
-      problem: "Modern web portfolios often suffer from degraded performance, broken links, or accessibility violations over time without continuous testing.",
-      responsibility: "Test automation architecture, CI/CD integration, and accessibility remediation.",
-      evidence: "Ensures 100% Lighthouse scores, zero WCAG AA violations, and sub-second LCP through automated Playwright and axe pipelines.",
-      technologies: ["Playwright", "K6", "axe-core", "GitHub Actions"],
-      category: "tools",
-      featured: true,
-      images: ["/projects/quality-dashboard.png"],
-      icon: "ShieldCheck",
-      date: "2024-03-10",
-      links: { github: "https://github.com/gokulsenthilkumar3/Portfolio-Tests" }
     },
     {
       id: "portfolio-v4",
