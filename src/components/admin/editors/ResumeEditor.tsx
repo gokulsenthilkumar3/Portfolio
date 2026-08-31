@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { ExperienceEditor } from './ExperienceEditor'
-import { Plus, GraduationCap, Briefcase } from 'lucide-react'
+import { GraduationCap, Briefcase } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
-import { portfolioConfig } from '@/config/portfolio.config'
 import { motion } from 'framer-motion'
 
 import type { Education } from '@/lib/types/portfolio'
@@ -19,6 +18,7 @@ export function ResumeEditor() {
       {/* Switcher */}
       <div className="flex p-1 bg-white/5 rounded-xl border border-white/10">
         <button
+          type="button"
           onClick={() => setMode('experience')}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
             mode === 'experience' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-gray-200'
@@ -27,6 +27,7 @@ export function ResumeEditor() {
           <Briefcase size={14} /> Experience
         </button>
         <button
+          type="button"
           onClick={() => setMode('education')}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
             mode === 'education' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-gray-200'
@@ -43,6 +44,7 @@ export function ResumeEditor() {
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500">{education.length} education entries</p>
             <button 
+              type="button"
               className="text-[10px] uppercase tracking-widest font-bold text-blue-400 hover:text-blue-300 transition-colors"
               onClick={() => {
                 const newEd: Education = {

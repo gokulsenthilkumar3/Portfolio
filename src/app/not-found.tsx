@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 
 export default function NotFound() {
@@ -14,22 +14,24 @@ export default function NotFound() {
   const carRef = useRef<HTMLDivElement>(null)
   const obstacleRef = useRef<HTMLDivElement>(null)
   const [isJumping, setIsJumping] = useState(false)
+  const scoreRef = useRef(0)
 
   // Start game
-  const startGame = () => {
+  const startGame = useCallback(() => {
     setIsPlaying(true)
     setGameOver(false)
+    scoreRef.current = 0
     setScore(0)
-  }
+  }, [])
 
   // Handle Jump
-  const jump = () => {
+  const jump = useCallback(() => {
     if (isJumping || gameOver || !isPlaying) return
     setIsJumping(true)
     setTimeout(() => {
       setIsJumping(false)
     }, 500)
-  }
+  }, [gameOver, isJumping, isPlaying])
 
   // Game Loop for collision and scoring
   useEffect(() => {
@@ -40,7 +42,10 @@ export default function NotFound() {
 
     if (isPlaying && !gameOver) {
       scoreInterval = setInterval(() => {
-        setScore(s => s + 1)
+        setScore(() => {
+          scoreRef.current += 1
+          return scoreRef.current
+        })
       }, 100)
 
       checkInterval = setInterval(() => {
@@ -60,7 +65,7 @@ export default function NotFound() {
           ) {
             setGameOver(true)
             setIsPlaying(false)
-            setHighScore(prev => Math.max(prev, score))
+            setHighScore(prev => Math.max(prev, scoreRef.current))
           }
         }
       }, 20)
@@ -70,7 +75,7 @@ export default function NotFound() {
       clearInterval(scoreInterval)
       clearInterval(checkInterval)
     }
-  }, [isPlaying, gameOver, score])
+  }, [isPlaying, gameOver])
 
   // Key listeners
   useEffect(() => {
@@ -84,7 +89,7 @@ export default function NotFound() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isPlaying, gameOver, isJumping])
+  }, [isPlaying, gameOver, startGame, jump])
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden relative selection:bg-primary/20">

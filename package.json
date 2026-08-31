@@ -23,7 +23,7 @@
     "dev:vinext": "vinext dev --port 3001",
     "start:vinext": "vinext start",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "type-check": "tsc --noEmit --incremental false",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"

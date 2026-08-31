@@ -72,7 +72,7 @@ export async function GET() {
       }))
 
     // Contribution heatmap via GitHub's public contribution HTML
-    let contributionMap: Record<string, number> = {}
+    const contributionMap: Record<string, number> = {}
     try {
       const contribHtml = await fetch(
         `https://github.com/users/${GITHUB_USERNAME}/contributions`,

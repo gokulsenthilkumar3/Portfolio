@@ -59,10 +59,15 @@ export function Navigation() {
     }
 
     lastY.current = window.scrollY
-    setBordered(window.scrollY > 100)
-    setVisible(true)
+    const frame = window.requestAnimationFrame(() => {
+      setBordered(window.scrollY > 100)
+      setVisible(true)
+    })
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
   useEffect(() => {
@@ -144,13 +149,13 @@ export function Navigation() {
               ↓ Resume
             </a>
           )}
-          <a
+          <Link
             href="/#contact"
             className="minimal-nav__hire"
             data-cursor="link"
           >
             Hire Me
-          </a>
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -211,13 +216,13 @@ export function Navigation() {
                   ↓ Resume
                 </a>
               )}
-              <a
+              <Link
                 href="/#contact"
                 className="minimal-nav__hire"
                 onClick={closeMenu}
               >
                 Hire Me
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
         )}

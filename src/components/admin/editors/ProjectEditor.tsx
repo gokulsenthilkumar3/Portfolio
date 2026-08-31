@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Pencil, Trash2, ExternalLink, Github, X, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, ChevronDown, ChevronUp } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
-import { portfolioConfig } from '@/config/portfolio.config'
 
 import type { Project } from '@/lib/types/portfolio'
 
@@ -27,12 +26,9 @@ export function ProjectEditor() {
   const projects = (portfolioData.projects as Project[]) || []
   const [editing, setEditing] = useState<Project | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [saved, setSaved] = useState(false)
 
   const save = async (updated: Project[]) => {
     await updateSection('projects', updated)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
   }
 
   const handleAdd = () => {
@@ -67,6 +63,7 @@ export function ProjectEditor() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAdd}
+          type="button"
           title="Add new project"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30"
         >
@@ -89,6 +86,8 @@ export function ProjectEditor() {
             >
               {/* Image preview */}
               {project.images?.[0] ? (
+                // Admin previews may be local or user-supplied remote URLs.
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={project.images[0]} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
               ) : (
                 <div className="w-8 h-8 rounded bg-white/5 flex-shrink-0" />
@@ -131,7 +130,7 @@ export function ProjectEditor() {
                   <div className="px-3 pb-3 text-[11px] text-gray-500 space-y-1 border-t border-white/5 pt-2">
                     <p className="line-clamp-2">{project.description}</p>
                     <div className="flex flex-wrap gap-1">
-                      {(project.tech || []).slice(0, 4).map((t: string) => (
+                      {(project.tech || project.technologies || []).slice(0, 4).map((t: string) => (
                         <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-gray-400">{t}</span>
                       ))}
                     </div>
@@ -181,11 +180,8 @@ function ProjectForm({
   const [form, setForm] = useState({ ...project })
 
   const handleTechChange = (value: string) => {
-    setForm(prev => ({ ...prev, tech: value.split(',').map(t => t.trim()).filter(Boolean) }))
-  }
-
-  const handleTagsChange = (value: string) => {
-    setForm(prev => ({ ...prev, tags: value.split(',').map(t => t.trim()).filter(Boolean) }))
+    const technologies = value.split(',').map(t => t.trim()).filter(Boolean)
+    setForm(prev => ({ ...prev, tech: technologies, technologies }))
   }
 
   return (
@@ -207,7 +203,7 @@ function ProjectForm({
           <h3 className="text-sm font-semibold text-white">
             {project.id ? 'Edit Project' : 'New Project'}
           </h3>
-          <button onClick={onCancel} title="Cancel" aria-label="Cancel" className="p-1 rounded text-gray-500 hover:text-gray-300">
+          <button type="button" onClick={onCancel} title="Cancel" aria-label="Cancel" className="flex min-h-11 min-w-11 items-center justify-center rounded text-gray-500 hover:text-gray-300">
             <X size={14} />
           </button>
         </div>
@@ -275,7 +271,7 @@ function ProjectForm({
             <label htmlFor="proj-tech" className="block text-[11px] text-gray-400 mb-1">Tech Stack (comma-separated)</label>
             <input
               id="proj-tech"
-              value={(form.tech || []).join(', ')}
+              value={(form.tech || form.technologies || []).join(', ')}
               onChange={e => handleTechChange(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               placeholder="React, TypeScript, Node.js"

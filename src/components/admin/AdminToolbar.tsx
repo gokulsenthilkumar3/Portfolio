@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, LogOut, Loader2, Download, Edit3 } from 'lucide-react'
+import { LogOut, Loader2, Download, Edit3 } from 'lucide-react'
 import { useAdmin } from './AdminProvider'
 
 interface AdminToolbarProps {
@@ -85,6 +85,17 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
                 Open editor
               </motion.button>
             )}
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleExport}
+              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-white/10"
+              title="Download a JSON backup of the draft"
+            >
+              <Download size={12} aria-hidden="true" />
+              {exported ? 'Exported' : 'Export draft'}
+            </motion.button>
 
             {/* Publish button */}
             <motion.button

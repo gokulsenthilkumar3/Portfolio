@@ -48,7 +48,9 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
   }
 
   useEffect(() => {
-    if (isOpen) setActiveTab(initialTab)
+    if (!isOpen) return
+    const frame = window.requestAnimationFrame(() => setActiveTab(initialTab))
+    return () => window.cancelAnimationFrame(frame)
   }, [initialTab, isOpen])
 
   useFocusTrap(isOpen, panelRef, { initialFocusRef: closeRef, onClose: handleClose })

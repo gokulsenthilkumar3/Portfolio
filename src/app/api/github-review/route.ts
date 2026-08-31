@@ -289,7 +289,6 @@ function scoreRepo(
   const hasTailwind = hints.includes('tailwind')
   const hasStorybook = hints.includes('storybook')
   const hasOpenAPI = hints.includes('openapi') || hints.includes('graphql')
-  const hasCI = hasCICD
   const hasPerformanceTesting = hints.includes('k6') || hints.includes('loadtest')
   const hasAnimations = topics.includes('animation') || desc.includes('animation') || hasFrontend
 
@@ -390,6 +389,7 @@ function scoreRepo(
   if (hasDockerfile) { relScore += 10; relSignals.push('Docker — reproducible environments') }
   if (avgCommitsPerMonth > 5) { relScore += 10; relSignals.push('Active maintenance — reliability improvements ongoing') }
   if (!hasTests) relSignals.push('No test files found — reliability unverified')
+  if (openIssues > 0) relSignals.push(`${openIssues} open issues — follow-up work remains visible`)
 
   // 10. Security & Privacy
   const secSignals: string[] = []
@@ -414,6 +414,7 @@ function scoreRepo(
   if (hasStorybook) { dxScore += 10; dxSignals.push('Storybook — component documentation') }
   if (branchCount > 3) { dxScore += 5; dxSignals.push(`${branchCount} branches — active feature branching`) }
   if (!hasReadme) dxSignals.push('No README detected — poor developer onboarding')
+  if (hasPackageJson || hasPipfile || hasRequirements) dxSignals.push('Standard dependency manifest supports predictable setup')
 
   // 12. Hooks / Addictive Factor
   const hookSignals: string[] = []

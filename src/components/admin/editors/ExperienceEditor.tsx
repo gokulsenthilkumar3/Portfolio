@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, Pencil, X } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
-import { portfolioConfig } from '@/config/portfolio.config'
 
 import type { Experience } from '@/lib/types/portfolio'
 
@@ -24,12 +23,9 @@ export function ExperienceEditor() {
   const { portfolioData, updateSection } = useAdmin()
   const experiences = (portfolioData.experiences as Experience[]) || []
   const [editing, setEditing] = useState<Experience | null>(null)
-  const [saved, setSaved] = useState(false)
 
   const save = async (updated: Experience[]) => {
     await updateSection('experiences', updated)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 1500)
   }
 
   const handleSave = async (exp: Experience) => {
