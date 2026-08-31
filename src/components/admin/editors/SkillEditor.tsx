@@ -78,7 +78,7 @@ export function SkillEditor() {
               <motion.div
                 className="w-3 h-3 rounded-full flex-shrink-0 border border-white/10 shadow-sm"
                 initial={false}
-                animate={{ backgroundColor: (skill as any).color || '#3b82f6' }}
+                animate={{ backgroundColor: skill.color || '#3b82f6' }}
               />
 
               {/* Name */}

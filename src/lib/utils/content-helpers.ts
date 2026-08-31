@@ -143,7 +143,7 @@ export const groupByCategory = <T extends { category: string }>(items: T[]) => {
 }
 
 // Utility helpers
-export const debounce = <T extends (...args: any[]) => any>(func: T, delay: number) => {
+export const debounce = <T extends (...args: never[]) => unknown>(func: T, delay: number) => {
   let timeoutId: NodeJS.Timeout
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId)
@@ -151,7 +151,7 @@ export const debounce = <T extends (...args: any[]) => any>(func: T, delay: numb
   }
 }
 
-export const throttle = <T extends (...args: any[]) => any>(func: T, limit: number) => {
+export const throttle = <T extends (...args: never[]) => unknown>(func: T, limit: number) => {
   let inThrottle: boolean
   return (...args: Parameters<T>) => {
     if (!inThrottle) {

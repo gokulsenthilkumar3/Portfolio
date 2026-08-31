@@ -55,7 +55,7 @@ function GlassShape() {
 
 import { ErrorBoundary } from 'react-error-boundary'
 
-function Fallback({ error }: { error: any }) {
+function Fallback({ error }: { error: unknown }) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-red-950/20 text-red-500 p-4 overflow-auto rounded-2xl border border-red-500/20">
       <p className="font-bold mb-2">3D Scene Error:</p>
