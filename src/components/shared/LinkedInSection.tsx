@@ -26,6 +26,10 @@ function formatPeriod(start?: string, end?: string) {
  */
 export function LinkedInSection({ personal, experiences, education }: LinkedInSectionProps) {
   const currentRole = experiences.find((experience) => experience.period.present) ?? experiences[0]
+  const careerStartYear = experiences
+    .map((experience) => new Date(experience.period.start).getUTCFullYear())
+    .filter((year) => Number.isFinite(year))
+    .sort((a, b) => a - b)[0]
   const latestEducation = education.reduce<typeof education[number] | undefined>((latest, item) => {
     if (!latest) return item
     return item.period.start > latest.period.start ? item : latest
@@ -35,7 +39,7 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
     <section id="profile" className="portfolio-section linkedin-profile" aria-labelledby="profile-title">
       <SectionHeading
         id="profile-title"
-        index="04"
+        index="02"
         eyebrow="Profile"
         title="The person behind the systems."
         description="A closer, more human view of the work — the kind of context a polished professional profile should make easy to scan."
@@ -85,7 +89,8 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
 
             <div className="linkedin-profile__exp-list">
               {experiences.map((exp) => {
-                const bullets = Array.isArray(exp.description) ? exp.description : []
+                const descriptionBullets = Array.isArray(exp.description) ? exp.description : []
+                const bullets = exp.achievements?.length ? exp.achievements : descriptionBullets
                 const summary = Array.isArray(exp.description) ? exp.description.join(' ') : exp.description
 
                 return (
@@ -100,7 +105,7 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
                       </p>
                       <p className="linkedin-profile__exp-role">{exp.role}</p>
                       <p className="linkedin-profile__exp-company">{exp.company} · {exp.location}</p>
-                      {bullets.length > 1 ? (
+                      {bullets.length > 0 ? (
                         <ul className="linkedin-profile__exp-bullets">
                           {bullets.slice(0, 3).map((b, i) => <li key={i}>{b}</li>)}
                         </ul>
@@ -123,9 +128,9 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
           <aside className="linkedin-profile__snapshot" aria-label="Professional snapshot">
             <p className="linkedin-profile__label">Snapshot</p>
             <div className="linkedin-profile__metrics">
-              <div><strong>{experiences.length}</strong><span>roles shipped</span></div>
-              <div><strong>{education.length}</strong><span>learning chapters</span></div>
-              <div><strong>{currentRole ? new Date(currentRole.period.start).getFullYear() : '—'}</strong><span>career start</span></div>
+              <div><strong>{experiences.length}</strong><span>roles</span></div>
+              <div><strong>{education.length}</strong><span>degrees &amp; courses</span></div>
+              <div><strong>{careerStartYear || '—'}</strong><span>career start</span></div>
             </div>
 
             {education.map((edu) => (

@@ -10,7 +10,7 @@ interface AdminToolbarProps {
 }
 
 export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
-  const { isAdmin, deactivate, isSaving, exportConfig, persistData } = useAdmin()
+  const { isAdmin, deactivate, isSaving, isPublishing, hasUnsavedChanges, publishError, exportConfig, persistData } = useAdmin()
   const [exported, setExported] = useState(false)
 
   const handleExport = () => {
@@ -49,13 +49,13 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
               </span>
             </div>
             <div className="h-3 w-px bg-white/10" />
-            <span className="text-xs text-gray-500">Hover any section to edit</span>
+            <span className="text-xs text-gray-500">Edit the curated draft</span>
           </div>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
             <AnimatePresence>
-              {isSaving && (
+              {(isSaving || isPublishing) && (
                 <motion.div
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -63,29 +63,48 @@ export function AdminToolbar({ onOpenPanel }: AdminToolbarProps) {
                   className="flex items-center gap-1.5 text-xs text-blue-400 px-2"
                 >
                   <Loader2 size={11} className="animate-spin" />
-                  <span>Saving...</span>
+                  <span>{isPublishing ? 'Publishing…' : 'Draft saved locally'}</span>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Save button */}
+            {publishError && (
+              <span className="max-w-48 truncate text-[11px] text-red-300" role="alert" title={publishError}>
+                {publishError}
+              </span>
+            )}
+
+            {onOpenPanel && (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onOpenPanel}
+                className="flex min-h-11 items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-white/10"
+              >
+                <Edit3 size={12} aria-hidden="true" />
+                Open editor
+              </motion.button>
+            )}
+
+            {/* Publish button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={persistData}
-              title="Save to Server"
-              aria-label="Save to Server"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-blue-300 border border-indigo-500/25 transition-colors"
+              disabled={isPublishing || isSaving || !hasUnsavedChanges}
+              title={hasUnsavedChanges ? 'Publish draft to server' : 'No unpublished changes'}
+              aria-label={hasUnsavedChanges ? 'Publish draft to server' : 'No unpublished changes'}
+              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-indigo-500/25 bg-indigo-500/15 px-3 py-1.5 text-xs font-medium text-blue-300 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Download size={11} />
-              Save to Server
+              {isPublishing ? 'Publishing…' : 'Publish changes'}
             </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={deactivate}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              className="flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
             >
               <LogOut size={11} />
               Exit

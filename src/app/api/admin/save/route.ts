@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
 import { writePortfolioData } from '@/lib/admin/storage'
+import { z } from 'zod'
+
+const PORTFOLIO_SECTIONS = new Set([
+  'personal', 'about', 'stats', 'projects', 'skills', 'experiences',
+  'education', 'socialLinks', 'seo', 'blog', 'microblogs',
+])
+
+const PortfolioPayloadSchema = z.record(z.string(), z.unknown()).superRefine((value, context) => {
+  if (Object.keys(value).some((key) => !PORTFOLIO_SECTIONS.has(key))) {
+    context.addIssue({ code: 'custom', message: 'Unknown portfolio section' })
+  }
+})
 
 // SECURITY + RELIABILITY FIX
 // -----------------------------------------------------------------------
@@ -27,12 +39,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const data = await request.json()
-    if (!data || typeof data !== 'object') {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
+    const contentLength = Number(request.headers.get('content-length') || 0)
+    if (contentLength > 1_500_000) {
+      return NextResponse.json({ error: 'Payload is too large' }, { status: 413 })
     }
+    const rawData = await request.json()
+    const parsed = PortfolioPayloadSchema.safeParse(rawData)
+    if (!parsed.success) return NextResponse.json({ error: 'Invalid portfolio payload' }, { status: 400 })
 
-    await writePortfolioData(data)
+    await writePortfolioData(parsed.data)
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {
     console.error('Error saving portfolio data:', err)

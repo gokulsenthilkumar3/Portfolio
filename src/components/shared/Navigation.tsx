@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAdmin } from '@/components/admin/AdminProvider'
 import { navigation } from '@/lib/data/content'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 const links = navigation
 
@@ -28,6 +29,16 @@ export function Navigation() {
   const [active, setActive] = useState('home')
   const [menuOpen, setMenuOpen] = useState(false)
   const lastY = useRef(0)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const firstMobileLinkRef = useRef<HTMLAnchorElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+
+  useFocusTrap(menuOpen, mobileMenuRef, {
+    initialFocusRef: firstMobileLinkRef,
+    onClose: closeMenu,
+  })
 
   useEffect(() => {
     const onScroll = () => {
@@ -76,13 +87,14 @@ export function Navigation() {
   }, [])
 
   useEffect(() => {
-    if (!menuOpen) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+    const media = window.matchMedia('(min-width: 901px)')
+    const closeAtDesktop = () => {
+      if (media.matches) setMenuOpen(false)
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [menuOpen])
+    closeAtDesktop()
+    media.addEventListener?.('change', closeAtDesktop)
+    return () => media.removeEventListener?.('change', closeAtDesktop)
+  }, [])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -143,6 +155,7 @@ export function Navigation() {
 
         {/* Mobile hamburger */}
         <button
+          ref={menuButtonRef}
           type="button"
           className="minimal-nav__menu"
           onClick={() => setMenuOpen((open) => !open)}
@@ -158,8 +171,12 @@ export function Navigation() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            ref={mobileMenuRef}
             id="mobile-navigation"
             className="minimal-nav__mobile"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
@@ -172,7 +189,11 @@ export function Navigation() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.035 }}
               >
-                <Link href={`/#${link.id}`} onClick={() => setMenuOpen(false)}>
+                <Link
+                  ref={index === 0 ? firstMobileLinkRef : undefined}
+                  href={`/#${link.id}`}
+                  onClick={closeMenu}
+                >
                   <span>0{index + 1}</span>
                   {link.label}
                 </Link>
@@ -186,14 +207,14 @@ export function Navigation() {
               style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}
             >
               {resumeHref && (
-                <a href={resumeHref} download className="minimal-nav__resume" onClick={() => setMenuOpen(false)}>
+                <a href={resumeHref} download className="minimal-nav__resume" onClick={closeMenu}>
                   ↓ Resume
                 </a>
               )}
               <a
                 href="/#contact"
                 className="minimal-nav__hire"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 Hire Me
               </a>

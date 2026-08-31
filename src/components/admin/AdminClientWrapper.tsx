@@ -1,26 +1,28 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { AdminProvider } from '@/components/admin/AdminProvider'
 import { SecretActivator } from '@/components/admin/SecretActivator'
 import { AdminToolbar } from '@/components/admin/AdminToolbar'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { useAdmin } from '@/components/admin/AdminProvider'
+import { usePathname } from 'next/navigation'
 
 function AdminLayer() {
-  const { isAdmin } = useAdmin()
-  const [panelOpen, setPanelOpen] = useState(false)
-  const [panelTab] = useState('personal')
+  const pathname = usePathname()
+  const { isAdmin, adminPanelOpen, adminPanelTab, closeAdminPanel, openAdminPanel } = useAdmin()
+
+  if (pathname?.startsWith('/admin')) return null
 
   return (
     <>
       <SecretActivator />
-      <AdminToolbar onOpenPanel={isAdmin ? () => setPanelOpen(true) : undefined} />
+      <AdminToolbar onOpenPanel={isAdmin ? () => openAdminPanel('dashboard') : undefined} />
       {isAdmin && (
         <AdminPanel
-          isOpen={panelOpen}
-          onClose={() => setPanelOpen(false)}
-          initialTab={panelTab}
+          isOpen={adminPanelOpen}
+          onClose={closeAdminPanel}
+          initialTab={adminPanelTab}
         />
       )}
     </>

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { use3DGate } from '@/hooks/use3DGate'
 
 const HeroBlob = dynamic(
   () => import('./HeroBlob').then((module) => module.HeroBlob),
@@ -22,13 +23,14 @@ interface CinematicHeroProps {
 export function CinematicHero({ name, role, available }: CinematicHeroProps) {
   const root = useRef<HTMLElement>(null)
   const [showBlob, setShowBlob] = useState(false)
+  const canRenderBlob = use3DGate()
 
   useEffect(() => {
     const hero = root.current
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const compact = window.matchMedia('(max-width: 820px), (pointer: coarse)').matches
     const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
-    if (!hero || reduced || compact || saveData) return
+    if (!hero || !canRenderBlob || reduced || compact || saveData) return
 
     let ready = false
     let inView = true
@@ -47,7 +49,7 @@ export function CinematicHero({ name, role, available }: CinematicHeroProps) {
       window.clearTimeout(timer)
       observer.disconnect()
     }
-  }, [])
+  }, [canRenderBlob])
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -106,15 +108,15 @@ export function CinematicHero({ name, role, available }: CinematicHeroProps) {
 
       <div className="cinematic-hero__content" data-hero-content>
         <h1 id="hero-heading" className="cinematic-hero__title">
-          <span data-hero-line="one" data-hero-reveal>I build things</span>
+          <span data-hero-line="one" data-hero-reveal>I build software</span>
           <span data-hero-line="two" data-hero-reveal>
-            that feel <em>inevitable.</em>
+            that earns <em>trust.</em>
           </span>
         </h1>
 
         <div className="cinematic-hero__meta" data-hero-meta data-hero-reveal>
           <p>
-            I engineer reliable products where quality is part of the architecture,
+            I&apos;m an SDET and full-stack builder who makes quality part of the architecture,
             not a checkpoint at the end.
           </p>
           <Link href="#projects" className="cinematic-hero__cta" data-hero-cta data-cursor="link">
@@ -124,7 +126,7 @@ export function CinematicHero({ name, role, available }: CinematicHeroProps) {
         </div>
       </div>
 
-      <a className="cinematic-hero__scroll" href="#about" data-hero-scroll aria-label="Scroll to about section">
+      <a className="cinematic-hero__scroll" href="#projects" data-hero-scroll aria-label="Scroll to selected work">
         <span />
       </a>
     </section>

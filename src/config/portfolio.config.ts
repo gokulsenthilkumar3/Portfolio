@@ -2,9 +2,8 @@
  * 🎯 CENTRALIZED PORTFOLIO CONFIG
  *
  * Curated baseline for portfolio content.
- * Runtime profile fields and GitHub metadata are enriched from live APIs
- * when available; this file remains the safe fallback for fields those APIs
- * do not expose (for example, historical work details and authored metrics).
+ * The public page uses this curated content as its source of truth. External
+ * profile data can be reviewed separately by an administrator before publishing.
  *
  * careerStart: Set this to the start date of your FIRST professional role.
  * This is used by /api/stats to calculate "Years Experience" dynamically —
@@ -21,7 +20,7 @@ export const portfolioConfig = {
     email: "gokulsenthilkumar3@gmail.com",
     emailZoho: "gokulsenthilkumar3@zohomail.in",
     location: "Sivanmalai, Tamil Nadu, India",
-    availability: "open" as "available" | "busy" | "open-to-offers" | "open",
+    availability: "open-to-offers" as "available" | "busy" | "open-to-offers",
     avatar: "/gokul-photo.jpg",
     resume: "/Gokul_S_Resume.pdf",
     github: "https://github.com/gokulsenthilkumar3",
@@ -34,7 +33,7 @@ export const portfolioConfig = {
      * Update this if you change jobs or want to adjust the start date.
      * Format: YYYY-MM-DD
      */
-    careerStart: "2024-06-01",
+    careerStart: "2023-06-01",
   },
 
   // ─── ABOUT SECTION ──────────────────────────────────────────────────────────
@@ -47,7 +46,7 @@ export const portfolioConfig = {
     secondaryTitle: "Full-Stack Dev",
     secondarySkills: ["React", "Next.js", "PERN", "Node.js"],
     contactHeading: "Get In Touch",
-    contactDesc: "Not currently looking for new roles, but I'm always happy to chat about interesting projects, open source, or just tech in general.",
+    contactDesc: "Open to thoughtful product, quality, and automation work — and always happy to talk about interesting open source ideas.",
   },
 
   // ─── THEME & APPEARANCE ─────────────────────────────────────────────────────
@@ -63,10 +62,10 @@ export const portfolioConfig = {
   // ─── PRIMARY NAVIGATION ───────────────────────────────────────────────────
   // Keep the visible navigation aligned with the sections rendered on the home page.
   navigation: [
-    { label: "About", id: "about" },
-    { label: "Skills", id: "skills" },
     { label: "Work", id: "projects" },
     { label: "Profile", id: "profile" },
+    { label: "About", id: "about" },
+    { label: "Skills", id: "skills" },
     { label: "Contact", id: "contact" },
   ],
 
@@ -88,14 +87,14 @@ export const portfolioConfig = {
         duration: 2200 
       },
       { 
-        label: "GitHub Repos",     
-        value: 0, // Fallback; live value is synced via /api/stats
+        label: "GitHub Repos",
+        value: 45, // Verified against the public profile; /api/stats refreshes this when available.
         suffix: "+", 
         duration: 2400 
       },
       { 
-        label: "Tests Written",    
-        value: this.projects.filter(p => p.category === 'testing').length * 50, 
+        label: "Quality Practices",
+        value: 3,
         suffix: "+", 
         duration: 2600 
       },
@@ -211,7 +210,7 @@ export const portfolioConfig = {
     {
       id: "vaultiq",
       title: "VaultIQ",
-      description: "Centralized office asset management system to track, assign, and manage organizational assets.",
+      description: "A zero-knowledge password manager prototype designed around client-side encryption and a calm vault workflow.",
       technologies: ["TypeScript", "Next.js", "PostgreSQL", "Tailwind CSS"],
       category: "fullstack",
       featured: true,
@@ -219,9 +218,9 @@ export const portfolioConfig = {
       icon: "AppWindow",
       date: "2026-05-05",
       links: { github: "https://github.com/gokulsenthilkumar3/VaultIQ", live: "https://gokulsenthilkumar3.github.io/VaultIQ" },
-      problem: "Manual tracking of organizational assets across branches led to frequent losses and inaccurate audit records.",
-      responsibility: "Full-stack development, database design, and CI/CD setup.",
-      evidence: "Achieved 100% asset reconciliation accuracy and reduced audit time from days to hours."
+      problem: "Password managers need to make secure storage understandable without weakening the user's control over their data.",
+      responsibility: "Full-stack implementation, encryption-aware data flow, and interface design.",
+      evidence: "Public repository with a documented zero-knowledge password-manager direction."
     },
     {
       id: "oxfin",
@@ -229,7 +228,6 @@ export const portfolioConfig = {
       description: "Personal finance tracker with expense categorization, budget planning, and visual spending analytics.",
       problem: "Users struggled with bloated financial apps that made expense categorization and budgeting difficult.",
       responsibility: "Frontend UI/UX design, state management, and backend API implementation.",
-      evidence: "Maintained 95+ Lighthouse performance scores and zero layout shift on complex charting views.",
       technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
       category: "fullstack",
       featured: true,
@@ -244,7 +242,7 @@ export const portfolioConfig = {
       description: "CLI tool that scaffolds production-ready monorepos in one command — Next.js, NestJS, and Docker Compose.",
       problem: "Setting up a full-stack monorepo with CI/CD and Docker consistently took days of boilerplate configuration.",
       responsibility: "Tool architecture, CLI implementation, and CI/CD workflow templating.",
-      evidence: "Reduced project initialization time from 3 days to under 5 minutes.",
+      evidence: "A focused CLI workflow for generating a consistent full-stack starter without repetitive setup.",
       technologies: ["TypeScript", "Node.js", "Docker", "GitHub Actions"],
       category: "tools",
       featured: true,
@@ -259,7 +257,7 @@ export const portfolioConfig = {
       description: "Ensemble machine learning project applying Random Forest, Gradient Boosting, and stacking to forecast Forex movements.",
       problem: "Single models often overfit to historical forex data, leading to poor generalization in live prediction.",
       responsibility: "Data preprocessing, model stacking architecture, and backtesting framework.",
-      evidence: "Improved directional accuracy by 12% over baseline models through ensemble stacking.",
+      evidence: "Public notebook compares ensemble models with reproducible preprocessing and backtesting steps.",
       technologies: ["Python", "Jupyter Notebook", "Scikit-learn", "Pandas"],
       category: "ai",
       featured: true,
@@ -271,17 +269,17 @@ export const portfolioConfig = {
     {
       id: "portfolio-quality-dashboard",
       title: "Portfolio Quality Dashboard",
-      description: "Automated quality, performance, and accessibility testing suite for this Next.js portfolio.",
+      description: "A planned quality-checking surface for tracking performance, accessibility, and regression checks over time.",
       problem: "Modern web portfolios often suffer from degraded performance, broken links, or accessibility violations over time without continuous testing.",
       responsibility: "Test automation architecture, CI/CD integration, and accessibility remediation.",
-      evidence: "Ensures 100% Lighthouse scores, zero WCAG AA violations, and sub-second LCP through automated Playwright and axe pipelines.",
+      evidence: "Kept as a planned concept until a linked, reproducible report is available.",
       technologies: ["Playwright", "K6", "axe-core", "GitHub Actions"],
       category: "tools",
-      featured: true,
+      featured: false,
       images: ["/projects/portfolio.webp"],
       icon: "ShieldCheck",
       date: "2024-03-10",
-      links: { github: "https://github.com/gokulsenthilkumar3/Portfolio-Tests" }
+      links: {}
     },
     {
       id: "forex-prediction",
@@ -289,26 +287,26 @@ export const portfolioConfig = {
       description: "Published at IEEE CIFEr — benchmarked GRU, Informer & TFT models for forex forecasting. TFT achieved the highest trading profit.",
       technologies: ["Python", "TensorFlow", "Deep Learning", "GRU"],
       category: "ai",
-      featured: true,
+      featured: false,
       images: ["/projects/forex-prediction.webp"],
       icon: "Brain",
       date: "2024-02-15",
-      links: { github: "https://github.com/gokulsenthilkumar3/Forex-Prediction" }
+      links: {}
     },
     {
       id: "weaver-book",
-      title: "Weaver Book",
-      description: "Inventory management web app for the weaving sector.",
+      title: "Weave inventory",
+      description: "An inventory management web app for weaving workflows and day-to-day stock visibility.",
       problem: "Weaving vendors relied on disconnected ledgers causing massive discrepancies in inventory tracking.",
       responsibility: "Backend API development, vendor synchronization logic, and database optimization.",
-      evidence: "Automated vendor sync reduced manual errors by 60% as measured by end-of-month client reporting.",
+      evidence: "A focused inventory workflow intended to reduce manual reconciliation work.",
       technologies: ["PHP", "MySQL", "HTML", "CSS"],
       category: "web",
       featured: true,
       images: ["/projects/weaver-book.webp"],
       icon: "BookOpen",
       date: "2023-01-15",
-      links: { github: "https://github.com/gokulsenthilkumar3/Weaver-Book" }
+      links: { github: "https://github.com/gokulsenthilkumar3/weave" }
     },
     {
       id: "car-renovation-spa",
@@ -316,11 +314,11 @@ export const portfolioConfig = {
       description: "Full-stack car service booking platform with real-time renovation progress tracking and appointment management.",
       technologies: ["React.js", "Node.js", "MongoDB", "Express"],
       category: "fullstack",
-      featured: true,
+      featured: false,
       images: ["/projects/car-spa.webp"],
       icon: "Car",
       date: "2023-08-20",
-      links: { github: "https://github.com/gokulsenthilkumar3/Car-Renovation-Spa" }
+      links: {}
     },
     {
       id: "yarn-management",
@@ -343,16 +341,16 @@ export const portfolioConfig = {
       evidence: "Reduced functional regression testing from 3 days to 4 hours with comprehensive HTML reporting.",
       technologies: ["Selenium", "TypeScript", "Jest", "Azure DevOps"],
       category: "testing",
-      featured: true,
+      featured: false,
       images: ["/projects/selenium-framework.webp"],
       icon: "TestTube",
       date: "2024-09-01",
-      links: { github: "https://github.com/gokulsenthilkumar3/Selenium-Test-Framework" }
+      links: {}
     },
     {
       id: "portfolio-v4",
       title: "Portfolio v4",
-      description: "This portfolio — built with Next.js 15, Three.js 3D components, admin panel, and live data syncing from GitHub.",
+      description: "This cinematic Next.js and TypeScript portfolio with GSAP transitions, a protected editor, and curated project data.",
       technologies: ["Next.js", "TypeScript", "Three.js", "Tailwind CSS"],
       category: "web",
       featured: false,

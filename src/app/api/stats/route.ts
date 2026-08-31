@@ -9,7 +9,7 @@ import { portfolioConfig } from '@/config/portfolio.config'
  * - GitHub Repos   → fetched from GitHub public API (no token needed for public data)
  * - Years Experience → calculated from portfolioConfig.personal.careerStart date
  * - Projects Built  → count of portfolioConfig.projects array (source of truth)
- * - Tests Written   → from config (no public API for this; kept as a manual signal)
+ * - Quality Practices → from curated config (a qualitative signal, not a test-count claim)
  *
  * LinkedIn does not offer a public API for profile stats. "Years Experience"
  * is derived from the careerStart date in portfolio.config.ts, which matches
@@ -106,10 +106,9 @@ export async function GET() {
       source: github ? 'github_api' : 'config_fallback',
     },
     {
-      label: 'Tests Written',
-      // No public API for this — kept as a manually curated signal
-      value: portfolioConfig.stats.find(s => s.label === 'Tests Written')?.value ?? 0,
-      suffix: '+',
+      label: 'Quality Practices',
+      value: portfolioConfig.stats.find(s => s.label === 'Quality Practices')?.value ?? 0,
+      suffix: '',
       duration: 2600,
       source: 'config',
     },
@@ -123,7 +122,7 @@ export async function GET() {
         yearsExperience: `Calculated from careerStart: ${personal.careerStart}`,
         projectsBuilt: `Count of projects[] array (${projectsBuilt} total)`,
         githubRepos: github ? `Live from GitHub API (user: ${githubUsername})` : 'Fallback from config',
-        testsWritten: 'Manual config value',
+        qualityPractices: 'Curated config value',
       },
     },
   })

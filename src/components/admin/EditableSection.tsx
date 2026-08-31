@@ -47,28 +47,27 @@ export function EditableSection({ children, label, onEdit, className = '' }: Edi
         )}
       </AnimatePresence>
 
-      {/* Edit button */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: -5 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -5 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 400 }}
-            onClick={(e) => { e.stopPropagation(); onEdit() }}
-            className="absolute top-2 right-2 z-50 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium pointer-events-auto"
-            style={{
-              background: 'linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.9))',
-              boxShadow: '0 4px 15px rgba(59,130,246,0.4)',
-              backdropFilter: 'blur(8px)',
-              color: 'white',
-            }}
-          >
-            <Pencil size={10} />
-            Edit {label}
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Keep the control keyboard discoverable; hover only changes emphasis. */}
+      <motion.button
+        type="button"
+        initial={false}
+        animate={{ opacity: hovered ? 1 : 0.78, scale: hovered ? 1 : 0.98, y: hovered ? 0 : -2 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 400 }}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
+        onClick={(e) => { e.stopPropagation(); onEdit() }}
+        aria-label={`Edit ${label} section`}
+        className="absolute right-2 top-2 z-50 flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+        style={{
+          background: 'linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.9))',
+          boxShadow: '0 4px 15px rgba(59,130,246,0.4)',
+          backdropFilter: 'blur(8px)',
+          color: 'white',
+        }}
+      >
+        <Pencil size={12} aria-hidden="true" />
+        Edit {label}
+      </motion.button>
     </div>
   )
 }

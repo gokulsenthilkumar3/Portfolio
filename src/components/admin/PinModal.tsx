@@ -4,13 +4,15 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Lock, X, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import { useAdmin } from './AdminProvider'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 interface PinModalProps {
   onClose: () => void
   onSuccess: () => void
+  inertSelectors?: string[]
 }
 
-export function PinModal({ onClose, onSuccess }: PinModalProps) {
+export function PinModal({ onClose, onSuccess, inertSelectors }: PinModalProps) {
   const { activate, verifyPin } = useAdmin()
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
@@ -19,6 +21,9 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
   const [showPin, setShowPin] = useState(false)
   const [shake, setShake] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(true, modalRef, { initialFocusRef: inputRef, onClose, inertSelectors })
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -64,9 +69,14 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-3xl bg-black/75"
-        onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+        onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
       >
         <motion.div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pin-modal-title"
+          aria-describedby="pin-modal-description"
           initial={{ scale: 0.85, opacity: 0, y: 20 }}
           animate={shake 
             ? { x: [-10, 10, -8, 8, -4, 4, 0], scale: 1, opacity: 1, y: 0 } 
@@ -86,12 +96,13 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
 
           {/* Close button */}
           <button
+            type="button"
             onClick={onClose}
             title="Close"
             aria-label="Close"
-            className="absolute top-4 right-4 p-1.5 rounded-full text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors z-10"
+            className="absolute right-3 top-3 flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-white/5 hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 z-10"
           >
-            <X size={14} />
+            <X size={16} aria-hidden="true" />
           </button>
 
           <div className="p-8">
@@ -115,7 +126,8 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
             </div>
 
             {/* Subtitle */}
-            <p className="text-center text-sm text-gray-400 mb-6">
+            <h2 id="pin-modal-title" className="sr-only">Admin access code</h2>
+            <p id="pin-modal-description" className="text-center text-sm text-gray-400 mb-6">
               {success ? '✨ Access granted. Welcome back.' : 'Enter your access code to continue'}
             </p>
 
@@ -163,8 +175,7 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
                 onClick={() => setShowPin(!showPin)}
                 title={showPin ? "Hide PIN" : "Show PIN"}
                 aria-label={showPin ? "Hide PIN" : "Show PIN"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors"
-                tabIndex={-1}
+                className="absolute right-2 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-gray-500 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
               >
                 {showPin ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
@@ -176,8 +187,10 @@ export function PinModal({ onClose, onSuccess }: PinModalProps) {
                 <motion.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  className="flex items-center gap-1.5 text-red-400 text-xs mb-4"
+                exit={{ opacity: 0, y: -4 }}
+                className="flex items-center gap-1.5 text-red-400 text-xs mb-4"
+                role="alert"
+                aria-live="assertive"
                 >
                   <AlertCircle size={12} />
                   {error}

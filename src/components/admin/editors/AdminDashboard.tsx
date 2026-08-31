@@ -5,13 +5,7 @@ import { motion } from 'framer-motion'
 import { FolderGit2, Wrench, Briefcase, Activity, ShieldCheck } from 'lucide-react'
 
 export function AdminDashboard() {
-  const { portfolioData, sourceSync } = useAdmin()
-  const sourceLabel = (status: typeof sourceSync.github) => {
-    if (status === 'ok') return 'Connected'
-    if (status === 'loading') return 'Syncing…'
-    if (status === 'not_configured') return 'Token required'
-    return 'Unavailable'
-  }
+  const { portfolioData, isPublishing, hasUnsavedChanges, publishError } = useAdmin()
 
   const stats = [
     { label: 'Projects', value: portfolioData.projects?.length || 0, icon: FolderGit2, color: 'text-blue-400' },
@@ -51,20 +45,20 @@ export function AdminDashboard() {
             <ShieldCheck size={16} className="text-primary" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white">Online sources</h4>
-            <p className="text-[10px] text-gray-400">Live status from connected profiles</p>
+            <h4 className="text-sm font-bold text-white">Publishing status</h4>
+            <p className="text-[10px] text-gray-400">Curated content stays authoritative until you publish.</p>
           </div>
         </div>
-        
-        <div className="space-y-2 text-[10px]">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 font-medium">GitHub</span>
-            <span className={sourceSync.github === 'ok' ? 'text-green-400 font-bold' : 'text-gray-400 font-bold'}>{sourceLabel(sourceSync.github)}</span>
+        <div className="space-y-2 text-[11px]" aria-live="polite">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-gray-400 font-medium">Draft</span>
+            <span className="text-gray-200 font-bold">{hasUnsavedChanges ? 'Ready to publish' : 'In sync'}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 font-medium">LinkedIn</span>
-            <span className={sourceSync.linkedIn === 'ok' ? 'text-green-400 font-bold' : 'text-gray-400 font-bold'}>{sourceLabel(sourceSync.linkedIn)}</span>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-gray-400 font-medium">Server</span>
+            <span className={isPublishing ? 'text-blue-300 font-bold' : 'text-gray-200 font-bold'}>{isPublishing ? 'Publishing…' : 'Protected'}</span>
           </div>
+          {publishError && <p className="text-red-300" role="alert">{publishError}</p>}
         </div>
       </div>
     </div>

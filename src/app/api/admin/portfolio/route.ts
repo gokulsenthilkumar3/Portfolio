@@ -11,7 +11,7 @@ const SectionSchema = z.enum([
 
 const PayloadSchema = z.object({
   section: SectionSchema,
-  data: z.any() // Basic validation to ensure it exists
+  data: z.unknown()
 })
 
 function isAuthenticated(request: NextRequest): boolean {
@@ -50,6 +50,10 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
+    const contentLength = Number(request.headers.get('content-length') || 0)
+    if (contentLength > 1_500_000) {
+      return NextResponse.json({ error: 'Payload is too large' }, { status: 413 })
+    }
     const body = await request.json()
     const parsed = PayloadSchema.safeParse(body)
     

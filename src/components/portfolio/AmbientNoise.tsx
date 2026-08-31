@@ -100,6 +100,7 @@ export function AmbientNoise() {
 
     let raf = 0
     let lastFrame = 0
+    let isVisible = true
 
     const resize = () => {
       const scale = Math.min(window.devicePixelRatio, 1) * 0.58
@@ -109,8 +110,12 @@ export function AmbientNoise() {
     }
 
     const render = (now: number) => {
+      if (!isVisible || document.hidden) {
+        raf = 0
+        return
+      }
       raf = requestAnimationFrame(render)
-      if (document.hidden || now - lastFrame < 48) return
+      if (now - lastFrame < 48) return
       lastFrame = now
       gl.clearColor(0, 0, 0, 0)
       gl.clear(gl.COLOR_BUFFER_BIT)
@@ -121,11 +126,31 @@ export function AmbientNoise() {
 
     resize()
     window.addEventListener('resize', resize, { passive: true })
+    const resume = () => {
+      isVisible = true
+      if (!raf) raf = requestAnimationFrame(render)
+    }
+    const pause = () => {
+      isVisible = false
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const visibilityObserver = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(([entry]) => entry.isIntersecting ? resume() : pause(), { rootMargin: '20% 0px' })
+      : null
+    visibilityObserver?.observe(canvas)
+    const onVisibilityChange = () => {
+      if (document.hidden) pause()
+      else resume()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
     raf = requestAnimationFrame(render)
 
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
+      visibilityObserver?.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       gl.deleteBuffer(buffer)
       gl.deleteProgram(program)
       gl.deleteShader(vertex)

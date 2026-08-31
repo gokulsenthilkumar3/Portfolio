@@ -39,7 +39,7 @@ export const getSkillsByCategory = (skills: Skill[], category: Skill['category']
 }
 
 export const getTopSkills = (skills: Skill[], limit = 10) => {
-  return skills
+  return [...skills]
     .filter(skill => skill.proficiency >= 4)
     .sort((a, b) => b.proficiency - a.proficiency)
     .slice(0, limit)
@@ -51,7 +51,7 @@ export const getSkillsByProficiency = (skills: Skill[], minProficiency: number) 
 
 // Experience helpers
 export const sortExperiencesByDate = (experiences: Experience[]) => {
-  return experiences.sort((a, b) => {
+  return [...experiences].sort((a, b) => {
     const dateA = a.period.present ? new Date() : new Date(a.period.end || a.period.start)
     const dateB = b.period.present ? new Date() : new Date(b.period.end || b.period.start)
     return dateB.getTime() - dateA.getTime()
@@ -64,9 +64,11 @@ export const getCurrentExperience = (experiences: Experience[]) => {
 
 export const getExperienceDuration = (experience: Experience) => {
   const start = new Date(experience.period.start)
-  const end = experience.period.present ? new Date() : new Date(experience.period.end!)
+  const end = experience.period.present ? new Date() : new Date(experience.period.end || experience.period.start)
+
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) return '—'
   
-  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
+  const months = Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()))
   const years = Math.floor(months / 12)
   const remainingMonths = months % 12
   
@@ -97,8 +99,18 @@ export const formatDateShort = (date: string) => {
 export const getRelativeTime = (date: string) => {
   const now = new Date()
   const past = new Date(date)
+  if (!Number.isFinite(past.getTime())) return ''
   const diffInMs = now.getTime() - past.getTime()
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+
+  if (diffInDays < 0) {
+    const daysUntil = Math.abs(diffInDays)
+    if (daysUntil === 1) return 'Tomorrow'
+    if (daysUntil < 7) return `In ${daysUntil} days`
+    if (daysUntil < 30) return `In ${Math.floor(daysUntil / 7)} weeks`
+    if (daysUntil < 365) return `In ${Math.floor(daysUntil / 30)} months`
+    return `In ${Math.floor(daysUntil / 365)} years`
+  }
   
   if (diffInDays === 0) return 'Today'
   if (diffInDays === 1) return 'Yesterday'
@@ -110,10 +122,12 @@ export const getRelativeTime = (date: string) => {
 
 // Array helpers
 export const sortByDate = <T extends { date: string }>(items: T[], order: 'asc' | 'desc' = 'desc') => {
-  return items.sort((a, b) => {
+  return [...items].sort((a, b) => {
     const dateA = new Date(a.date).getTime()
     const dateB = new Date(b.date).getTime()
-    return order === 'desc' ? dateB - dateA : dateA - dateB
+    const safeDateA = Number.isFinite(dateA) ? dateA : 0
+    const safeDateB = Number.isFinite(dateB) ? dateB : 0
+    return order === 'desc' ? safeDateB - safeDateA : safeDateA - safeDateB
   })
 }
 

@@ -10,6 +10,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import type { Project } from '@/lib/types/portfolio'
 import { SectionHeading } from './SectionHeading'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 function projectYear(project: Project) {
   if (!project.date) return '—'
@@ -74,7 +75,7 @@ function ProjectCard({ project, index, selected, setRef, onOpen }: ProjectCardPr
         <div className="project-card__image">
           <Image
             src={project.images?.[0] || '/projects/portfolio.webp'}
-            alt={`${project.title} project preview`}
+            alt={`${project.title} project cover`}
             fill
             sizes="(max-width: 900px) 88vw, 62vw"
           />
@@ -121,13 +122,25 @@ interface ExpandedProjectProps {
 }
 
 function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
+  const dialogRef = useRef<HTMLElement>(null)
+
+  useFocusTrap(true, dialogRef, { initialFocusRef: closeRef, onClose })
+
   return (
-    <div className="project-expanded__backdrop" role="presentation">
+    <div
+      className="project-expanded__backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
       <article
+        ref={dialogRef}
         className="project-expanded"
         role="dialog"
         aria-modal="true"
         aria-labelledby="expanded-project-title"
+        aria-describedby="expanded-project-description"
         data-flip-id={`project-${project.id}`}
       >
         <button ref={closeRef} type="button" className="project-expanded__close" onClick={onClose} aria-label="Close project details">
@@ -138,7 +151,7 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
         <div className="project-expanded__visual">
           <Image
             src={project.images?.[0] || '/projects/portfolio.webp'}
-            alt={`${project.title} project preview`}
+            alt={`${project.title} project cover`}
             fill
             priority
             sizes="100vw"
@@ -151,7 +164,7 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
         </div>
 
         <div className="project-expanded__details">
-          <p className="project-expanded__lede">{project.description}</p>
+          <p id="expanded-project-description" className="project-expanded__lede">{project.description}</p>
 
           <dl>
             {project.problem && <><dt>Problem</dt><dd>{project.problem}</dd></>}
@@ -191,7 +204,8 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
   const lastTrigger = useRef<HTMLButtonElement | null>(null)
 
   const featuredProjects = useMemo(() => {
-    return projects.filter((project) => project.featured).slice(0, 6)
+    const featured = projects.filter((project) => project.featured)
+    return (featured.length > 0 ? featured : projects).slice(0, 6)
   }, [projects])
 
   useGSAP(() => {
@@ -264,13 +278,7 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
     document.body.style.overflow = 'hidden'
     window.__portfolioLenis?.stop()
 
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeProject()
-    }
-    window.addEventListener('keydown', onKey)
-
     return () => {
-      window.removeEventListener('keydown', onKey)
       document.body.style.overflow = previousOverflow
       window.__portfolioLenis?.start()
     }
@@ -298,7 +306,7 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
       <div className="projects-gallery__header">
         <SectionHeading
           id="projects-title"
-          index="03"
+          index="01"
           eyebrow="Selected work"
           title="Proof, not promises."
           description="A curated set of products, automation systems, and research built to solve real problems."

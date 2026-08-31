@@ -3,12 +3,11 @@ import 'lenis/dist/lenis.css'
 import '../styles/globals.css'
 import '../styles/cinematic.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
-import { Navigation } from '@/components/shared/Navigation'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { Toaster } from 'sonner'
 import { seo, personal } from '@/lib/data/content'
 import { Analytics } from '@vercel/analytics/react'
-import { ExperienceShell } from '@/components/portfolio/ExperienceShell'
+import { PublicChrome } from '@/components/shared/PublicChrome'
 
 // BASE_URL must always be set via NEXT_PUBLIC_SITE_URL env var in production.
 // The personal.website fallback is for local dev only — never use a Vercel preview URL here.
@@ -113,8 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <ThemeProvider>
           <AdminClientWrapper>
-            <ExperienceShell />
-            <Navigation />
+            <PublicChrome />
             <main id="main-content">{children}</main>
             {/* Toaster lives here so it's available to all sections */}
             <Toaster position="bottom-right" richColors closeButton />

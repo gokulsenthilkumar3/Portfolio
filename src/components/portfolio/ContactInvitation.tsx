@@ -46,7 +46,7 @@ export function ContactInvitation({ name, email, github, linkedin, twitter }: Co
         <h2 id="contact-title">Let&apos;s build<br />something worth using.</h2>
 
         <div className="contact-invitation__email-row">
-          <a href={`mailto:${email}`} className="contact-invitation__email" data-cursor="link">
+          <a href={`mailto:${email}`} className="contact-invitation__email" data-cursor="link" data-no-transition>
             {email}
           </a>
           <button type="button" onClick={copyEmail} aria-label={copied ? 'Email copied' : 'Copy email address'} data-cursor="link">

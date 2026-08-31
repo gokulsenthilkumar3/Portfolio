@@ -168,7 +168,12 @@ async function enrichRepo(repo: GHRepo): Promise<DynamicProject> {
 }
 
 export async function GET(req: NextRequest) {
-  const owner = new URL(req.url).searchParams.get('owner') ?? OWNER
+  const requestedOwner = new URL(req.url).searchParams.get('owner')?.trim() || OWNER
+  const owner = requestedOwner.toLowerCase() === OWNER.toLowerCase() ? OWNER : ''
+
+  if (!owner || !/^[a-zA-Z0-9-]{1,39}$/.test(owner)) {
+    return NextResponse.json({ error: 'Only the configured GitHub profile can be queried.' }, { status: 403 })
+  }
 
   const repos = await ghFetch<GHRepo[]>(
     `/users/${owner}/repos?per_page=100&type=owner&sort=pushed`

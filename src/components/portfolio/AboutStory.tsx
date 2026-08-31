@@ -32,7 +32,7 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount 
   const statItems = [
     { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '+', label: 'Years engineering quality' },
     { value: projectCount, suffix: stats.find((stat) => stat.label === 'Projects Built')?.suffix ?? '+', label: 'Products and systems built' },
-    { value: Number(stats.find((stat) => stat.label === 'Tests Written')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Tests Written')?.suffix ?? '+', label: 'Automated test cases' },
+    { value: Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '+', label: 'Public repositories' },
   ]
 
   const place = location.split(',')[0]?.trim() || location
@@ -116,7 +116,7 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount 
 
   return (
     <section ref={root} id="about" className="portfolio-section about-story" aria-labelledby="about-title">
-      <SectionHeading id="about-title" index="01" eyebrow="About" title="The details are the product." />
+      <SectionHeading id="about-title" index="03" eyebrow="About" title="The details are the product." />
 
       <div className="about-story__grid">
         <div className="about-story__copy">

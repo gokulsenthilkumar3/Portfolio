@@ -16,7 +16,7 @@ export const siteConfig = {
   tagline: portfolioConfig.personal.tagline,
   resume: portfolioConfig.personal.resume,
   avatar: portfolioConfig.personal.avatar,
-  emailZoho: (portfolioConfig.personal as any).emailZoho,
+  emailZoho: portfolioConfig.personal.emailZoho,
   linkedin: portfolioConfig.personal.linkedin,
   github: portfolioConfig.personal.github,
   twitter: portfolioConfig.personal.twitter

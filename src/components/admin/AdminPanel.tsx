@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AdminDashboard } from './editors/AdminDashboard'
 import { ContentEditor } from './editors/ContentEditor'
@@ -13,6 +13,7 @@ import { MicroblogEditor } from './editors/MicroblogEditor'
 import { useAdmin } from './AdminProvider'
 import { X, User, FolderGit2, Wrench, Briefcase, LayoutDashboard, Save, FileText, BookOpen, MessageSquare } from 'lucide-react'
 import { Tabs } from '@/components/ui/Tabs'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 interface AdminPanelProps {
   isOpen: boolean
@@ -33,16 +34,33 @@ const tabs = [
 
 export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState(initialTab)
-  const { isSaving, persistData, hasUnsavedChanges } = useAdmin()
+  const { isSaving, isPublishing, persistData, hasUnsavedChanges } = useAdmin()
+  const panelRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
 
   const handleClose = () => {
     if (hasUnsavedChanges) {
       if (!window.confirm('You have unsaved changes. Are you sure you want to close?')) {
-        return;
+        return
       }
     }
-    onClose();
+    onClose()
   }
+
+  useEffect(() => {
+    if (isOpen) setActiveTab(initialTab)
+  }, [initialTab, isOpen])
+
+  useFocusTrap(isOpen, panelRef, { initialFocusRef: closeRef, onClose: handleClose })
+
+  useEffect(() => {
+    if (!isOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isOpen])
 
   return (
     <AnimatePresence>
@@ -56,10 +74,16 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
             className="fixed inset-0 z-[9990]"
             style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)' }}
             onClick={handleClose}
+            aria-hidden="true"
           />
 
           {/* Panel */}
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-panel-title"
+            aria-describedby="admin-panel-description"
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
@@ -74,7 +98,10 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">Admin Panel</h2>
+                <div>
+                  <h2 id="admin-panel-title" className="text-sm font-bold text-white uppercase tracking-wider">Admin Panel</h2>
+                  <p id="admin-panel-description" className="sr-only">Edit portfolio content and publish the current draft.</p>
+                </div>
                 {isSaving && (
                   <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
                 )}
@@ -83,19 +110,21 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => persistData()}
-                  disabled={isSaving}
+                  disabled={isSaving || isPublishing}
                   className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-[11px] font-bold transition-all shadow-lg shadow-blue-500/20"
                 >
                   <Save size={12} />
-                  {isSaving ? 'Saving...' : 'Save Changes'}
+                  {isPublishing ? 'Publishing…' : isSaving ? 'Updating…' : 'Publish changes'}
                 </button>
                 
                 <button 
+                  ref={closeRef}
+                  type="button"
                   onClick={handleClose}
                   title="Close editor"
-                  className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors"
+                  className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                 >
-                  <X size={16} />
+                  <X size={16} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -131,6 +160,9 @@ export function AdminPanel({ isOpen, onClose, initialTab = 'dashboard' }: AdminP
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
                   className="p-5"
+                  role="tabpanel"
+                  id={`panel-${activeTab}`}
+                  aria-labelledby={`tab-${activeTab}`}
                 >
                   {activeTab === 'dashboard' && <AdminDashboard />}
                   {activeTab === 'personal' && <PersonalEditor />}

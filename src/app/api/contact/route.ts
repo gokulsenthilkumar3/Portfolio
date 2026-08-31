@@ -27,21 +27,46 @@ interface ContactPayload {
   email: string
   subject: string
   message: string
+  website?: string
 }
 
 function validatePayload(body: unknown): body is ContactPayload {
   if (typeof body !== 'object' || body === null) return false
   const b = body as Record<string, unknown>
+  const name = typeof b.name === 'string' ? b.name.trim() : ''
+  const email = typeof b.email === 'string' ? b.email.trim() : ''
+  const subject = typeof b.subject === 'string' ? b.subject.trim() : ''
+  const message = typeof b.message === 'string' ? b.message.trim() : ''
   return (
-    typeof b.name === 'string'    && b.name.trim().length > 0 &&
-    typeof b.email === 'string'   && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email) &&
-    typeof b.subject === 'string' && b.subject.trim().length > 0 &&
-    typeof b.message === 'string' && b.message.trim().length >= 10
+    name.length > 0 && name.length <= 120 &&
+    email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+    subject.length > 0 && subject.length <= 180 &&
+    message.length >= 10 && message.length <= 5000
   )
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown'
+  const contentLength = Number(req.headers.get('content-length') || 0)
+  if (contentLength > 12000) {
+    return NextResponse.json({ ok: false, message: 'Message is too large.' }, { status: 413 })
+  }
+
+  let body: unknown
+  try { body = await req.json() } catch {
+    return NextResponse.json({ ok: false, message: 'Invalid JSON body.' }, { status: 400 })
+  }
+
+  if (!validatePayload(body)) {
+    return NextResponse.json({ ok: false, message: 'Missing or invalid fields.' }, { status: 422 })
+  }
+
+  // Honeypot: quietly accept bot submissions without sending mail or exposing
+  // whether the endpoint is configured.
+  if (typeof body.website === 'string' && body.website.trim()) {
+    return NextResponse.json({ ok: true, message: 'Message received.' })
+  }
+
+  const ip = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown').split(',')[0].trim().slice(0, 128)
   const { success } = await rateLimit(`contact:${ip}`, 3, 3600000) // 3 emails per hour
   if (!success) {
     return NextResponse.json({ ok: false, message: 'Too many messages sent. Please try again later.' }, { status: 429 })
@@ -56,16 +81,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  let body: unknown
-  try { body = await req.json() } catch {
-    return NextResponse.json({ ok: false, message: 'Invalid JSON body.' }, { status: 400 })
-  }
-
-  if (!validatePayload(body)) {
-    return NextResponse.json({ ok: false, message: 'Missing or invalid fields.' }, { status: 422 })
-  }
-
   const { name, email, subject, message } = body
+  const normalizedName = name.trim()
+  const normalizedEmail = email.trim().toLowerCase()
+  const normalizedSubject = subject.trim()
+  const normalizedMessage = message.trim()
 
   try {
     const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -77,11 +97,11 @@ export async function POST(req: NextRequest) {
         user_id:     EMAILJS_PUBLIC_KEY,
         accessToken: EMAILJS_PRIVATE_KEY,
         template_params: {
-          from_name:  name,
-          from_email: email,
-          subject,
-          message,
-          reply_to:   email,
+          from_name:  normalizedName,
+          from_email: normalizedEmail,
+          subject: normalizedSubject,
+          message: normalizedMessage,
+          reply_to:   normalizedEmail,
         },
       }),
     })

@@ -13,6 +13,11 @@ export async function rateLimit(
 
   // Fallback to in-memory if no KV configured
   if (!KV_URL || !KV_TOKEN) {
+    if (inMemoryStore.size > 1000) {
+      inMemoryStore.forEach((value, key) => {
+        if (value.resetTime < now) inMemoryStore.delete(key)
+      })
+    }
     const record = inMemoryStore.get(identifier)
     if (!record || record.resetTime < now) {
       inMemoryStore.set(identifier, { count: 1, resetTime: reset })
@@ -29,7 +34,7 @@ export async function rateLimit(
 
   try {
     // Basic Rate Limiting using KV
-    const key = `rate-limit:${identifier}`
+    const key = encodeURIComponent(`rate-limit:${identifier}`)
     
     // Increment the key
     const incRes = await fetch(`${KV_URL}/incr/${key}`, {

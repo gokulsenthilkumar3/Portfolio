@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { rateLimit } from '@/lib/admin/rate-limit'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,6 +66,34 @@ export interface RepoAnalysis {
   improvedAt: string     // ISO timestamp when this analysis ran
 }
 
+interface GitHubRepoDetails {
+  name: string
+  full_name: string
+  description: string | null
+  html_url: string
+  homepage: string | null
+  stargazers_count: number
+  forks_count: number
+  watchers_count: number
+  open_issues_count: number
+  language: string | null
+  has_wiki: boolean
+  has_pages: boolean
+  archived: boolean
+  fork: boolean
+  private: boolean
+  created_at: string
+  pushed_at: string
+  updated_at: string
+  default_branch: string
+  size: number
+  license: { spdx_id: string | null } | null
+}
+
+interface GitHubCommit {
+  commit?: { author?: { date?: string | null } | null } | null
+}
+
 // ─── GitHub API helper ────────────────────────────────────────────────────────
 
 const GH = 'https://api.github.com'
@@ -92,21 +121,23 @@ async function ghFetch<T>(path: string): Promise<T | null> {
 // ─── Collect raw repo signals ─────────────────────────────────────────────────
 
 async function collectSignals(owner: string, repo: string) {
-  const [repoData, languages, topics, tree, commitsRaw, branches, contributors, issues] =
+  // Fetch repository metadata once; reuse its default branch for the tree.
+  const r = await ghFetch<GitHubRepoDetails>(`/repos/${owner}/${repo}`)
+  if (!r) return { r: null, langs: {}, topicList: [], treeFiles: [], commits: [], branchList: [], contribs: [], closedIssues: [] }
+
+  const [languages, topics, tree, commitsRaw, branches, contributors, issues] =
     await Promise.allSettled([
-      ghFetch<any>(`/repos/${owner}/${repo}`),
       ghFetch<Record<string, number>>(`/repos/${owner}/${repo}/languages`),
       ghFetch<{ names: string[] }>(`/repos/${owner}/${repo}/topics`),
       ghFetch<{ tree: { path: string; type: string }[] }>(
-        `/repos/${owner}/${repo}/git/trees/${(await ghFetch<any>(`/repos/${owner}/${repo}`))?.default_branch ?? 'main'}?recursive=1`
+        `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(r.default_branch || 'main')}?recursive=1`
       ),
-      ghFetch<any[]>(`/repos/${owner}/${repo}/commits?per_page=100`),
-      ghFetch<any[]>(`/repos/${owner}/${repo}/branches?per_page=100`),
-      ghFetch<any[]>(`/repos/${owner}/${repo}/contributors?per_page=100`),
-      ghFetch<any[]>(`/repos/${owner}/${repo}/issues?state=closed&per_page=100`),
+      ghFetch<GitHubCommit[]>(`/repos/${owner}/${repo}/commits?per_page=100`),
+      ghFetch<Array<Record<string, unknown>>>(`/repos/${owner}/${repo}/branches?per_page=100`),
+      ghFetch<Array<Record<string, unknown>>>(`/repos/${owner}/${repo}/contributors?per_page=100`),
+      ghFetch<Array<Record<string, unknown>>>(`/repos/${owner}/${repo}/issues?state=closed&per_page=100`),
     ])
 
-  const r = repoData.status === 'fulfilled' ? repoData.value : null
   const langs = languages.status === 'fulfilled' ? (languages.value ?? {}) : {}
   const topicList = topics.status === 'fulfilled' ? (topics.value?.names ?? []) : []
   const treeFiles = tree.status === 'fulfilled' ? (tree.value?.tree ?? []) : []
@@ -181,7 +212,7 @@ function deriveFileFlags(treeFiles: { path: string; type: string }[]) {
 
 // ─── Derive commit metrics ────────────────────────────────────────────────────
 
-function deriveCommitMetrics(commits: any[], createdAt: string) {
+function deriveCommitMetrics(commits: GitHubCommit[], createdAt: string) {
   const now = Date.now()
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000
   const recentCommitsLast30Days = commits.filter((c) => {
@@ -200,7 +231,7 @@ function deriveCommitMetrics(commits: any[], createdAt: string) {
 
 // ─── Classify repo type ───────────────────────────────────────────────────────
 
-function classifyType(r: any, langs: Record<string, number>, frameworkHints: string[], topicList: string[]): string {
+function classifyType(r: GitHubRepoDetails, langs: Record<string, number>, frameworkHints: string[], topicList: string[]): string {
   const lang = (r?.language ?? '').toLowerCase()
   const topics = topicList.map((t) => t.toLowerCase()).join(' ')
   const hints = frameworkHints.join(' ').toLowerCase()
@@ -227,7 +258,7 @@ function classifyType(r: any, langs: Record<string, number>, frameworkHints: str
 // Each characteristic is scored 0-100 from real signals with no hardcoded per-repo values.
 
 function scoreRepo(
-  r: any,
+  r: GitHubRepoDetails,
   langs: Record<string, number>,
   topicList: string[],
   fileFlags: ReturnType<typeof deriveFileFlags>,
@@ -523,13 +554,29 @@ async function analyzeRepo(owner: string, repo: string): Promise<RepoAnalysis | 
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
 
-let cache: { data: any; ts: number; owner: string } | null = null
+interface ReviewPayload {
+  owner: string
+  analyzedAt: string
+  totalRepos: number
+  averageScore: number
+  repos: RepoAnalysis[]
+}
+
+let cache: { data: ReviewPayload; ts: number; owner: string } | null = null
 const CACHE_TTL = 60 * 60 * 1000 // 1 hour
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const owner = searchParams.get('owner') ?? 'gokulsenthilkumar3'
-  const singleRepo = searchParams.get('repo')
+  const owner = (searchParams.get('owner') ?? 'gokulsenthilkumar3').trim()
+  const singleRepo = searchParams.get('repo')?.trim() || null
+
+  if (!/^[A-Za-z0-9-]{1,39}$/.test(owner) || (singleRepo && !/^[A-Za-z0-9_.-]{1,100}$/.test(singleRepo))) {
+    return NextResponse.json({ error: 'Invalid repository identifier.' }, { status: 400 })
+  }
+
+  const ip = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown').split(',')[0].trim().slice(0, 128)
+  const { success } = await rateLimit(`github-review:${ip}`, 10, 60000)
+  if (!success) return NextResponse.json({ error: 'Too many review requests. Please try again later.' }, { status: 429 })
 
   // Return from cache if valid and no single repo is requested
   if (!singleRepo && cache && cache.owner === owner && Date.now() - cache.ts < CACHE_TTL) {
@@ -546,7 +593,7 @@ export async function GET(req: NextRequest) {
   }
 
   // All public repos
-  const repos = await ghFetch<any[]>(`/users/${owner}/repos?per_page=100&type=public&sort=pushed`)
+  const repos = await ghFetch<GitHubRepoDetails[]>(`/users/${owner}/repos?per_page=100&type=public&sort=pushed`)
   if (!repos) return NextResponse.json({ error: 'Could not fetch repos' }, { status: 500 })
 
   const filtered = repos
@@ -572,7 +619,7 @@ export async function GET(req: NextRequest) {
     owner,
     analyzedAt: new Date().toISOString(),
     totalRepos: results.length,
-    averageScore: Math.round(results.reduce((acc, r) => acc + r.overallScore, 0) / results.length),
+    averageScore: results.length ? Math.round(results.reduce((acc, r) => acc + r.overallScore, 0) / results.length) : 0,
     repos: results,
   }
 

@@ -1,10 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
-test('admin login modal opens', async ({ page }) => {
-  await page.goto('/');
+test('admin route is an isolated authentication gate', async ({ page }) => {
+  await page.goto('/admin')
 
-  // There's a hidden way to open the admin panel or a route, usually /admin or triggered via UI
-  // Assuming there's a button or shortcut.
-  // Wait for page load
-  await page.waitForLoadState('networkidle');
-});
+  await expect(page.getByRole('heading', { name: 'Admin access', exact: true })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toHaveCount(0)
+  await expect(page.getByRole('dialog', { name: 'Admin access code' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Close' }).click()
+  await expect(page).toHaveURL(/\/$/)
+})

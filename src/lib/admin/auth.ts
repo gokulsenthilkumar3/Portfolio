@@ -54,10 +54,12 @@ export function getCookieName(): string {
 
 export function getTokenFromCookie(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null
-  const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split('=')
-    acc[key] = value
-    return acc
-  }, {} as Record<string, string>)
-  return cookies[COOKIE_NAME] || null
+  for (const rawCookie of cookieHeader.split(';')) {
+    const separator = rawCookie.indexOf('=')
+    if (separator < 0) continue
+    const key = rawCookie.slice(0, separator).trim()
+    if (key !== COOKIE_NAME) continue
+    return rawCookie.slice(separator + 1).trim() || null
+  }
+  return null
 }

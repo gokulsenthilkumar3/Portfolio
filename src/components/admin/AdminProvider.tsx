@@ -35,65 +35,19 @@ interface PortfolioData {
   microblogs: Microblog[]
 }
 
-interface GitHubSyncProfile {
-  name?: string | null
-  avatar_url?: string | null
-  bio?: string | null
-  location?: string | null
-  blog?: string | null
-}
-
-interface GitHubSyncRepo {
-  name: string
-  description: string | null
-  url: string
-  language: string | null
-  updatedAt: string
-  topics: string[]
-}
-
-interface GitHubSyncPayload {
-  profile?: GitHubSyncProfile
-  stats?: { totalRepos?: number }
-  allRepos?: GitHubSyncRepo[]
-}
-
-interface LinkedInSyncPayload {
-  status?: 'ok' | 'not_configured' | 'error'
-  profile?: {
-    name?: string | null
-    picture?: string | null
-    email?: string | null
-    profileUrl?: string | null
-  } | null
-  experience?: {
-    role?: string | null
-    company?: string | null
-    companyUrl?: string | null
-    start?: string | null
-  } | null
-  education?: {
-    institution?: string | null
-    degree?: string | null
-  } | null
-}
-
-type SourceStatus = 'loading' | 'ok' | 'not_configured' | 'error'
-
-interface SourceSyncState {
-  github: SourceStatus
-  linkedIn: SourceStatus
-  fetchedAt?: string
-}
-
 interface AdminContextType {
   isAdmin: boolean
   portfolioData: PortfolioData
-  sourceSync: SourceSyncState
   activate: () => void
   deactivate: () => void
+  openAdminPanel: (tab?: string) => void
+  closeAdminPanel: () => void
+  adminPanelOpen: boolean
+  adminPanelTab: string
   updateSection: (section: keyof PortfolioData, data: unknown) => Promise<void>
   isSaving: boolean
+  isPublishing: boolean
+  publishError: string | null
   exportConfig: () => string
   verifyPin: (pin: string) => Promise<boolean>
   persistData: () => Promise<boolean>
@@ -116,124 +70,6 @@ const defaultData: PortfolioData = {
   microblogs: portfolioConfig.microblogs as Microblog[],
 }
 
-function normalizeUrl(url?: string) {
-  return url?.trim().replace(/\/$/, '').toLowerCase()
-}
-
-function mergeOnlineSources(
-  current: PortfolioData,
-  github: GitHubSyncPayload | null,
-  linkedIn: LinkedInSyncPayload | null,
-): PortfolioData {
-  const githubProfile = github?.profile
-  const linkedInProfile = linkedIn?.status === 'ok' ? linkedIn.profile : null
-  const syncedName = linkedInProfile?.name || githubProfile?.name
-  const syncedAvatar = linkedInProfile?.picture || githubProfile?.avatar_url
-  const syncedProjects = github?.allRepos ?? []
-  const reposByUrl = new Map(syncedProjects.map((repo) => [normalizeUrl(repo.url), repo]))
-
-  const linkedInRole = linkedIn?.status === 'ok' ? linkedIn.experience : null
-  let experiences = current.experiences
-  if (linkedInRole?.role && linkedInRole.company) {
-    const sameCompany = (experience: Experience) =>
-      experience.company.trim().toLowerCase() === linkedInRole.company?.trim().toLowerCase()
-    const hasMatchingExperience = current.experiences.some(sameCompany)
-    experiences = current.experiences.map((experience) => {
-      if (!sameCompany(experience)) return experience
-      return {
-        ...experience,
-        role: linkedInRole.role || experience.role,
-        period: {
-          ...experience.period,
-          start: linkedInRole.start || experience.period.start,
-          present: true,
-        },
-      }
-    })
-
-    // LinkedIn's approved current-position scope may expose a role that is
-    // newer than the curated list. Add it only when LinkedIn supplies a
-    // usable start date; historical roles remain curated because the API does
-    // not expose the complete work history.
-    if (!hasMatchingExperience && linkedInRole.start) {
-      const id = `linkedin-${linkedInRole.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-      experiences = [
-        {
-          id,
-          role: linkedInRole.role,
-          company: linkedInRole.company,
-          period: { start: linkedInRole.start, present: true },
-          description: [],
-          technologies: [],
-        },
-        ...experiences,
-      ]
-    }
-  }
-
-  const linkedInEducation = linkedIn?.status === 'ok' ? linkedIn.education : null
-  const education = linkedInEducation?.institution
-    ? current.education.map((item) => {
-        const sameInstitution = item.institution.trim().toLowerCase() === linkedInEducation.institution?.trim().toLowerCase()
-        if (!sameInstitution) return item
-        return {
-          ...item,
-          degree: linkedInEducation.degree || item.degree,
-        }
-      })
-    : current.education
-
-  const projects = current.projects.map((project) => {
-    const repo = reposByUrl.get(normalizeUrl(project.links.github))
-    if (!repo) return project
-
-    const detectedTech = [repo.language, ...repo.topics].filter((item): item is string => Boolean(item))
-    return {
-      ...project,
-      description: repo.description || project.description,
-      technologies: detectedTech.length > 0 ? detectedTech : project.technologies,
-      date: project.date || repo.updatedAt,
-    }
-  })
-
-  const stats = current.stats.map((stat) =>
-    stat.label === 'GitHub Repos' && typeof github?.stats?.totalRepos === 'number'
-      ? { ...stat, value: github.stats.totalRepos }
-      : stat
-  )
-
-  return {
-    ...current,
-    personal: {
-      ...current.personal,
-      name: syncedName || current.personal.name,
-      title: linkedInRole?.role || current.personal.title,
-      // Keep an explicitly curated portrait. Remote profile images are useful
-      // only as a fallback and can expire or be blocked by an image proxy.
-      avatar: current.personal.avatar || syncedAvatar || undefined,
-      bio: githubProfile?.bio || current.personal.bio,
-      location: githubProfile?.location || current.personal.location,
-      website: githubProfile?.blog || current.personal.website,
-      email: linkedInProfile?.email || current.personal.email,
-      linkedin: linkedInProfile?.profileUrl || current.personal.linkedin,
-    },
-    projects,
-    stats,
-    experiences,
-    education,
-  }
-}
-
-
-
-function loadFromStorage(): Partial<PortfolioData> {
-  if (typeof window === 'undefined') return {}
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
-  } catch { return {} }
-}
-
 function saveToStorage(data: PortfolioData) {
   if (typeof window === 'undefined') return
   try {
@@ -244,11 +80,16 @@ function saveToStorage(data: PortfolioData) {
 const AdminContext = createContext<AdminContextType>({
   isAdmin: false,
   portfolioData: defaultData,
-  sourceSync: { github: 'loading', linkedIn: 'loading' },
   activate: () => {},
   deactivate: () => {},
+  openAdminPanel: () => {},
+  closeAdminPanel: () => {},
+  adminPanelOpen: false,
+  adminPanelTab: 'dashboard',
   updateSection: async () => {},
   isSaving: false,
+  isPublishing: false,
+  publishError: null,
   exportConfig: () => '',
   verifyPin: async () => false,
   persistData: async () => false,
@@ -258,62 +99,35 @@ const AdminContext = createContext<AdminContextType>({
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(defaultData)
-  const [sourceSync, setSourceSync] = useState<SourceSyncState>({ github: 'loading', linkedIn: 'loading' })
   const [isSaving, setIsSaving] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [publishError, setPublishError] = useState<string | null>(null)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false)
+  const [adminPanelTab, setAdminPanelTab] = useState('dashboard')
 
-  // Load local/admin data first, then enrich it from public online sources.
+  // Curated content is authoritative for the public page. Only an authenticated
+  // admin session may load the durable draft; this prevents stale local storage
+  // or third-party profile data from rewriting the visitor experience.
   useEffect(() => {
     let cancelled = false
 
     const load = async () => {
-      const stored = loadFromStorage()
-      let nextData: PortfolioData = Object.keys(stored).length > 0
-        ? { ...defaultData, ...stored }
-        : defaultData
-
-      if (!cancelled && nextData !== defaultData) setPortfolioData(nextData)
-
       try {
         const serverResponse = await fetch(buildApiPath('/api/admin/portfolio'))
         if (serverResponse.ok) {
-          setIsAdmin(true)
           const serverData = await serverResponse.json() as Partial<PortfolioData>
-          nextData = { ...nextData, ...serverData }
           if (!cancelled) {
+            setIsAdmin(true)
+            const nextData = { ...defaultData, ...serverData }
             setPortfolioData(nextData)
             saveToStorage(nextData)
           }
         }
       } catch {
-        // Unauthenticated visitors should continue with config/local data.
+        // Unauthenticated visitors use the curated config baseline.
       }
 
-      const [githubResponse, linkedInResponse] = await Promise.all([
-        fetch(buildApiPath('/api/github')).catch(() => null),
-        fetch(buildApiPath('/api/linkedin')).catch(() => null),
-      ])
-      let github: GitHubSyncPayload | null = null
-      let linkedIn: LinkedInSyncPayload | null = null
-
-      if (githubResponse?.ok) {
-        try { github = await githubResponse.json() as GitHubSyncPayload } catch { github = null }
-      }
-      if (linkedInResponse?.ok) {
-        try { linkedIn = await linkedInResponse.json() as LinkedInSyncPayload } catch { linkedIn = null }
-      }
-
-      if (!cancelled) {
-        setSourceSync({
-          github: github ? 'ok' : 'error',
-          linkedIn: linkedIn?.status === 'ok' ? 'ok' : linkedIn?.status === 'not_configured' ? 'not_configured' : 'error',
-          fetchedAt: new Date().toISOString(),
-        })
-      }
-
-      if (!cancelled && (github || linkedIn)) {
-        setPortfolioData((current) => mergeOnlineSources(current, github, linkedIn))
-      }
     }
 
     load().catch(() => {
@@ -356,6 +170,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const deactivate = useCallback(() => {
     setIsAdmin(false)
+    setAdminPanelOpen(false)
     try {
       fetch(buildApiPath('/api/admin/logout'), { method: 'POST' }).catch(console.error)
     } catch (e) {
@@ -363,24 +178,37 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const openAdminPanel = useCallback((tab = 'dashboard') => {
+    setAdminPanelTab(tab)
+    setAdminPanelOpen(true)
+  }, [])
+
+  const closeAdminPanel = useCallback(() => {
+    setAdminPanelOpen(false)
+  }, [])
+
   const updateSection = useCallback(async (section: keyof PortfolioData, data: unknown) => {
     setIsSaving(true)
     try {
-      const updated = { ...portfolioData, [section]: data }
-      setPortfolioData(updated)
-      saveToStorage(updated)
+      setPortfolioData((current) => {
+        const updated = { ...current, [section]: data }
+        saveToStorage(updated)
+        return updated
+      })
       setHasUnsavedChanges(true)
     } finally {
       setTimeout(() => setIsSaving(false), 500)
     }
-  }, [portfolioData])
+  }, [])
 
   const exportConfig = useCallback(() => {
     return JSON.stringify(portfolioData, null, 2)
   }, [portfolioData])
 
-  // Persist data to server (development only)
   const persistData = useCallback(async (): Promise<boolean> => {
+    if (isPublishing) return false
+    setIsPublishing(true)
+    setPublishError(null)
     try {
       const res = await fetch(buildApiPath('/api/admin/save'), {
         method: 'POST',
@@ -388,30 +216,40 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify(portfolioData),
       })
       if (!res.ok) {
-        console.error('Failed to persist data', await res.text())
-        toast.error('Failed to save to server')
+        const body = await res.json().catch(() => null) as { error?: string } | null
+        const message = body?.error || 'Failed to save to server'
+        setPublishError(message)
+        toast.error(message)
         return false
       }
-      toast.success('Saved to server successfully!')
+      toast.success('Portfolio changes published')
       setHasUnsavedChanges(false)
       return true
     } catch (e) {
-      console.error('Error persisting data', e)
-      toast.error('Server error during save')
+      const message = e instanceof Error ? e.message : 'Server error during save'
+      setPublishError(message)
+      toast.error(message)
       return false
+    } finally {
+      setIsPublishing(false)
     }
-  }, [portfolioData])
+  }, [isPublishing, portfolioData])
 
   return (
     <AdminContext.Provider
       value={{
         isAdmin,
         portfolioData,
-        sourceSync,
         activate,
         deactivate,
+        openAdminPanel,
+        closeAdminPanel,
+        adminPanelOpen,
+        adminPanelTab,
         updateSection,
         isSaving,
+        isPublishing,
+        publishError,
         exportConfig,
         verifyPin: verifyPinFunc,
         persistData,

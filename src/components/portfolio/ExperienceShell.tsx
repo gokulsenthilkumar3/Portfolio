@@ -53,8 +53,12 @@ function SmoothScrollRuntime() {
       if (!target) return
 
       event.preventDefault()
+      // Keep the URL (including search params) and browser history in sync,
+      // then give keyboard and screen-reader users a clear destination.
+      history.pushState(history.state, '', `${url.pathname}${url.search}${url.hash}`)
+      if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+      target.focus({ preventScroll: true })
       lenis.scrollTo(target, { duration: 1.35, offset: 0 })
-      history.replaceState(history.state, '', `${url.pathname}${url.hash}`)
     }
 
     document.addEventListener('click', onClick)
@@ -93,8 +97,11 @@ function CustomCursor() {
     // immediately. Mouse fallback matters in embedded browser shells where
     // PointerEvent support or pointer media queries can be incomplete.
 
-    const onMove = (event: MouseEvent) => {
-      if ('pointerType' in event && (event as PointerEvent).pointerType === 'touch') return
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+    if (!finePointer.matches) return
+
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return
       const target = event.target as Element | null
       const context = target?.closest<HTMLElement>('[data-cursor], a, button, input, textarea')
       const explicitMode = context?.dataset.cursor
@@ -113,20 +120,16 @@ function CustomCursor() {
       gsap.set([dot, ring], { opacity: 1 })
     }
 
-    const onEnter = (event: MouseEvent) => onMove(event)
+    const onEnter = (event: PointerEvent) => onMove(event)
     const onLeave = () => gsap.to([dot, ring], { opacity: 0, duration: 0.18, overwrite: true })
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('pointerenter', onEnter, { passive: true })
-    window.addEventListener('mouseenter', onEnter, { passive: true })
-    window.addEventListener('mouseleave', onLeave)
+    window.addEventListener('pointerleave', onLeave)
 
     return () => {
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('mousemove', onMove)
       window.removeEventListener('pointerenter', onEnter)
-      window.removeEventListener('mouseenter', onEnter)
-      window.removeEventListener('mouseleave', onLeave)
+      window.removeEventListener('pointerleave', onLeave)
       document.documentElement.classList.remove('custom-cursor-ready')
       delete document.documentElement.dataset.cursorReady
     }

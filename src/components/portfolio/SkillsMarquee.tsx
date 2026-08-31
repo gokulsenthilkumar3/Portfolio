@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import type { Skill } from '@/lib/types/portfolio'
 import { SectionHeading } from './SectionHeading'
+import { Pause, Play } from 'lucide-react'
 
 type FilterKey = 'all' | 'testing' | 'frontend' | 'backend' | 'delivery'
 
@@ -26,19 +27,27 @@ function matchesFilter(skill: Skill, filter: FilterKey) {
 export function SkillsMarquee({ skills }: { skills: Skill[] }) {
   const root = useRef<HTMLElement>(null)
   const [filter, setFilter] = useState<FilterKey>('all')
+  const [isPaused, setIsPaused] = useState(false)
 
   const rows = useMemo(() => {
     const quality = skills.filter((skill) => skill.category === 'testing')
     const frontend = skills.filter((skill) => skill.category === 'frontend')
     const backend = skills.filter((skill) => skill.category === 'backend')
     const delivery = skills.filter((skill) => ['devops', 'tools', 'design', 'soft-skills'].includes(skill.category))
-    return [
+    const baseRows = [
       { label: 'Quality', skills: quality, reverse: false, duration: 25 },
       { label: 'Interface', skills: frontend, reverse: true, duration: 29 },
       { label: 'Systems', skills: backend, reverse: false, duration: 23 },
       { label: 'Delivery', skills: delivery, reverse: true, duration: 32 },
-    ].filter((row) => row.skills.length > 0)
-  }, [skills])
+    ]
+
+    return baseRows
+      .map((row) => ({ ...row, skills: row.skills.filter((skill) => matchesFilter(skill, filter)) }))
+      .filter((row) => row.skills.length > 0)
+  }, [filter, skills])
+
+  const filteredSkills = useMemo(() => skills.filter((skill) => matchesFilter(skill, filter)), [filter, skills])
+  const filterLabel = filters.find((item) => item.key === filter)?.label ?? 'All'
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -66,7 +75,7 @@ export function SkillsMarquee({ skills }: { skills: Skill[] }) {
       <div data-skills-heading>
         <SectionHeading
           id="skills-title"
-          index="02"
+          index="04"
           eyebrow="Capabilities"
           title="What I know."
           description="A working set of tools for making software reliable, fast, and quietly intuitive."
@@ -86,13 +95,27 @@ export function SkillsMarquee({ skills }: { skills: Skill[] }) {
             {item.label}
           </button>
         ))}
+        <button
+          type="button"
+          className="skills-marquee__pause"
+          aria-pressed={isPaused}
+          aria-label={isPaused ? 'Play skills animation' : 'Pause skills animation'}
+          onClick={() => setIsPaused((paused) => !paused)}
+        >
+          {isPaused ? <Play size={13} aria-hidden="true" /> : <Pause size={13} aria-hidden="true" />}
+          <span>{isPaused ? 'Play' : 'Pause'}</span>
+        </button>
       </div>
 
       <ul className="sr-only">
-        {skills.map((skill) => <li key={skill.id}>{skill.name}, {skill.category}</li>)}
+        {filteredSkills.map((skill) => <li key={skill.id}>{skill.name}, {skill.category}</li>)}
       </ul>
 
-      <div className="skills-marquee__stack" data-marquee-stack aria-hidden="true">
+      <p className="skills-marquee__status" aria-live="polite">
+        Showing {filteredSkills.length} {filterLabel.toLowerCase()} skill{filteredSkills.length === 1 ? '' : 's'}{isPaused ? ' · animation paused' : ''}
+      </p>
+
+      <div className="skills-marquee__stack" data-marquee-stack data-paused={isPaused} aria-hidden="true">
         {rows.map((row) => (
           <div
             key={row.label}
@@ -122,6 +145,7 @@ export function SkillsMarquee({ skills }: { skills: Skill[] }) {
           </div>
         ))}
       </div>
+      {filteredSkills.length === 0 && <p className="skills-marquee__empty">No skills are tagged in this category yet.</p>}
     </section>
   )
 }

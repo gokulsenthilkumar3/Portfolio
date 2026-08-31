@@ -1,116 +1,77 @@
-# Gokul S — Portfolio
+# Gokul Senthilkumar — Portfolio
 
-Personal portfolio of **Gokul Senthilkumar** ([@gokulsenthilkumar3](https://github.com/gokulsenthilkumar3)) — SDET & Full-Stack Developer from Tamil Nadu, India.
+Personal portfolio for Gokul Senthilkumar, a Software Development Engineer in Test and full-stack developer.
 
-🌐 **Live:** [portfolio-ten-plum-98.vercel.app](https://portfolio-ten-plum-98.vercel.app)
+## Stack
 
----
+- Next.js 16 App Router and React 19
+- TypeScript, Tailwind CSS, and CSS tokens
+- GSAP, Framer Motion, Lenis, and a capability-gated Three.js hero
+- Protected admin editor with server-side PIN/JWT authentication
 
-## Tech Stack
+## What is included
 
-| Layer | Tech |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4 |
-| Animation | Framer Motion |
-| 3D | React Three Fiber / Three.js |
-| State | Zustand |
-| Icons | Lucide React |
-| Deploy | Vercel |
+- A focused hero that explains the SDET/full-stack practice in one read.
+- Selected work cards with detail dialogs, source links, and progressive-motion fallbacks.
+- Profile timeline using curated achievements and the earliest career start.
+- About portrait and verified profile metrics.
+- Skills category filters with accessible announcements and pause/play control.
+- Direct email/social contact and a keyboard-friendly mobile navigation.
+- `/admin` authentication gate and one responsive editor drawer for private drafts.
 
----
+The public page treats `src/config/portfolio.config.ts` as its source of truth. External GitHub and LinkedIn integrations are optional admin-side tools and never rewrite the public copy automatically.
 
-## Features
+## Project structure
 
-- **Hero** — 3D animated background, text reveal effects
-- **About** — interactive timeline, animated stats counter
-- **Skills** — 2D/3D toggle, category filtering, proficiency bars
-- **Projects** — searchable/filterable gallery with detail views
-- **GitHub** — live API stats, contribution heatmap, Commit City mini-game
-- **Profile sync** — GitHub identity/repository metadata is enriched at runtime; LinkedIn basic profile and eligible current-role/education fields sync through an authenticated server token
-- **Insights** — blog/articles section
-- **Contact** — validated form with toast feedback
-- **Theme System** — Dark, Light, Neon, Pastel, Cyberpunk with live switching
-- **Accessibility** — WCAG 2.1 AA, keyboard nav, `prefers-reduced-motion` support
-
----
-
-## Project Structure
-
-```
+```text
 src/
-├── app/
-│   ├── api/github/       # GitHub stats API route (5-min cached)
-│   ├── (sections)/       # Route groups
-│   ├── layout.tsx
-│   └── page.tsx
+├── app/                    # Public page, admin gate, and API routes
 ├── components/
-│   ├── effects/          # LiquidTransitions, MagneticButton, etc.
-│   ├── shared/           # Navigation, Footer, GitHubSection, etc.
-│   └── ui/               # Base UI primitives
-├── hooks/                # use3DGate
-├── lib/
-│   ├── data/content.ts   # All site content
-│   ├── hooks/            # useMousePosition, useTheme, useParallax
-│   └── utils/
-├── config/
-│   └── portfolio.config.ts  # ← Edit this to personalise
-└── styles/globals.css
+│   ├── admin/              # Authenticated editor and draft persistence
+│   ├── portfolio/          # Hero, work, skills, about, and contact sections
+│   ├── shared/             # Navigation, profile, theme, and route chrome
+│   └── ui/                 # Reusable controls
+├── config/portfolio.config.ts
+├── lib/                    # Auth, storage, hooks, and content helpers
+└── styles/                 # Public cinematic design system
 ```
 
----
-
-## Personalisation
-
-Edit **one file**: `src/config/portfolio.config.ts`
-
-```ts
-personal: {
-  name: 'Your Name',
-  title: 'Your Title',
-  email: 'you@example.com',
-  github: 'https://github.com/you',
-}
-```
-
-All sections (projects, skills, experience, social links, SEO) are driven from this single config. See inline comments for guidance.
-
----
-
-## Local Development
+## Local development
 
 ```bash
-git clone https://github.com/gokulsenthilkumar3/Portfolio.git
-cd Portfolio
 npm install
-npm run dev          # → http://localhost:3000
+npm run dev                 # http://localhost:3000
+npm run type-check
+npm run build
+npm run test:e2e
 ```
 
-### Environment Variables
+If `npm` is unavailable in a managed environment, run the equivalent scripts with the bundled Node runtime and the binaries in `node_modules`.
 
-Create `.env.local`:
+### Environment variables
 
 ```env
-GITHUB_TOKEN=ghp_your_token   # Optional — raises GitHub API rate limit
+ADMIN_PIN_HASH=             # bcrypt hash for the private editor PIN
+JWT_SECRET=                 # long random secret for the admin session cookie
+GITHUB_TOKEN=               # optional, raises GitHub API rate limits
 GITHUB_USERNAME=gokulsenthilkumar3
-LINKEDIN_ACCESS_TOKEN=         # Optional LinkedIn OAuth token for your own member profile
-LINKEDIN_API_VERSION=202510.03 # Optional identityMe API version
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+LINKEDIN_ACCESS_TOKEN=      # optional approved LinkedIn token
+EMAILJS_SERVICE_ID=         # optional contact delivery
+EMAILJS_TEMPLATE_ID=
+EMAILJS_PUBLIC_KEY=
+EMAILJS_PRIVATE_KEY=
+KV_REST_API_URL=            # required for durable production drafts
+KV_REST_API_TOKEN=
+NEXT_PUBLIC_SITE_URL=https://your-domain.example
 ```
 
-The LinkedIn public profile URL cannot be scraped for experience data. Current role and education are available only when the LinkedIn app has the matching approved product/scopes; otherwise the curated profile history remains the fallback.
-
----
+The curated profile remains usable when optional integrations are not configured. Durable publishing requires the KV credentials shown above.
 
 ## Deployment
 
-```bash
-npm run build   # Verify no build errors locally
-vercel          # Deploy to Vercel
-```
+Run the type check, production build, and end-to-end suite before publishing. The repository is configured for the Sites hosting workflow; keep `.openai/hosting.json` in place so the project is published with its configured project ID.
 
----
+See [AUDIT.md](AUDIT.md) for the latest verified audit and known follow-ups.
 
 ## License
 
