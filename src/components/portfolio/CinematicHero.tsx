@@ -18,12 +18,14 @@ interface CinematicHeroProps {
   name: string
   role: string
   available: boolean
+  heroHeading?: string
 }
 
-export function CinematicHero({ name, role, available }: CinematicHeroProps) {
+export function CinematicHero({ name, role, available, heroHeading = 'I build software that earns <em>trust.</em>' }: CinematicHeroProps) {
   const root = useRef<HTMLElement>(null)
   const [showBlob, setShowBlob] = useState(false)
   const canRenderBlob = use3DGate()
+  const headingParts = heroHeading.match(/^([\s\S]*?)<em>([\s\S]*?)<\/em>([\s\S]*)$/)
 
   useEffect(() => {
     const hero = root.current
@@ -108,10 +110,12 @@ export function CinematicHero({ name, role, available }: CinematicHeroProps) {
 
       <div className="cinematic-hero__content" data-hero-content>
         <h1 id="hero-heading" className="cinematic-hero__title">
-          <span data-hero-line="one" data-hero-reveal>I build software</span>
-          <span data-hero-line="two" data-hero-reveal>
-            that earns <em>trust.</em>
-          </span>
+          {headingParts ? (
+            <>
+              <span data-hero-line="one" data-hero-reveal>{headingParts[1]}</span>
+              <span data-hero-line="two" data-hero-reveal><em>{headingParts[2]}</em>{headingParts[3]}</span>
+            </>
+          ) : <span data-hero-line="one" data-hero-reveal>{heroHeading}</span>}
         </h1>
 
         <div className="cinematic-hero__meta" data-hero-meta data-hero-reveal>
@@ -120,13 +124,13 @@ export function CinematicHero({ name, role, available }: CinematicHeroProps) {
             not a checkpoint at the end.
           </p>
           <Link href="#projects" className="cinematic-hero__cta" data-hero-cta data-cursor="link">
-            Selected work
+            View all projects
             <ArrowDownRight aria-hidden="true" />
           </Link>
         </div>
       </div>
 
-      <a className="cinematic-hero__scroll" href="#projects" data-hero-scroll aria-label="Scroll to selected work">
+      <a className="cinematic-hero__scroll" href="#projects" data-hero-scroll aria-label="Scroll to all projects">
         <span />
       </a>
     </section>

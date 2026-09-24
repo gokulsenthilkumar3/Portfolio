@@ -68,7 +68,7 @@ const jsonLd = {
   knowsAbout: ['TypeScript', 'Next.js', 'React', 'Playwright', 'Node.js', 'Test Automation'],
   worksFor: {
     '@type': 'Organization',
-    name: 'Freelance / Open Source',
+    name: 'CloudAssert',
   },
 }
 

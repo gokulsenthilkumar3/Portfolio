@@ -4,6 +4,8 @@
 
 All your portfolio content is managed in **ONE SINGLE FILE**. Just edit this file to customize everything!
 
+The tracked `src/data/portfolio-data.json` is an older snapshot retained for reference; it does not drive the public page. The in-browser admin editor starts from `portfolio.config.ts` and saves drafts separately (`.portfolio-admin-data.json` locally, KV in production). Publish through the admin panel to persist its edits. Update `portfolio.config.ts` when changing the curated baseline shipped with a deployment.
+
 ---
 
 ## 📋 **What You Can Edit**

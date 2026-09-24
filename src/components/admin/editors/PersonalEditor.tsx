@@ -15,6 +15,8 @@ const FIELDS: FieldConfig[] = [
   { key: 'name', label: 'Full Name', type: 'text' },
   { key: 'title', label: 'Professional Title', type: 'text' },
   { key: 'tagline', label: 'Tagline', type: 'text' },
+  { key: 'heroHeading', label: 'Hero headline (wrap emphasized words in <em> tags)', type: 'text' },
+  { key: 'aboutManifesto', label: 'About manifesto', type: 'textarea' },
   { key: 'bio', label: 'Bio', type: 'textarea' },
   { key: 'email', label: 'Email', type: 'email' },
   { key: 'location', label: 'Location', type: 'text' },

@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 const SectionSchema = z.enum([
   'personal', 'stats', 'projects', 'skills', 'experiences', 
-  'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'about'
+  'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'certifications', 'about'
 ])
 
 const PayloadSchema = z.object({
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     blog: storedData.blog || portfolioConfig.blog,
     microblogs: storedData.microblogs || portfolioConfig.microblogs,
     education: storedData.education || portfolioConfig.education,
+    certifications: storedData.certifications || portfolioConfig.certifications,
     about: storedData.about || portfolioConfig.about,
   }
 

@@ -2,6 +2,8 @@
   "personal": {
     "name": "Gokul S",
     "title": "SDET & Full-Stack Developer",
+    "heroHeading": "I build software that earns <em>trust.</em>",
+    "aboutManifesto": "I obsess over the 1% of details users never consciously notice \u2014 but always feel.",
     "tagline": "I test what others build and build what others test \u2014 bridging quality and code.",
     "bio": "SDET and full-stack engineer building reliable web products. I design scalable test automation, performance-test APIs with K6, and build production web applications with React, Next.js, Node.js, and PostgreSQL.",
     "email": "gokulsenthilkumar3@gmail.com",
@@ -56,7 +58,7 @@
       "featured": true,
       "priority": 1,
       "images": [
-        "/projects/vaultiq.png"
+        "/projects/vaultiq.webp"
       ],
       "date": "2026-05-05",
       "links": {
@@ -81,7 +83,7 @@
       "featured": true,
       "priority": 2,
       "images": [
-        "/projects/oxfin.png"
+        "/projects/oxfin.webp"
       ],
       "date": "2026-01-31",
       "links": {
@@ -105,7 +107,7 @@
       "featured": true,
       "priority": 5,
       "images": [
-        "/projects/forex-ensemble.png"
+        "/projects/forex-ensemble.webp"
       ],
       "date": "2026-05-02",
       "links": {
@@ -129,7 +131,7 @@
       "featured": true,
       "priority": 3,
       "images": [
-        "/projects/stackforge.png"
+        "/projects/stackforge.webp"
       ],
       "date": "2026-05-15",
       "links": {
@@ -152,7 +154,7 @@
       "category": "ai",
       "featured": false,
       "images": [
-        "/projects/backtestiq.png"
+        "/projects/backtestiq.webp"
       ],
       "date": "2026-05-15",
       "links": {
@@ -173,7 +175,7 @@
       "featured": true,
       "priority": 7,
       "images": [
-        "/projects/weaver-book.png"
+        "/projects/weaver-book.webp"
       ],
       "date": "2023-01-15",
       "links": {
@@ -197,7 +199,7 @@
       "featured": true,
       "priority": 8,
       "images": [
-        "/projects/car-spa.png"
+        "/projects/car-spa.webp"
       ],
       "date": "2023-05-20",
       "links": {
@@ -217,7 +219,7 @@
       "category": "fullstack",
       "featured": false,
       "images": [
-        "/projects/expense-tracker.png"
+        "/projects/expense-tracker.webp"
       ],
       "date": "2024-08-15",
       "links": {
@@ -237,7 +239,7 @@
       "category": "web",
       "featured": false,
       "images": [
-        "/projects/maruti-opticals.png"
+        "/projects/maruti-opticals.webp"
       ],
       "date": "2022-12-05",
       "links": {
@@ -257,7 +259,7 @@
       "category": "iot",
       "featured": false,
       "images": [
-        "/projects/notice-board.png"
+        "/projects/notice-board.webp"
       ],
       "date": "2023-03-25",
       "links": {
@@ -278,7 +280,7 @@
       "featured": true,
       "priority": 4,
       "images": [
-        "/projects/forex-prediction.png"
+        "/projects/forex-prediction.webp"
       ],
       "date": "2024-02-15",
       "links": {
@@ -298,7 +300,7 @@
       "category": "web",
       "featured": false,
       "images": [
-        "/projects/yarn-management.png"
+        "/projects/yarn-management.webp"
       ],
       "date": "2023-11-20",
       "links": {
@@ -317,7 +319,7 @@
       "category": "other",
       "featured": false,
       "images": [
-        "/projects/findthemnow.png"
+        "/projects/findthemnow.webp"
       ],
       "date": "2024-01-10",
       "links": {
@@ -341,7 +343,7 @@
       "featured": true,
       "priority": 6,
       "images": [
-        "/projects/quality-dashboard.png"
+        "/projects/quality-dashboard.webp"
       ],
       "date": "2024-03-10",
       "links": {
@@ -388,21 +390,21 @@
     {
       "id": "k6",
       "name": "K6 Load Testing",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 5,
       "color": "#7d64ff"
     },
     {
       "id": "selenium",
       "name": "Selenium",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 4,
       "color": "#43b02a"
     },
     {
       "id": "testcafe",
       "name": "TestCafe",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 4,
       "color": "#09a8d0"
     },
@@ -430,7 +432,7 @@
     {
       "id": "postman",
       "name": "Postman",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 5,
       "color": "#ff6c37"
     },
@@ -458,14 +460,14 @@
     {
       "id": "playwright",
       "name": "Playwright",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 4,
       "color": "#2ead33"
     },
     {
       "id": "jest",
       "name": "Jest",
-      "category": "tools",
+      "category": "testing",
       "proficiency": 4,
       "color": "#c21325"
     },

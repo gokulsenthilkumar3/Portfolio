@@ -2,13 +2,14 @@
 
 import Image from 'next/image'
 import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Linkedin, MapPin } from 'lucide-react'
-import type { Education, Experience, SiteConfig } from '@/lib/types/portfolio'
+import type { Certification, Education, Experience, SiteConfig } from '@/lib/types/portfolio'
 import { SectionHeading } from '@/components/portfolio/SectionHeading'
 
 interface LinkedInSectionProps {
   personal: SiteConfig
   experiences: Experience[]
   education: Education[]
+  certifications?: Certification[]
 }
 
 function formatPeriod(start?: string, end?: string) {
@@ -24,7 +25,7 @@ function formatPeriod(start?: string, end?: string) {
  * Full LinkedIn-inspired profile: cover + avatar header, experience timeline,
  * and education card — matching the reference site's rich profile layout.
  */
-export function LinkedInSection({ personal, experiences, education }: LinkedInSectionProps) {
+export function LinkedInSection({ personal, experiences, education, certifications = [] }: LinkedInSectionProps) {
   const currentRole = experiences.find((experience) => experience.period.present) ?? experiences[0]
   const careerStartYear = experiences
     .map((experience) => new Date(experience.period.start).getUTCFullYear())
@@ -129,7 +130,7 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
             <p className="linkedin-profile__label">Snapshot</p>
             <div className="linkedin-profile__metrics">
               <div><strong>{experiences.length}</strong><span>roles</span></div>
-              <div><strong>{education.length}</strong><span>degrees &amp; courses</span></div>
+              <div><strong>{education.length}</strong><span>education entries</span></div>
               <div><strong>{careerStartYear || '—'}</strong><span>career start</span></div>
             </div>
 
@@ -142,6 +143,21 @@ export function LinkedInSection({ personal, experiences, education }: LinkedInSe
                 </span>
               </p>
             ))}
+
+            {certifications && certifications.length > 0 && (
+              <>
+                <p className="linkedin-profile__label" style={{marginTop: '2rem'}}>Certifications</p>
+                {certifications.map((cert) => (
+                  <p key={cert.id} className="linkedin-profile__education">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{width: '18px', height: '18px', marginTop: '2px'}}><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                    <span>
+                      <strong>{cert.name}</strong>
+                      <small>{cert.issuer}</small>
+                    </span>
+                  </p>
+                ))}
+              </>
+            )}
           </aside>
         </div>
       </div>

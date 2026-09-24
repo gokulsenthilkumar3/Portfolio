@@ -17,7 +17,7 @@ import { portfolioConfig } from '@/config/portfolio.config'
  *
  * Revalidates every 24 hours so the deploy is fast but numbers stay fresh.
  */
-export const revalidate = 86400 // 24 hours
+export const dynamic = 'force-dynamic'
 
 interface GitHubUser {
   public_repos: number
@@ -40,7 +40,7 @@ async function fetchGitHubStats(username: string): Promise<{ repos: number } | n
 
     const res = await fetch(`https://api.github.com/users/${username}`, {
       headers,
-      next: { revalidate: 86400 },
+      cache: 'no-store',
     })
 
     if (!res.ok) {
@@ -79,7 +79,7 @@ export async function GET() {
   const yearsExperience = calcYearsExperience(personal.careerStart)
 
   // Projects count: live count from the config array (single source of truth)
-  const projectsBuilt = projects.length
+  const projectsBuilt = projects.filter((project) => project.id !== 'forex-prediction').length
 
   const stats = [
     {
@@ -93,7 +93,7 @@ export async function GET() {
     {
       label: 'Projects Built',
       value: projectsBuilt,
-      suffix: '+',
+      suffix: '',
       duration: 2200,
       source: 'config',
     },
@@ -120,7 +120,7 @@ export async function GET() {
       generatedAt: new Date().toISOString(),
       sources: {
         yearsExperience: `Calculated from careerStart: ${personal.careerStart}`,
-        projectsBuilt: `Count of projects[] array (${projectsBuilt} total)`,
+        projectsBuilt: `Count of canonical project entries (${projectsBuilt} total; research archive excluded)`,
         githubRepos: github ? `Live from GitHub API (user: ${githubUsername})` : 'Fallback from config',
         qualityPractices: 'Curated config value',
       },

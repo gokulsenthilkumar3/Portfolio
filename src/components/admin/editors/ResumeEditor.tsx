@@ -6,12 +6,13 @@ import { GraduationCap, Briefcase } from 'lucide-react'
 import { useAdmin } from '../AdminProvider'
 import { motion } from 'framer-motion'
 
-import type { Education } from '@/lib/types/portfolio'
+import type { Certification, Education } from '@/lib/types/portfolio'
 
 export function ResumeEditor() {
-  const [mode, setMode] = useState<'experience' | 'education'>('experience')
+  const [mode, setMode] = useState<'experience' | 'education' | 'certifications'>('experience')
   const { portfolioData, updateSection } = useAdmin()
   const education = (portfolioData.education as Education[]) || []
+  const certifications = portfolioData.certifications || []
 
   return (
     <div className="space-y-6">
@@ -35,10 +36,41 @@ export function ResumeEditor() {
         >
           <GraduationCap size={14} /> Education
         </button>
+        <button
+          type="button"
+          onClick={() => setMode('certifications')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${mode === 'certifications' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+        >
+          Certifications
+        </button>
       </div>
 
       {mode === 'experience' ? (
         <ExperienceEditor />
+      ) : mode === 'certifications' ? (
+        <div className="space-y-3">
+          <button type="button" className="text-xs text-blue-400" onClick={() => updateSection('certifications', [...certifications, { id: crypto.randomUUID(), name: '', issuer: '' }])}>
+            + Add certification
+          </button>
+          {certifications.map((cert, index) => {
+            const update = (field: keyof Certification, value: string) => {
+              const next = [...certifications]
+              next[index] = { ...cert, [field]: value }
+              updateSection('certifications', next)
+            }
+            return (
+              <div key={cert.id} className="rounded-xl border border-white/10 p-3 space-y-2">
+                {(['name', 'issuer', 'issued', 'expires', 'credentialId', 'url'] as const).map((field) => (
+                  <label key={field} className="block text-xs text-gray-400">
+                    {field}
+                    <input className="mt-1 w-full rounded bg-white/5 p-2 text-white" value={cert[field] || ''} onChange={(event) => update(field, event.target.value)} />
+                  </label>
+                ))}
+                <button type="button" className="text-xs text-red-400" onClick={() => updateSection('certifications', certifications.filter((item) => item.id !== cert.id))}>Remove</button>
+              </div>
+            )
+          })}
+        </div>
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between">

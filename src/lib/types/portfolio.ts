@@ -15,6 +15,18 @@ export interface SiteConfig {
   twitter?: string
   website?: string
   careerStart?: string
+  heroHeading?: string
+  aboutManifesto?: string
+}
+
+export interface Certification {
+  id: string
+  name: string
+  issuer: string
+  issued?: string
+  expires?: string
+  credentialId?: string
+  url?: string
 }
 
 export interface Project {

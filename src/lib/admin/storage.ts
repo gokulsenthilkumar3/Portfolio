@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 
-const DATA_FILE = path.join(process.cwd(), 'src', 'data', 'portfolio-data.json')
+// Curated defaults live in portfolio.config.ts. Keep admin drafts separate so
+// the older JSON snapshot cannot silently replace current public content.
+const DATA_FILE = path.join(process.cwd(), '.portfolio-admin-data.json')
 const KV_KEY = 'portfolio:data'
 
 // PERSISTENCE FIX
@@ -52,7 +54,6 @@ function ensureDataDir() {
 }
 
 function readLocalFile(): Record<string, unknown> {
-  ensureDataDir()
   if (!fs.existsSync(DATA_FILE)) return {}
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'))

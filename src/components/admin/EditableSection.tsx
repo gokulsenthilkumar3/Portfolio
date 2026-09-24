@@ -57,7 +57,7 @@ export function EditableSection({ children, label, onEdit, className = '' }: Edi
         onBlur={() => setHovered(false)}
         onClick={(e) => { e.stopPropagation(); onEdit() }}
         aria-label={`Edit ${label} section`}
-        className="absolute right-2 top-2 z-50 flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+        className={`absolute right-2 ${label === 'Hero' ? 'top-16' : 'top-2'} z-50 flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300`}
         style={{
           background: 'linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.9))',
           boxShadow: '0 4px 15px rgba(59,130,246,0.4)',

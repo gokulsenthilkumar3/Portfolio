@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 const PORTFOLIO_SECTIONS = new Set([
   'personal', 'about', 'stats', 'projects', 'skills', 'experiences',
-  'education', 'socialLinks', 'seo', 'blog', 'microblogs',
+  'education', 'certifications', 'socialLinks', 'seo', 'blog', 'microblogs',
 ])
 
 const PortfolioPayloadSchema = z.record(z.string(), z.unknown()).superRefine((value, context) => {

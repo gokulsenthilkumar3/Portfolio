@@ -20,18 +20,18 @@ interface AboutStoryProps {
   location: string
   stats: StatLike[]
   projectCount: number
+  manifesto?: string
+  repoCountSource?: 'live' | 'fallback'
 }
 
-const manifesto = 'I obsess over the 1% of details users never consciously notice — but always feel.'
-
-export function AboutStory({ bio, portrait, name, location, stats, projectCount }: AboutStoryProps) {
+export function AboutStory({ bio, portrait, name, location, stats, projectCount, manifesto = 'I obsess over the 1% of details users never consciously notice — but always feel.', repoCountSource = 'fallback' }: AboutStoryProps) {
   const root = useRef<HTMLElement>(null)
   const portraitFrame = useRef<HTMLElement>(null)
   const portraitImage = useRef<HTMLDivElement>(null)
 
   const statItems = [
     { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '+', label: 'Years engineering quality' },
-    { value: projectCount, suffix: stats.find((stat) => stat.label === 'Projects Built')?.suffix ?? '+', label: 'Products and systems built' },
+    { value: projectCount, suffix: '', label: 'Projects and research' },
     { value: Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '+', label: 'Public repositories' },
   ]
 
@@ -157,6 +157,7 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount 
           </div>
         ))}
       </div>
+      <p className="about-story__stat-source">GitHub public count · {repoCountSource === 'live' ? 'live' : 'fallback verified Sep 2026'}</p>
     </section>
   )
 }

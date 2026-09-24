@@ -246,7 +246,7 @@ function ProjectForm({
                 onChange={e => setForm(prev => ({ ...prev, category: e.target.value as Project['category'] }))}
                 className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
               >
-                {['web', 'mobile', '3d', 'ai', 'other'].map(c => (
+                {['web', 'mobile', '3d', 'ai', 'fullstack', 'iot', 'testing', 'tools', 'other'].map(c => (
                   <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
                 ))}
               </select>

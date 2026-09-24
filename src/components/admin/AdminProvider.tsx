@@ -10,6 +10,7 @@ import {
   SiteConfig,
   SocialLink,
   Microblog
+  , Certification
 } from '@/lib/types/portfolio'
 
 const STORAGE_KEY = 'portfolio_data_v1'
@@ -29,6 +30,7 @@ interface PortfolioData {
   skills: Skill[]
   experiences: Experience[]
   education: typeof portfolioConfig.education
+  certifications: Certification[]
   socialLinks: SocialLink[]
   seo: typeof portfolioConfig.seo
   blog: typeof portfolioConfig.blog
@@ -64,6 +66,7 @@ const defaultData: PortfolioData = {
   skills: portfolioConfig.skills as Skill[],
   experiences: portfolioConfig.experiences as Experience[],
   education: portfolioConfig.education,
+  certifications: portfolioConfig.certifications,
   socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
   seo: portfolioConfig.seo,
   blog: portfolioConfig.blog,
