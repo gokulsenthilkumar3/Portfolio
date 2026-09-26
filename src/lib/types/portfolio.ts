@@ -2,7 +2,7 @@ export interface SiteConfig {
   name: string
   title: string
   tagline: string
-  description: string
+  description?: string
   bio: string
   email: string
   emailZoho?: string
@@ -30,6 +30,7 @@ export interface Certification {
 }
 
 export interface Project {
+  kind?: 'project' | 'research'
   id: string
   title: string
   description: string
@@ -50,6 +51,10 @@ export interface Project {
   problem?: string
   responsibility?: string
   evidence?: string
+  nextSteps?: string
+  mediaCaption?: string
+  mediaType?: 'concept' | 'prototype' | 'screenshot'
+  sourceReviewedAt?: string
 }
 
 export interface Skill {

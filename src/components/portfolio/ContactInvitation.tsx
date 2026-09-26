@@ -9,9 +9,11 @@ interface ContactInvitationProps {
   github?: string
   linkedin?: string
   twitter?: string
+  heading: string
+  description: string
 }
 
-export function ContactInvitation({ name, email, github, linkedin, twitter }: ContactInvitationProps) {
+export function ContactInvitation({ name, email, github, linkedin, twitter, heading, description }: ContactInvitationProps) {
   const [copied, setCopied] = useState(false)
 
   const copyEmail = async () => {
@@ -42,8 +44,9 @@ export function ContactInvitation({ name, email, github, linkedin, twitter }: Co
   return (
     <section id="contact" className="contact-invitation" aria-labelledby="contact-title">
       <div className="contact-invitation__content">
-        <p className="contact-invitation__eyebrow">Have a problem worth solving?</p>
-        <h2 id="contact-title">Let&apos;s build<br />something worth using.</h2>
+        <p className="contact-invitation__eyebrow">A note from Gokul</p>
+        <h2 id="contact-title">{heading}</h2>
+        <p className="contact-invitation__description">{description}</p>
 
         <div className="contact-invitation__email-row">
           <a href={`mailto:${email}`} className="contact-invitation__email" data-cursor="link" data-no-transition>

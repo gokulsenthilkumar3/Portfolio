@@ -19,9 +19,10 @@ interface CinematicHeroProps {
   role: string
   available: boolean
   heroHeading?: string
+  tagline: string
 }
 
-export function CinematicHero({ name, role, available, heroHeading = 'I build software that earns <em>trust.</em>' }: CinematicHeroProps) {
+export function CinematicHero({ name, role, available, heroHeading = '', tagline }: CinematicHeroProps) {
   const root = useRef<HTMLElement>(null)
   const [showBlob, setShowBlob] = useState(false)
   const canRenderBlob = use3DGate()
@@ -104,7 +105,7 @@ export function CinematicHero({ name, role, available, heroHeading = 'I build so
         </p>
         <p className="cinematic-hero__status">
           <span className={available ? 'is-available' : ''} aria-hidden="true" />
-          {available ? 'Open to meaningful work' : 'Currently building'}
+          {available ? 'Open to conversations' : 'Focused on current work'}
         </p>
       </div>
 
@@ -120,8 +121,7 @@ export function CinematicHero({ name, role, available, heroHeading = 'I build so
 
         <div className="cinematic-hero__meta" data-hero-meta data-hero-reveal>
           <p>
-            I&apos;m an SDET and full-stack builder who makes quality part of the architecture,
-            not a checkpoint at the end.
+            {tagline}
           </p>
           <Link href="#projects" className="cinematic-hero__cta" data-hero-cta data-cursor="link">
             View all projects

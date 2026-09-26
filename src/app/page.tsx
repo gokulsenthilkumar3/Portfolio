@@ -15,7 +15,7 @@ export default function Home() {
   const { portfolioData, openAdminPanel } = useAdmin()
 
   const { personal, projects, skills, experiences, education, stats } = portfolioData
-  const uniqueProjectCount = new Set(projects.filter((project) => project.id !== 'forex-prediction').map((project) => project.id)).size
+  const uniqueProjectCount = new Set(projects.filter((project) => project.kind !== 'research').map((project) => project.id)).size
   const [publicRepoCount, setPublicRepoCount] = useState<number | null>(null)
 
   useEffect(() => {
@@ -44,15 +44,12 @@ export default function Home() {
           role={personal.title}
           available={personal.availability !== 'busy'}
           heroHeading={personal.heroHeading}
+          tagline={personal.tagline}
         />
       </EditableSection>
 
       <EditableSection label="All projects" onEdit={() => openAdminPanel('projects')}>
-        <ProjectsGallery projects={projects} />
-      </EditableSection>
-
-      <EditableSection label="Profile" onEdit={() => openAdminPanel('resume')}>
-        <LinkedInSection personal={personal} experiences={experiences} education={education} certifications={portfolioData.certifications} />
+        <ProjectsGallery projects={projects} heading={portfolioData.about.projectsHeading} intro={portfolioData.about.projectsIntro} />
       </EditableSection>
 
       <EditableSection label="About" onEdit={() => openAdminPanel('personal')}>
@@ -65,11 +62,15 @@ export default function Home() {
           projectCount={uniqueProjectCount}
           manifesto={personal.aboutManifesto}
           repoCountSource={publicRepoCount === null ? 'fallback' : 'live'}
-        />
+          title={portfolioData.about.title}
+          subtitle={portfolioData.about.subtitle}
+        >
+          <LinkedInSection experiences={experiences} education={education} certifications={portfolioData.certifications} />
+        </AboutStory>
       </EditableSection>
 
       <EditableSection label="Skills" onEdit={() => openAdminPanel('skills')}>
-        <SkillsMarquee skills={skills} />
+        <SkillsMarquee skills={skills} heading={portfolioData.about.skillsHeading} intro={portfolioData.about.skillsIntro} />
       </EditableSection>
 
       <EditableSection label="Contact" onEdit={() => openAdminPanel('personal')}>
@@ -79,6 +80,8 @@ export default function Home() {
           github={personal.github}
           linkedin={personal.linkedin}
           twitter={personal.twitter}
+          heading={portfolioData.about.contactHeading}
+          description={portfolioData.about.contactDesc}
         />
       </EditableSection>
     </>

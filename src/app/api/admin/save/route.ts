@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
-import { writePortfolioData } from '@/lib/admin/storage'
+import { readPublishedData, writePublishedData } from '@/lib/admin/storage'
+import { parsePortfolioData } from '@/lib/portfolio-content'
 import { z } from 'zod'
-
-const PORTFOLIO_SECTIONS = new Set([
-  'personal', 'about', 'stats', 'projects', 'skills', 'experiences',
-  'education', 'certifications', 'socialLinks', 'seo', 'blog', 'microblogs',
-])
-
-const PortfolioPayloadSchema = z.record(z.string(), z.unknown()).superRefine((value, context) => {
-  if (Object.keys(value).some((key) => !PORTFOLIO_SECTIONS.has(key))) {
-    context.addIssue({ code: 'custom', message: 'Unknown portfolio section' })
-  }
-})
 
 // SECURITY + RELIABILITY FIX
 // -----------------------------------------------------------------------
@@ -44,12 +34,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payload is too large' }, { status: 413 })
     }
     const rawData = await request.json()
-    const parsed = PortfolioPayloadSchema.safeParse(rawData)
-    if (!parsed.success) return NextResponse.json({ error: 'Invalid portfolio payload' }, { status: 400 })
-
-    await writePortfolioData(parsed.data)
+    const parsed = parsePortfolioData(rawData)
+    await writePublishedData(parsed as unknown as Record<string, unknown>)
+    const verified = await readPublishedData()
+    if (!verified || JSON.stringify(parsePortfolioData(verified)) !== JSON.stringify(parsed)) {
+      throw new Error('Published content could not be verified after saving')
+    }
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: err.issues[0]?.message || 'Invalid portfolio content' }, { status: 400 })
+    }
     console.error('Error saving portfolio data:', err)
     const message = err instanceof Error ? err.message : 'unknown'
     return NextResponse.json({ error: message }, { status: 500 })

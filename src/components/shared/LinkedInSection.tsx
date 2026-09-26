@@ -1,12 +1,9 @@
 'use client'
 
-import Image from 'next/image'
-import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Linkedin, MapPin } from 'lucide-react'
-import type { Certification, Education, Experience, SiteConfig } from '@/lib/types/portfolio'
-import { SectionHeading } from '@/components/portfolio/SectionHeading'
+import { GraduationCap } from 'lucide-react'
+import type { Certification, Education, Experience } from '@/lib/types/portfolio'
 
 interface LinkedInSectionProps {
-  personal: SiteConfig
   experiences: Experience[]
   education: Education[]
   certifications?: Certification[]
@@ -25,63 +22,16 @@ function formatPeriod(start?: string, end?: string) {
  * Full LinkedIn-inspired profile: cover + avatar header, experience timeline,
  * and education card — matching the reference site's rich profile layout.
  */
-export function LinkedInSection({ personal, experiences, education, certifications = [] }: LinkedInSectionProps) {
-  const currentRole = experiences.find((experience) => experience.period.present) ?? experiences[0]
+export function LinkedInSection({ experiences, education, certifications = [] }: LinkedInSectionProps) {
   const careerStartYear = experiences
     .map((experience) => new Date(experience.period.start).getUTCFullYear())
     .filter((year) => Number.isFinite(year))
     .sort((a, b) => a - b)[0]
-  const latestEducation = education.reduce<typeof education[number] | undefined>((latest, item) => {
-    if (!latest) return item
-    return item.period.start > latest.period.start ? item : latest
-  }, undefined)
-
   return (
-    <section id="profile" className="portfolio-section linkedin-profile" aria-labelledby="profile-title">
-      <SectionHeading
-        id="profile-title"
-        index="02"
-        eyebrow="Profile"
-        title="The person behind the systems."
-        description="A closer, more human view of the work — the kind of context a polished professional profile should make easy to scan."
-      />
+    <div id="profile" className="linkedin-profile linkedin-profile--within-about" aria-labelledby="profile-title">
+      <h3 id="profile-title" className="linkedin-profile__chapter-heading">Experience and credentials</h3>
 
       <div className="linkedin-profile__surface">
-        {/* Cover gradient */}
-        <div className="linkedin-profile__cover" aria-hidden="true" />
-
-        {/* Header: avatar + identity */}
-        <div className="linkedin-profile__header">
-          <div className="linkedin-profile__avatar">
-            <Image src={personal.avatar || '/gokul-photo.jpg'} alt={personal.name} width={128} height={128} />
-          </div>
-
-          <div className="linkedin-profile__identity">
-            <div className="linkedin-profile__name-row">
-              <h3>{personal.name}</h3>
-              <span className="linkedin-profile__badge"><Linkedin aria-hidden="true" /> Profile view</span>
-            </div>
-            <p className="linkedin-profile__title">{personal.title}</p>
-            <div className="linkedin-profile__meta">
-              <span><MapPin aria-hidden="true" /> {personal.location}</span>
-              {currentRole && <span><BriefcaseBusiness aria-hidden="true" /> {currentRole.company}</span>}
-              {latestEducation && <span><GraduationCap aria-hidden="true" /> {latestEducation.institution}</span>}
-            </div>
-            {personal.linkedin && (
-              <a
-                href={personal.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="linkedin-profile__connect"
-                data-no-transition
-                data-cursor="link"
-              >
-                Connect on LinkedIn <ArrowUpRight aria-hidden="true" />
-              </a>
-            )}
-          </div>
-        </div>
-
         {/* Body: experience timeline left, education + snapshot right */}
         <div className="linkedin-profile__body">
           {/* Experience timeline */}
@@ -161,6 +111,6 @@ export function LinkedInSection({ personal, experiences, education, certificatio
           </aside>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

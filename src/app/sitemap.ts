@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next'
-import { seo } from '@/lib/data/content'
+import { getPublishedPortfolio } from '@/lib/admin/published'
 
-const base = seo.siteUrl || 'https://portfolio-ten-plum-98.vercel.app'
-
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const data = await getPublishedPortfolio()
+  const base = process.env.NEXT_PUBLIC_SITE_URL || data.seo.siteUrl
   return [
     {
       url: base,
@@ -11,29 +11,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 1,
     },
-    {
-      url: `${base}/#about`,
+    ...data.projects.filter((project) => project.kind !== 'research').map((project) => ({
+      url: `${base}/projects/${project.id}`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${base}/#projects`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${base}/#skills`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.7,
-    },
-    {
-      url: `${base}/#contact`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.6,
-    },
+    })),
   ]
 }

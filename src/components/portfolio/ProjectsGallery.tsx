@@ -20,7 +20,7 @@ function projectRole(project: Project) {
   if (project.status === 'planned') return 'Research and design'
   if (project.id === 'velo') return 'UI prototype'
   if (project.category === 'testing') return 'Test architecture'
-  if (project.category === 'ai') return 'Machine learning'
+  if (project.category === 'ai') return 'AI-assisted workflow'
   if (project.category === 'fullstack') return 'Full-stack build'
   return 'Product engineering'
 }
@@ -80,11 +80,11 @@ function ProjectCard({ project, index, selected, clone = false, setRef, onOpen }
 
         <div className="project-card__image">
           {project.images?.[0] ? (
-            <Image src={project.images[0]} alt={project.images[0].includes('-concept.') ? `${project.title} conceptual cover artwork` : `${project.title} project artwork`} fill sizes="(max-width: 900px) 88vw, 62vw" />
+            <Image src={project.images[0]} alt={`${project.title} ${project.mediaType === 'concept' ? 'concept artwork' : project.mediaType === 'prototype' ? 'prototype interface' : 'project image'}`} fill sizes="(max-width: 900px) 88vw, 62vw" />
           ) : (
             <div className="project-visual-placeholder" aria-hidden="true"><span>{project.status === 'planned' ? 'Research and design' : 'Project workspace'}</span><strong>{project.title}</strong></div>
           )}
-          {project.images?.[0]?.includes('-concept.') && <span className="project-card__art-label">Concept artwork</span>}
+          {project.mediaType && <span className="project-card__art-label">{project.mediaType === 'concept' ? 'Concept artwork' : project.mediaType === 'prototype' ? 'Prototype screen · sample data' : 'Product screen'}</span>}
         </div>
       </div>
 
@@ -156,12 +156,12 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
 
         <div className="project-expanded__visual">
           {project.images?.[0] ? (
-            <Image src={project.images[0]} alt={project.images[0].includes('-concept.') ? `${project.title} conceptual cover artwork` : `${project.title} project artwork`} fill priority sizes="100vw" />
+            <Image src={project.images[0]} alt={`${project.title} ${project.mediaType === 'concept' ? 'concept artwork' : project.mediaType === 'prototype' ? 'prototype interface' : 'project image'}`} fill priority sizes="100vw" />
           ) : (
             <div className="project-visual-placeholder project-visual-placeholder--expanded" aria-hidden="true"><span>{project.status === 'planned' ? 'Research and design' : 'Project workspace'}</span><strong>{project.title}</strong></div>
           )}
           <div className="project-expanded__shade" />
-          {project.images?.[0]?.includes('-concept.') && <span className="project-expanded__art-label">Concept artwork</span>}
+          {project.mediaType && <span className="project-expanded__art-label">{project.mediaType === 'concept' ? 'Concept artwork' : project.mediaType === 'prototype' ? 'Prototype screen · sample data' : 'Product screen'}</span>}
           <div className="project-expanded__title">
             <span>{projectYear(project)} · {projectRole(project)}</span>
             <h2 id="expanded-project-title">{project.title}</h2>
@@ -182,6 +182,9 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
           </div>
 
           <div className="project-expanded__actions">
+            <a href={`/projects/${project.id}`}>
+              Read the case study <ArrowUpRight aria-hidden="true" />
+            </a>
             {project.links?.github && (
               <a href={project.links.github} target="_blank" rel="noreferrer" data-no-transition>
                 Source <Github aria-hidden="true" />
@@ -199,22 +202,57 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
   )
 }
 
-export function ProjectsGallery({ projects }: { projects: Project[] }) {
+export function ProjectsGallery({ projects, heading, intro }: { projects: Project[]; heading: string; intro: string }) {
   const root = useRef<HTMLElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
   const cardRefs = useRef(new Map<string, HTMLElement>())
   const [selected, setSelected] = useState<Project | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [manualPaused, setManualPaused] = useState(false)
+  const [isInView, setIsInView] = useState(false)
+  const [isInteracting, setIsInteracting] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const interactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingFlip = useRef<{ state: ReturnType<typeof Flip.getState>; id: string; closing: boolean } | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const lastTrigger = useRef<HTMLButtonElement | null>(null)
-  const research = projects.find((project) => project.id === 'forex-prediction')
+  const research = projects.find((project) => project.kind === 'research')
 
   const displayedProjects = useMemo(() => {
-    return projects.filter((project) => project.id !== 'forex-prediction')
+    return projects.filter((project) => project.kind !== 'research')
   }, [projects])
+  const isPlaying = !manualPaused && isInView && !isInteracting && !isHidden && !reducedMotion && !selected && displayedProjects.length > 1
+
+  const pauseTemporarily = () => {
+    setIsInteracting(true)
+    if (interactionTimer.current) clearTimeout(interactionTimer.current)
+    interactionTimer.current = setTimeout(() => setIsInteracting(false), 2500)
+  }
+
+  useEffect(() => () => {
+    if (interactionTimer.current) clearTimeout(interactionTimer.current)
+  }, [])
+
+  useEffect(() => {
+    const stageElement = stage.current
+    if (!stageElement) return
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const onMotionChange = () => setReducedMotion(motion.matches)
+    const onVisibilityChange = () => setIsHidden(document.hidden)
+    onMotionChange()
+    onVisibilityChange()
+    const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting), { threshold: 0.2 })
+    observer.observe(stageElement)
+    motion.addEventListener('change', onMotionChange)
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => {
+      observer.disconnect()
+      motion.removeEventListener('change', onMotionChange)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
+  }, [])
 
   useGSAP(() => {
     gsap.registerPlugin(Flip)
@@ -223,9 +261,11 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
   const updatePosition = () => {
     const element = track.current
     if (!element) return
-    const maxScroll = element.scrollWidth - element.clientWidth
-    if (maxScroll > 0 && element.scrollLeft >= maxScroll - 1) {
-      element.scrollLeft = 0
+    const first = element.querySelector<HTMLElement>('.project-card:not([data-loop-clone])')
+    const clone = element.querySelector<HTMLElement>('[data-loop-clone]')
+    const period = first && clone ? clone.offsetLeft - first.offsetLeft : 0
+    if (period > 0 && element.scrollLeft >= period - 1) {
+      element.scrollLeft -= period
       setActiveIndex(0)
       return
     }
@@ -244,7 +284,7 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
     const element = track.current
     const card = element?.querySelectorAll<HTMLElement>('.project-card')[index]
     if (!element || !card) return
-    setIsPlaying(false)
+    pauseTemporarily()
     const left = card.offsetLeft - (element.clientWidth - card.offsetWidth) / 2
     element.scrollTo({ left, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
   }
@@ -258,29 +298,16 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
       previous = time
       const element = track.current
       if (!element) return
+      const first = element.querySelector<HTMLElement>('.project-card:not([data-loop-clone])')
+      const clone = element.querySelector<HTMLElement>('[data-loop-clone]')
+      const period = first && clone ? clone.offsetLeft - first.offsetLeft : 0
       const next = element.scrollLeft + delta * 0.18
-      element.scrollLeft = next >= element.scrollWidth - element.clientWidth - 1 ? 0 : next
+      element.scrollLeft = period > 0 && next >= period ? next - period : next
       frame = requestAnimationFrame(advance)
     }
     frame = requestAnimationFrame(advance)
     return () => cancelAnimationFrame(frame)
   }, [isPlaying, selected])
-
-  useEffect(() => {
-    if (!isPlaying || !stage.current) return
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) setIsPlaying(false)
-    }, { threshold: 0.1 })
-    const pauseWhenHidden = () => {
-      if (document.hidden) setIsPlaying(false)
-    }
-    observer.observe(stage.current)
-    document.addEventListener('visibilitychange', pauseWhenHidden)
-    return () => {
-      observer.disconnect()
-      document.removeEventListener('visibilitychange', pauseWhenHidden)
-    }
-  }, [isPlaying])
 
   useLayoutEffect(() => {
     const pending = pendingFlip.current
@@ -325,7 +352,7 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
     const source = cardRefs.current.get(project.id)
     if (!source) return
     lastTrigger.current = trigger
-    setIsPlaying(false)
+    pauseTemporarily()
     pendingFlip.current = { state: Flip.getState(source), id: project.id, closing: false }
     setSelected(project)
   }
@@ -346,8 +373,8 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
           id="projects-title"
           index="01"
           eyebrow="All projects"
-          title="Built and explored."
-          description={`${displayedProjects.length} current public projects, from working products and prototypes to clearly labeled research. Explore them in the horizontal gallery below.`}
+          title={heading}
+          description={intro}
         />
         {research && (
           <p className="projects-gallery__publication">
@@ -356,8 +383,8 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
               : research.title}
           </p>
         )}
-        <a href="#profile" className="projects-gallery__skip" data-cursor="link">
-          Skip to profile <ArrowDownRight aria-hidden="true" />
+        <a href="#about" className="projects-gallery__skip" data-cursor="link">
+          Skip to about <ArrowDownRight aria-hidden="true" />
         </a>
       </div>
 
@@ -366,13 +393,13 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
           <span className="projects-gallery__position" aria-live="off">{String(activeIndex + 1).padStart(2, '0')} / {String(displayedProjects.length).padStart(2, '0')}</span>
           <button type="button" className="projects-gallery__arrow" onClick={() => goToProject(Math.max(0, activeIndex - 1))} aria-label="Previous project" disabled={activeIndex === 0}><ArrowLeft size={14} aria-hidden="true" /></button>
           <button type="button" className="projects-gallery__arrow" onClick={() => goToProject(activeIndex + 1)} aria-label="Next project"><ArrowRight size={14} aria-hidden="true" /></button>
-          <button type="button" className="projects-gallery__autoplay" onClick={() => setIsPlaying((playing) => !playing)} aria-label={isPlaying ? 'Pause project tour' : 'Play project tour'} aria-pressed={isPlaying}>
-            {isPlaying ? <Pause size={13} aria-hidden="true" /> : <Play size={13} aria-hidden="true" />}
-            {isPlaying ? 'Pause' : 'Play tour'}
+          <button type="button" className="projects-gallery__autoplay" onClick={() => setManualPaused((paused) => !paused)} aria-label={manualPaused ? 'Play project tour' : 'Pause project tour'} aria-pressed={!manualPaused} disabled={reducedMotion} title={reducedMotion ? 'Automatic motion is disabled by your device preference' : undefined}>
+            {manualPaused ? <Play size={13} aria-hidden="true" /> : <Pause size={13} aria-hidden="true" />}
+            {manualPaused ? 'Play tour' : 'Pause'}
           </button>
-          <span className="projects-gallery__hint">Swipe or use arrows · Loops after 10</span>
+          <span className="projects-gallery__hint">Swipe or use arrows · Loops after {displayedProjects.length}</span>
         </div>
-        <div ref={track} className="projects-gallery__track" role="region" aria-label="Projects, horizontally scrollable and looping" tabIndex={0} data-playing={isPlaying} onScroll={updatePosition} onPointerDown={() => setIsPlaying(false)} onMouseEnter={() => setIsPlaying(false)} onFocusCapture={() => setIsPlaying(false)} onWheel={() => setIsPlaying(false)} onKeyDown={(event) => {
+        <div ref={track} className="projects-gallery__track" role="region" aria-label="Projects, horizontally scrollable and looping" tabIndex={0} data-playing={isPlaying} onScroll={updatePosition} onPointerDown={pauseTemporarily} onMouseEnter={() => setIsInteracting(true)} onMouseLeave={() => setIsInteracting(false)} onFocusCapture={() => setIsInteracting(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsInteracting(false) }} onWheel={pauseTemporarily} onKeyDown={(event) => {
           if (event.target !== event.currentTarget) return
           if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
             event.preventDefault()
@@ -395,6 +422,14 @@ export function ProjectsGallery({ projects }: { projects: Project[] }) {
           {displayedProjects[0] && <ProjectCard
             project={displayedProjects[0]}
             index={0}
+            selected={false}
+            clone
+            setRef={() => {}}
+            onOpen={() => {}}
+          />}
+          {displayedProjects[1] && <ProjectCard
+            project={displayedProjects[1]}
+            index={1}
             selected={false}
             clone
             setRef={() => {}}

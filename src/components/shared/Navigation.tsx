@@ -154,7 +154,7 @@ export function Navigation() {
             className="minimal-nav__hire"
             data-cursor="link"
           >
-            Hire Me
+            Say hello
           </Link>
         </div>
 
@@ -221,7 +221,7 @@ export function Navigation() {
                 className="minimal-nav__hire"
                 onClick={closeMenu}
               >
-                Hire Me
+                Say hello
               </Link>
             </motion.div>
           </motion.div>

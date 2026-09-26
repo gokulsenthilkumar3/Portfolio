@@ -22,17 +22,20 @@ interface AboutStoryProps {
   projectCount: number
   manifesto?: string
   repoCountSource?: 'live' | 'fallback'
+  title: string
+  subtitle: string
+  children?: React.ReactNode
 }
 
-export function AboutStory({ bio, portrait, name, location, stats, projectCount, manifesto = 'I obsess over the 1% of details users never consciously notice — but always feel.', repoCountSource = 'fallback' }: AboutStoryProps) {
+export function AboutStory({ bio, portrait, name, location, stats, projectCount, manifesto = '', repoCountSource = 'fallback', title, subtitle, children }: AboutStoryProps) {
   const root = useRef<HTMLElement>(null)
   const portraitFrame = useRef<HTMLElement>(null)
   const portraitImage = useRef<HTMLDivElement>(null)
 
   const statItems = [
-    { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '+', label: 'Years engineering quality' },
+    { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '', label: 'Years engineering quality' },
     { value: projectCount, suffix: '', label: 'Projects and research' },
-    { value: Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '+', label: 'Public repositories' },
+    { value: Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '', label: 'Public repositories' },
   ]
 
   const place = location.split(',')[0]?.trim() || location
@@ -116,7 +119,7 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount,
 
   return (
     <section ref={root} id="about" className="portfolio-section about-story" aria-labelledby="about-title">
-      <SectionHeading id="about-title" index="03" eyebrow="About" title="The details are the product." />
+      <SectionHeading id="about-title" index="02" eyebrow="About" title={title} description={subtitle} />
 
       <div className="about-story__grid">
         <div className="about-story__copy">
@@ -157,7 +160,8 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount,
           </div>
         ))}
       </div>
-      <p className="about-story__stat-source">GitHub public count · {repoCountSource === 'live' ? 'live' : 'fallback verified Sep 2026'}</p>
+      <p className="about-story__stat-source">GitHub public count · {repoCountSource === 'live' ? 'live API' : 'curated fallback'}</p>
+      {children}
     </section>
   )
 }

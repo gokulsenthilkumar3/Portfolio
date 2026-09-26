@@ -5,42 +5,30 @@ import '../styles/cinematic.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { Toaster } from 'sonner'
-import { seo, personal } from '@/lib/data/content'
+import { getPublishedPortfolio } from '@/lib/admin/published'
 import { Analytics } from '@vercel/analytics/react'
 import { PublicChrome } from '@/components/shared/PublicChrome'
 
-// BASE_URL must always be set via NEXT_PUBLIC_SITE_URL env var in production.
-// The personal.website fallback is for local dev only — never use a Vercel preview URL here.
-const BASE_URL = seo.siteUrl || personal.website || 'https://gokulsenthilkumar3.vercel.app'
+export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: seo.title,
-  description: seo.description,
-  keywords: seo.keywords,
-  authors: [{ name: seo.author }],
-  // Canonical URL — prevents duplicate content penalty across preview/prod deployments
-  alternates: {
-    canonical: BASE_URL,
-  },
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getPublishedPortfolio()
+  const base = process.env.NEXT_PUBLIC_SITE_URL || seo.siteUrl
+  return {
+    metadataBase: new URL(base),
     title: seo.title,
     description: seo.description,
-    type: 'website',
-    url: seo.siteUrl,
-    siteName: seo.author,
-    images: [{ url: `${BASE_URL}/og.png`, width: 1200, height: 630, alt: `${seo.author} — I build things that feel inevitable.` }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: seo.title,
-    description: seo.description,
-    creator: '@GokulKangeyanS',
-    images: [`${BASE_URL}/og.png`],
-  },
-  icons: {
-    icon: '/favicon.ico',
-  },
+    keywords: seo.keywords,
+    authors: [{ name: seo.author }],
+    alternates: { canonical: base },
+    openGraph: {
+      title: seo.title, description: seo.description, type: 'website', url: base,
+      siteName: seo.author,
+      images: [{ url: seo.ogImage, width: 1200, height: 630, alt: `${seo.author} portfolio` }],
+    },
+    twitter: { card: 'summary_large_image', title: seo.title, description: seo.description, images: [seo.ogImage] },
+    icons: { icon: '/favicon.ico' },
+  }
 }
 
 // Separate viewport export — avoids Next.js metadata warning
@@ -53,26 +41,15 @@ export const viewport: Viewport = {
   ],
 }
 
-// JSON-LD structured data — Person schema for Google rich results
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: seo.author,
-  url: BASE_URL,
-  sameAs: [
-    personal.github,
-    personal.linkedin,
-    personal.twitter,
-  ].filter(Boolean),
-  jobTitle: 'SDET & Full-Stack Developer',
-  knowsAbout: ['TypeScript', 'Next.js', 'React', 'Playwright', 'Node.js', 'Test Automation'],
-  worksFor: {
-    '@type': 'Organization',
-    name: 'CloudAssert',
-  },
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const initialData = await getPublishedPortfolio()
+  const { personal, seo } = initialData
+  const base = process.env.NEXT_PUBLIC_SITE_URL || seo.siteUrl
+  const jsonLd = {
+    '@context': 'https://schema.org', '@type': 'Person', name: personal.name,
+    url: base, sameAs: [personal.github, personal.linkedin, personal.twitter].filter(Boolean),
+    jobTitle: personal.title,
+  }
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -99,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* JSON-LD structured data for Google Search rich results */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       </head>
       <body suppressHydrationWarning>
@@ -111,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <ThemeProvider>
-          <AdminClientWrapper>
+          <AdminClientWrapper initialData={initialData}>
             <PublicChrome />
             <main id="main-content">{children}</main>
             {/* Toaster lives here so it's available to all sections */}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { portfolioConfig } from '@/config/portfolio.config'
+import { getPublishedPortfolio } from '@/lib/admin/published'
 
 /**
  * GET /api/stats
@@ -64,7 +64,7 @@ function calcYearsExperience(careerStart: string): number {
 }
 
 export async function GET() {
-  const { personal, projects } = portfolioConfig
+  const { personal, projects, stats: publishedStats } = await getPublishedPortfolio()
 
   // Extract GitHub username from the profile URL in config
   // e.g. "https://github.com/gokulsenthilkumar3" → "gokulsenthilkumar3"
@@ -76,17 +76,17 @@ export async function GET() {
 
   // Years of experience: calculated from careerStart date in config
   // This is the same date shown on LinkedIn as your first role start date.
-  const yearsExperience = calcYearsExperience(personal.careerStart)
+  const yearsExperience = calcYearsExperience(personal.careerStart || '2023-06-01')
 
   // Projects count: live count from the config array (single source of truth)
-  const projectsBuilt = projects.filter((project) => project.id !== 'forex-prediction').length
+  const projectsBuilt = projects.filter((project) => project.kind !== 'research').length
 
   const stats = [
     {
       label: 'Years Experience',
       // Live value from careerStart date; fallback to config static value
       value: yearsExperience,
-      suffix: '+',
+      suffix: '',
       duration: 2000,
       source: 'calculated',
     },
@@ -95,22 +95,22 @@ export async function GET() {
       value: projectsBuilt,
       suffix: '',
       duration: 2200,
-      source: 'config',
+      source: 'published',
     },
     {
       label: 'GitHub Repos',
       // Live from GitHub API; fallback to config static value if API fails
-      value: github?.repos ?? portfolioConfig.stats.find(s => s.label === 'GitHub Repos')?.value ?? 0,
-      suffix: '+',
+      value: github?.repos ?? publishedStats.find(s => s.label === 'GitHub Repos')?.value ?? 0,
+      suffix: '',
       duration: 2400,
       source: github ? 'github_api' : 'config_fallback',
     },
     {
       label: 'Quality Practices',
-      value: portfolioConfig.stats.find(s => s.label === 'Quality Practices')?.value ?? 0,
+      value: publishedStats.find(s => s.label === 'Quality Practices')?.value ?? 0,
       suffix: '',
       duration: 2600,
-      source: 'config',
+      source: 'published',
     },
   ]
 

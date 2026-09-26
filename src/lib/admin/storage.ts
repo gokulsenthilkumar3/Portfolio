@@ -5,6 +5,8 @@ import path from 'path'
 // the older JSON snapshot cannot silently replace current public content.
 const DATA_FILE = path.join(process.cwd(), '.portfolio-admin-data.json')
 const KV_KEY = 'portfolio:data'
+const PUBLISHED_FILE = path.join(process.cwd(), '.portfolio-published-data.json')
+const PUBLISHED_KV_KEY = 'portfolio:published'
 
 // PERSISTENCE FIX
 // -----------------------------------------------------------------------
@@ -27,8 +29,8 @@ const KV_URL = process.env.KV_REST_API_URL
 const KV_TOKEN = process.env.KV_REST_API_TOKEN
 const isProd = process.env.NODE_ENV === 'production'
 
-async function kvGet(): Promise<Record<string, unknown> | null> {
-  const res = await fetch(`${KV_URL}/get/${KV_KEY}`, {
+async function kvGet(key = KV_KEY): Promise<Record<string, unknown> | null> {
+  const res = await fetch(`${KV_URL}/get/${key}`, {
     headers: { Authorization: `Bearer ${KV_TOKEN}` },
     cache: 'no-store',
   })
@@ -37,8 +39,8 @@ async function kvGet(): Promise<Record<string, unknown> | null> {
   return result ? JSON.parse(result) : null
 }
 
-async function kvSet(data: Record<string, unknown>): Promise<void> {
-  const res = await fetch(`${KV_URL}/set/${KV_KEY}`, {
+async function kvSet(data: Record<string, unknown>, key = KV_KEY): Promise<void> {
+  const res = await fetch(`${KV_URL}/set/${key}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(JSON.stringify(data)),
@@ -53,18 +55,18 @@ function ensureDataDir() {
   }
 }
 
-function readLocalFile(): Record<string, unknown> {
-  if (!fs.existsSync(DATA_FILE)) return {}
+function readLocalFile(file = DATA_FILE): Record<string, unknown> {
+  if (!fs.existsSync(file)) return {}
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'))
+    return JSON.parse(fs.readFileSync(file, 'utf8'))
   } catch {
     return {}
   }
 }
 
-function writeLocalFile(data: Record<string, unknown>): void {
+function writeLocalFile(data: Record<string, unknown>, file = DATA_FILE): void {
   ensureDataDir()
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8')
+  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8')
 }
 
 export async function readPortfolioData(): Promise<Record<string, unknown>> {
@@ -90,6 +92,19 @@ export async function writePortfolioData(data: Record<string, unknown>): Promise
     )
   }
   writeLocalFile(data)
+}
+
+export async function readPublishedData(): Promise<Record<string, unknown> | null> {
+  if (KV_URL && KV_TOKEN) return kvGet(PUBLISHED_KV_KEY)
+  if (isProd) return null
+  if (!fs.existsSync(PUBLISHED_FILE)) return null
+  return readLocalFile(PUBLISHED_FILE)
+}
+
+export async function writePublishedData(data: Record<string, unknown>): Promise<void> {
+  if (KV_URL && KV_TOKEN) return kvSet(data, PUBLISHED_KV_KEY)
+  if (isProd) throw new Error('Publishing needs KV_REST_API_URL and KV_REST_API_TOKEN in production.')
+  writeLocalFile(data, PUBLISHED_FILE)
 }
 
 export async function updatePortfolioSection(

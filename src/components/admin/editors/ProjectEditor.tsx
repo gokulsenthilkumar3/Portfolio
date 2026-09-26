@@ -9,6 +9,7 @@ import type { Project } from '@/lib/types/portfolio'
 
 const BLANK_PROJECT: Project = {
   id: '',
+  kind: 'project',
   title: '',
   description: '',
   tech: [],
@@ -212,13 +213,19 @@ function ProjectForm({
           {([
             { key: 'title', label: 'Project Title', textarea: false },
             { key: 'description', label: 'Description', textarea: true },
+            { key: 'problem', label: 'Why this exists', textarea: true },
+            { key: 'responsibility', label: 'My contribution', textarea: true },
+            { key: 'evidence', label: 'What is implemented today', textarea: true },
+            { key: 'nextSteps', label: 'What remains to do', textarea: true },
+            { key: 'mediaCaption', label: 'Image provenance / caption', textarea: true },
+            { key: 'sourceReviewedAt', label: 'Source reviewed (month and year)', textarea: false },
           ] as const).map(f => (
             <div key={f.key}>
               <label htmlFor={`proj-${f.key}`} className="block text-[11px] text-gray-400 mb-1">{f.label}</label>
               {f.textarea ? (
                 <textarea
                   id={`proj-${f.key}`}
-                  value={form[f.key] as string || ''}
+                  value={form[f.key] || ''}
                   placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   rows={3}
@@ -227,7 +234,7 @@ function ProjectForm({
               ) : (
                 <input
                   id={`proj-${f.key}`}
-                  value={form[f.key] as string || ''}
+                  value={form[f.key] || ''}
                   placeholder={f.label}
                   onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
@@ -268,6 +275,19 @@ function ProjectForm({
           </div>
 
           <div>
+            <label htmlFor="proj-kind" className="block text-[11px] text-gray-400 mb-1">Placement</label>
+            <select
+              id="proj-kind"
+              value={form.kind || 'project'}
+              onChange={e => setForm(prev => ({ ...prev, kind: e.target.value as Project['kind'] }))}
+              className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
+            >
+              <option value="project" className="bg-gray-900">Project gallery</option>
+              <option value="research" className="bg-gray-900">Research archive</option>
+            </select>
+          </div>
+
+          <div>
             <label htmlFor="proj-tech" className="block text-[11px] text-gray-400 mb-1">Tech Stack (comma-separated)</label>
             <input
               id="proj-tech"
@@ -279,14 +299,29 @@ function ProjectForm({
           </div>
 
           <div>
-            <label htmlFor="proj-image" className="block text-[11px] text-gray-400 mb-1">Image URL</label>
+            <label htmlFor="proj-image" className="block text-[11px] text-gray-400 mb-1">Local image path</label>
             <input
               id="proj-image"
               value={form.images?.[0] || ''}
               onChange={e => setForm(prev => ({ ...prev, images: [e.target.value] }))}
               className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
-              placeholder="https://..."
+              placeholder="/projects/project-image.webp"
             />
+          </div>
+
+          <div>
+            <label htmlFor="proj-media-type" className="block text-[11px] text-gray-400 mb-1">Image type</label>
+            <select
+              id="proj-media-type"
+              value={form.mediaType || ''}
+              onChange={e => setForm(prev => ({ ...prev, mediaType: e.target.value ? e.target.value as Project['mediaType'] : undefined }))}
+              className="w-full px-3 py-2 rounded-lg text-sm text-white bg-white/5 border border-white/10 focus:border-blue-500/40 focus:outline-none"
+            >
+              <option value="" className="bg-gray-900">Unspecified</option>
+              <option value="concept" className="bg-gray-900">Concept artwork</option>
+              <option value="prototype" className="bg-gray-900">Prototype screen with sample data</option>
+              <option value="screenshot" className="bg-gray-900">Product screenshot</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

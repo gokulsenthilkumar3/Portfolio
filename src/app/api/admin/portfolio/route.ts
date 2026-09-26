@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
 import { readPortfolioData, updatePortfolioSection } from '@/lib/admin/storage'
-import { portfolioConfig } from '@/config/portfolio.config'
+import { getPublishedPortfolio } from '@/lib/admin/published'
 import { z } from 'zod'
 
 const SectionSchema = z.enum([
@@ -25,24 +25,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const storedData = await readPortfolioData()
-  // Merge stored data over the static config
-  const merged = {
-    personal: storedData.personal || portfolioConfig.personal,
-    stats: storedData.stats || portfolioConfig.stats,
-    projects: storedData.projects || portfolioConfig.projects,
-    skills: storedData.skills || portfolioConfig.skills,
-    experiences: storedData.experiences || portfolioConfig.experiences,
-    socialLinks: storedData.socialLinks || portfolioConfig.socialLinks,
-    seo: storedData.seo || portfolioConfig.seo,
-    blog: storedData.blog || portfolioConfig.blog,
-    microblogs: storedData.microblogs || portfolioConfig.microblogs,
-    education: storedData.education || portfolioConfig.education,
-    certifications: storedData.certifications || portfolioConfig.certifications,
-    about: storedData.about || portfolioConfig.about,
-  }
+  const [storedData, published] = await Promise.all([readPortfolioData(), getPublishedPortfolio()])
+  const merged = { ...published, ...storedData }
+  const hasUnpublishedDraft = Object.entries(storedData).some(([key, value]) =>
+    JSON.stringify((published as unknown as Record<string, unknown>)[key]) !== JSON.stringify(value)
+  )
 
-  return NextResponse.json(merged)
+  return NextResponse.json(merged, { headers: { 'X-Portfolio-Has-Draft': String(hasUnpublishedDraft) } })
 }
 
 export async function PUT(request: NextRequest) {

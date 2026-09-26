@@ -7,6 +7,7 @@ import { AdminToolbar } from '@/components/admin/AdminToolbar'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { useAdmin } from '@/components/admin/AdminProvider'
 import { usePathname } from 'next/navigation'
+import type { PortfolioData } from '@/lib/portfolio-content'
 
 function AdminLayer() {
   const pathname = usePathname()
@@ -29,9 +30,9 @@ function AdminLayer() {
   )
 }
 
-export function AdminClientWrapper({ children }: { children: React.ReactNode }) {
+export function AdminClientWrapper({ children, initialData }: { children: React.ReactNode; initialData: PortfolioData }) {
   return (
-    <AdminProvider>
+    <AdminProvider initialData={initialData}>
       <AdminLayer />
       {children}
     </AdminProvider>

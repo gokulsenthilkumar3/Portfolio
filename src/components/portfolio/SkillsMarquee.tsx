@@ -24,7 +24,7 @@ function matchesFilter(skill: Skill, filter: FilterKey) {
   return skill.category === filter
 }
 
-export function SkillsMarquee({ skills }: { skills: Skill[] }) {
+export function SkillsMarquee({ skills, heading, intro }: { skills: Skill[]; heading: string; intro: string }) {
   const root = useRef<HTMLElement>(null)
   const [filter, setFilter] = useState<FilterKey>('all')
   const [isPaused, setIsPaused] = useState(false)
@@ -75,10 +75,10 @@ export function SkillsMarquee({ skills }: { skills: Skill[] }) {
       <div data-skills-heading>
         <SectionHeading
           id="skills-title"
-          index="04"
+          index="03"
           eyebrow="Capabilities"
-          title="What I know."
-          description="A working set of tools for making software reliable, fast, and quietly intuitive."
+          title={heading}
+          description={intro}
         />
       </div>
 

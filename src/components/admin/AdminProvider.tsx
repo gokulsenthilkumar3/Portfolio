@@ -1,40 +1,29 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { portfolioConfig } from '@/config/portfolio.config'
+import { baselineData, parsePortfolioData, type PortfolioData } from '@/lib/portfolio-content'
 import { toast } from 'sonner'
-import { 
-  Project, 
-  Skill, 
-  Experience, 
-  SiteConfig,
-  SocialLink,
-  Microblog
-  , Certification
-} from '@/lib/types/portfolio'
 
-const STORAGE_KEY = 'portfolio_data_v1'
+const STORAGE_KEY = 'portfolio_data_v2'
+const LEGACY_STORAGE_KEY = 'portfolio_data_v1'
+const LEGACY_MIGRATED_KEY = 'portfolio_legacy_draft_migrated_v1'
+
+function legacyBrowserDraft(): PortfolioData | null {
+  try {
+    if (localStorage.getItem(LEGACY_MIGRATED_KEY)) return null
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
+    return legacy ? parsePortfolioData(JSON.parse(legacy)) : null
+  } catch {
+    // Keep the original value untouched so it can still be recovered manually.
+    return null
+  }
+}
 
 function buildApiPath(path: string) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
   const normalizedBase = basePath.replace(/\/+$/, '')
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
   return `${normalizedBase}${normalizedPath}` || normalizedPath
-}
-
-interface PortfolioData {
-  personal: SiteConfig
-  about: typeof portfolioConfig.about
-  stats: typeof portfolioConfig.stats
-  projects: Project[]
-  skills: Skill[]
-  experiences: Experience[]
-  education: typeof portfolioConfig.education
-  certifications: Certification[]
-  socialLinks: SocialLink[]
-  seo: typeof portfolioConfig.seo
-  blog: typeof portfolioConfig.blog
-  microblogs: Microblog[]
 }
 
 interface AdminContextType {
@@ -58,21 +47,6 @@ interface AdminContextType {
 
 export type { PortfolioData }
 
-const defaultData: PortfolioData = {
-  personal: portfolioConfig.personal as SiteConfig,
-  about: portfolioConfig.about,
-  stats: portfolioConfig.stats,
-  projects: portfolioConfig.projects as Project[],
-  skills: portfolioConfig.skills as Skill[],
-  experiences: portfolioConfig.experiences as Experience[],
-  education: portfolioConfig.education,
-  certifications: portfolioConfig.certifications,
-  socialLinks: portfolioConfig.socialLinks as unknown as SocialLink[],
-  seo: portfolioConfig.seo,
-  blog: portfolioConfig.blog,
-  microblogs: portfolioConfig.microblogs as Microblog[],
-}
-
 function saveToStorage(data: PortfolioData) {
   if (typeof window === 'undefined') return
   try {
@@ -82,7 +56,7 @@ function saveToStorage(data: PortfolioData) {
 
 const AdminContext = createContext<AdminContextType>({
   isAdmin: false,
-  portfolioData: defaultData,
+  portfolioData: baselineData,
   activate: () => {},
   deactivate: () => {},
   openAdminPanel: () => {},
@@ -99,9 +73,9 @@ const AdminContext = createContext<AdminContextType>({
   hasUnsavedChanges: false,
 })
 
-export function AdminProvider({ children }: { children: React.ReactNode }) {
+export function AdminProvider({ children, initialData }: { children: React.ReactNode; initialData: PortfolioData }) {
   const [isAdmin, setIsAdmin] = useState(false)
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(defaultData)
+  const [portfolioData, setPortfolioData] = useState<PortfolioData>(initialData)
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishError, setPublishError] = useState<string | null>(null)
@@ -122,8 +96,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           const serverData = await serverResponse.json() as Partial<PortfolioData>
           if (!cancelled) {
             setIsAdmin(true)
-            const nextData = { ...defaultData, ...serverData }
+            const serverHasDraft = serverResponse.headers.get('X-Portfolio-Has-Draft') === 'true'
+            const legacy = serverHasDraft ? null : legacyBrowserDraft()
+            const nextData = legacy ?? parsePortfolioData({ ...initialData, ...serverData })
             setPortfolioData(nextData)
+            setHasUnsavedChanges(serverHasDraft || Boolean(legacy))
             saveToStorage(nextData)
           }
         }
@@ -140,7 +117,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [initialData])
 
   const verifyPinFunc = useCallback(async (pin: string): Promise<boolean> => {
     try {
@@ -158,18 +135,18 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const activate = useCallback(() => {
     setIsAdmin(true)
     fetch(buildApiPath('/api/admin/portfolio'))
-      .then(res => res.ok ? res.json() : null)
-      .then(serverData => {
-        if (serverData) {
-          setPortfolioData(prev => {
-            const updated = { ...prev, ...serverData }
-            saveToStorage(updated)
-            return updated
-          })
+      .then(async res => res.ok ? { data: await res.json() as Partial<PortfolioData>, hasDraft: res.headers.get('X-Portfolio-Has-Draft') === 'true' } : null)
+      .then(result => {
+        if (result) {
+          const legacy = result.hasDraft ? null : legacyBrowserDraft()
+          const updated = legacy ?? parsePortfolioData({ ...initialData, ...result.data })
+          setPortfolioData(updated)
+          setHasUnsavedChanges(result.hasDraft || Boolean(legacy))
+          saveToStorage(updated)
         }
       })
       .catch(console.error)
-  }, [])
+  }, [initialData])
 
   const deactivate = useCallback(() => {
     setIsAdmin(false)
@@ -199,6 +176,14 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         return updated
       })
       setHasUnsavedChanges(true)
+      const response = await fetch(buildApiPath('/api/admin/portfolio'), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section, data }),
+      })
+      if (!response.ok) toast.error('Draft saved in this browser only; server draft could not be updated')
+    } catch {
+      toast.error('Draft saved in this browser only; server draft could not be updated')
     } finally {
       setTimeout(() => setIsSaving(false), 500)
     }
@@ -227,6 +212,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       }
       toast.success('Portfolio changes published')
       setHasUnsavedChanges(false)
+      try { localStorage.setItem(LEGACY_MIGRATED_KEY, 'true') } catch {}
       return true
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Server error during save'

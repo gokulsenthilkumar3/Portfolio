@@ -15,14 +15,14 @@ export const portfolioConfig = {
   personal: {
     name: "Gokul Senthilkumar",
     title: "Software Development Engineer in Test",
-    heroHeading: "I build software that earns <em>trust.</em>",
-    aboutManifesto: "I obsess over the 1% of details users never consciously notice — but always feel.",
-    tagline: "I test what others build and build what others test — bridging quality and code.",
-    bio: "SDET and full-stack engineer building reliable web products. I design scalable test automation, performance-test APIs with K6, and build production web applications with React, Next.js, Node.js, and PostgreSQL.",
+    heroHeading: "I test the seams. <em>Then I build.</em>",
+    aboutManifesto: "My day job is finding the places software breaks. My side projects are where I try to make those places harder to miss.",
+    tagline: "SDET at CloudAssert. Building tools for developers, small businesses, and the problems I keep coming back to.",
+    bio: "I started in frontend development and moved into quality engineering. At CloudAssert I work on test automation, performance checks, and release confidence. Outside work, I build and document products that stretch from business operations to developer tooling. Some are working applications; others are honest prototypes or research. I want the distinction to be clear.",
     email: "gokulsenthilkumar3@gmail.com",
     emailZoho: "gokulsenthilkumar3@zohomail.in",
     location: "Sivanmalai, Tamil Nadu, India",
-    availability: "open-to-offers" as "available" | "busy" | "open-to-offers",
+    availability: "busy" as "available" | "busy" | "open-to-offers",
     avatar: "/gokul-photo.jpg",
     resume: "/Gokul_S_Resume.pdf",
     github: "https://github.com/gokulsenthilkumar3",
@@ -40,15 +40,19 @@ export const portfolioConfig = {
 
   // ─── ABOUT SECTION ──────────────────────────────────────────────────────────
   about: {
-    title: "About Me",
-    subtitle: "SDET by day, builder by night.",
+    title: "How I work",
+    subtitle: "Quality engineering and product building are part of the same practice.",
+    projectsHeading: "Work in the open.",
+    projectsIntro: "Public repositories at different stages. Each card leads to a note on what is implemented, what is still a prototype, and what is only research.",
+    skillsHeading: "Tools I reach for.",
+    skillsIntro: "Testing is my daily craft; the rest of this stack comes from building the products alongside it.",
     featuredTitle: "Quality Engineering",
     featuredDesc: "Automated testing, load testing, CI/CD quality gates",
     featuredLong: "At CloudAssert I design automated test frameworks, run performance tests with K6, and integrate quality gates into Azure DevOps pipelines — making sure software ships without surprises.",
     secondaryTitle: "Full-Stack Dev",
     secondarySkills: ["React", "Next.js", "PERN", "Node.js"],
-    contactHeading: "Get In Touch",
-    contactDesc: "Open to thoughtful product, quality, and automation work — and always happy to talk about interesting open source ideas.",
+    contactHeading: "Keep the conversation going.",
+    contactDesc: "I'm focused on my current work, not looking for a new role. If a project here sparked a question or an idea, you're welcome to write.",
   },
 
   // ─── THEME & APPEARANCE ─────────────────────────────────────────────────────
@@ -65,7 +69,6 @@ export const portfolioConfig = {
   // Keep the visible navigation aligned with the sections rendered on the home page.
   navigation: [
     { label: "Work", id: "projects" },
-    { label: "Profile", id: "profile" },
     { label: "About", id: "about" },
     { label: "Skills", id: "skills" },
     { label: "Contact", id: "contact" },
@@ -79,19 +82,19 @@ export const portfolioConfig = {
       { 
         label: "Years Experience", 
         value: Math.max(1, new Date().getFullYear() - new Date(this.personal.careerStart).getFullYear()), 
-        suffix: "+", 
+        suffix: "",
         duration: 2000 
       },
       { 
         label: "Projects Built",   
-        value: this.projects.filter((project) => project.id !== 'forex-prediction').length,
-        suffix: "+", 
+        value: this.projects.filter((project) => project.kind !== 'research').length,
+        suffix: "",
         duration: 2200 
       },
       { 
         label: "GitHub Repos",
         value: 12, // Public GitHub profile count verified on 2026-09-24; /api/stats refreshes it.
-        suffix: "+", 
+        suffix: "",
         duration: 2400 
       },
       { 
@@ -110,7 +113,7 @@ export const portfolioConfig = {
     keywords: ["SDET", "QA", "Automation", "Full Stack", "React", "Next.js", "TypeScript"],
     ogImage: "/og.png",
     siteUrl: "https://portfolio-ten-plum-98.vercel.app",
-        author: "Gokul Senthilkumar",
+    author: "Gokul Senthilkumar",
   },
 
   // ─── SOCIAL LINKS ───────────────────────────────────────────────────────────
@@ -173,10 +176,7 @@ export const portfolioConfig = {
       location: "Coimbatore, Tamil Nadu, India",
       period: { start: "2025-08-01", present: true },
       description: "Full-time SDET ensuring robust quality gates and test automation frameworks.",
-      achievements: [
-        "Built end-to-end automation suite covering 200+ test cases with Selenium + TypeScript",
-        "Reduced regression cycle from 3 days to 4 hours via parallel test execution"
-      ],
+      achievements: ["Developing automated regression coverage and performance checks for release workflows"],
       technologies: ["K6", "Azure DevOps", "Selenium", "TestCafe"],
       type: "full-time" as const,
     },
@@ -186,11 +186,8 @@ export const portfolioConfig = {
       role: "Software Development Engineer in Test (Internship)",
       location: "Coimbatore, Tamil Nadu, India",
       period: { start: "2024-08-01", end: "2025-07-31", present: false },
-      description: "Designed automated test frameworks. Selenium suite reduced functional regression from 3 days to 4 hours. K6 identified performance bottlenecks under 500 concurrent users. Integrated quality gates into Azure DevOps CI/CD pipelines.",
-      achievements: [
-        "Authored K6 load scripts simulating 500 concurrent users; identified 3 critical bottlenecks",
-        "Integrated quality gates into Azure DevOps pipelines, blocking deploys on >5% test failure rate"
-      ],
+      description: "Worked on Selenium automation, K6 performance checks, and Azure DevOps quality gates.",
+      achievements: ["Built test automation and performance-checking workflows as part of the quality team"],
       technologies: ["K6", "Azure DevOps", "Selenium"],
       type: "internship" as const,
     },
@@ -219,6 +216,10 @@ export const portfolioConfig = {
       problem: "Separate tools made workspace setup and product navigation fragmented.",
       responsibility: "Unifying modules, shared navigation, and workspace configuration.",
       evidence: "VaultIQ and StackForge have working entry points in the shared UI; the migration checklist still lists unfinished parity work."
+      ,nextSteps: "Finish module parity, simplify the shared workspace experience, and document which of the former standalone tools are fully integrated.",
+      mediaCaption: "Concept illustration for the unified developer workspace; not a product screenshot.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "evergreen", title: "EverGreen One",
@@ -230,6 +231,10 @@ export const portfolioConfig = {
       problem: "Yarn and MSME teams need stock, production, billing, and customer records in one workflow.",
       responsibility: "Integrating operations and billing workspaces.",
       evidence: "The repository brings its yarn, job-work, and invoice code into a shared app and package structure."
+      ,nextSteps: "Complete the integration between operational modules, replace remaining demo reporting data, and harden import permissions and validation.",
+      mediaCaption: "Concept illustration of connected business operations; not a screenshot.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "nexora", title: "Nexora",
@@ -241,6 +246,10 @@ export const portfolioConfig = {
       problem: "People, workplace, and support processes live in disconnected systems.",
       responsibility: "Combining domain applications around a shared identity and data model.",
       evidence: "Nexora replaces NexFlow and Office Management / HRMS; the merged UI and migration work are still in progress."
+      ,nextSteps: "Continue consolidating the former applications and verify each domain workflow against the shared identity and data model.",
+      mediaCaption: "Concept illustration for Nexora; not a screenshot of a completed suite.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "agroos", title: "AgroOS",
@@ -252,6 +261,10 @@ export const portfolioConfig = {
       problem: "Farm data, sales, and logistics are often managed in separate tools.",
       responsibility: "Building the shared platform and module foundations.",
       evidence: "The repository contains a Next.js app, Prisma schema, and automated test setup; the roadmap marks further modules as MVP work."
+      ,nextSteps: "Turn roadmap modules into verified user flows, especially where field operations, sales, and logistics need to share data.",
+      mediaCaption: "Concept illustration of the intended agriculture platform; not a shipped interface.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "verilexai", title: "VeriLex AI",
@@ -263,6 +276,10 @@ export const portfolioConfig = {
       problem: "Audit evidence, tax work, documents, and compliance research need reviewable context.",
       responsibility: "Combining those workflows in a single application.",
       evidence: "The repository includes a Next.js app and Prisma data model. AI output is explicitly a draft for professional review."
+      ,nextSteps: "Build reviewable evidence trails around the draft-generation workflow and keep professional sign-off explicit.",
+      mediaCaption: "Concept illustration of a professional research workspace; not a product screenshot.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "ultimate", title: "GrowthTrack Ultimate",
@@ -274,6 +291,10 @@ export const portfolioConfig = {
       problem: "Personal operations are scattered across separate applications.",
       responsibility: "Integrating independent products through one private workspace and gateway.",
       evidence: "OxFin and the canonical Forex app now live here as companion products; the older Forex ensemble folder remains as reference."
+      ,nextSteps: "Keep the companion products coherent without implying that every planned area is implemented or connected today.",
+      mediaCaption: "Concept illustration of the personal workspace; not a product screenshot.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "findthemnow", title: "FindThemNow",
@@ -285,17 +306,25 @@ export const portfolioConfig = {
       problem: "Search and emergency information need to be quick to find, especially on limited connections.",
       responsibility: "Building the client-side interface, accessibility, and offline-friendly structure.",
       evidence: "The repository contains a working static web app, JavaScript modules, a manifest, and a service worker; its broader AI and law-enforcement ambitions are not represented here as shipped features."
+      ,nextSteps: "Validate the emergency-information flow with real users before treating the more ambitious matching and coordination ideas as product capabilities.",
+      mediaCaption: "Concept illustration for search and location; not a depiction of live search data.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "velo", title: "Velo",
       description: "An EV scooter-sharing concept for India's Tier-2 cities with a browser-based rider discovery and reservation prototype.",
       technologies: ["HTML", "CSS", "JavaScript"],
       category: "mobile", featured: true, status: "in-progress" as const,
-      images: ["/projects/velo-concept.webp"], date: "2026-09-13",
+      images: ["/projects/velo-screen.png"], date: "2026-09-13",
       links: { github: "https://github.com/gokulsenthilkumar3/Velo" },
       problem: "Local riders and operators need clearer access to scooter availability, reservations, and fleet information.",
       responsibility: "Designing the product and implementing the static rider-facing prototype.",
       evidence: "The repository includes a responsive rider UI prototype and product specifications; the planned Android app and backend are not yet implemented."
+      ,nextSteps: "Test the rider discovery and reservation flow with operators; backend, fleet operations, and a native app remain proposed work.",
+      mediaCaption: "Captured from the repository's static rider UI prototype. Scooter markers and availability are sample interface data, not a live fleet.",
+      mediaType: "prototype" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "lang", title: "Lang",
@@ -307,6 +336,10 @@ export const portfolioConfig = {
       problem: "Systems development often trades safety, iteration speed, and deployment simplicity against one another.",
       responsibility: "Writing the language vision, research notes, syntax sketches, and RFCs.",
       evidence: "This is a design repository; its README explicitly says no compiler code lives here yet."
+      ,nextSteps: "Turn the syntax and safety RFCs into a small executable prototype before claiming language-toolchain capabilities.",
+      mediaCaption: "Abstract illustration of syntax and verification ideas; Lang has no compiler implementation yet.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "os", title: "OS",
@@ -318,9 +351,14 @@ export const portfolioConfig = {
       problem: "The project explores security, update, and AI-workload constraints in operating-system design.",
       responsibility: "Documenting architecture, research questions, roadmap gates, and prototype directions.",
       evidence: "The repository describes phase zero as research and architecture, not a completed operating system."
+      ,nextSteps: "Use the research questions and architecture gates to scope a first measurable prototype.",
+      mediaCaption: "Abstract architecture illustration; this is not a running operating system.",
+      mediaType: "concept" as const,
+      sourceReviewedAt: "Sep 2026"
     },
     {
       id: "forex-prediction", title: "Forex Forecasting Research",
+      kind: "research" as const,
       description: "Forex forecasting research now represented by the canonical Forex app inside GrowthTrack Ultimate.",
       technologies: ["Python", "Deep Learning"], category: "ai",
       featured: false, status: "completed" as const,
@@ -383,33 +421,8 @@ export const portfolioConfig = {
   ],
 
   // ─── BLOG / INSIGHTS ─────────
-  blog: [
-    {
-      id: "k6-regression",
-      title: "How I reduced regression testing cycle to 4 hours with K6",
-      date: "May 24, 2026",
-      readTime: "5 min read",
-      category: "Performance Testing",
-      excerpt: "A deep dive into migrating from a bulky legacy testing framework to K6, achieving massive parallelization and cutting down our regression suite execution time by 60%.",
-      content: "### The Problem\nOur legacy end-to-end testing suite was taking over 10 hours to complete. This created a massive bottleneck in our CI/CD pipeline, forcing developers to wait overnight to get feedback on their PRs.\n\n### Why K6?\nWe evaluated several tools including JMeter and Gatling, but K6 stood out for its developer experience. Being able to write performance scripts in JavaScript meant our frontend and backend teams could easily contribute.\n\n### The Migration\n1. **Identified critical paths**: We started by migrating the top 20% of tests that covered 80% of our user traffic.\n2. **Modularized data generation**: We built a custom data seeder that fed directly into K6's Virtual Users.\n3. **Parallel Execution**: By leveraging K6's execution scenarios, we ran completely isolated tests in parallel across 10 CI runners.\n\n### The Results\nWe brought the 10-hour regression suite down to just under 4 hours, significantly improving developer velocity and reducing our infrastructure costs by avoiding idle compute time."
-    },
-    {
-      id: "cypress-flakiness",
-      title: "Eliminating Flakiness in Cypress UI Automation",
-      date: "April 12, 2026",
-      readTime: "4 min read",
-      category: "UI Automation",
-      excerpt: "Flaky tests destroy developer trust. Here are 5 battle-tested strategies I implemented to ensure 99.9% reliability in our Cypress test suites.",
-      content: "### The Cost of Flaky Tests\nWhen tests fail randomly, developers stop looking at the results. They just hit \"re-run\" and hope for the best. This completely defeats the purpose of automated testing.\n\n### Strategies to fix it\n\n#### 1. Never rely on arbitrary waits\nUsing `cy.wait(5000)` is the biggest anti-pattern in Cypress. Always wait for specific network aliases (`cy.wait('@getUsers')`) or UI state changes.\n\n#### 2. Seed database state per test\nUI tests should never depend on each other. If test A creates a user, test B should not assume that user exists. Use `cy.task()` to seed the database fresh before every spec.\n\n#### 3. Stub 3rd-party services\nIf your test relies on Stripe, PayPal, or an external API, stub it! `cy.intercept()` is your best friend. Only test your integration points in higher-level E2E tests, not in everyday functional UI tests."
-    }
-  ],
+  blog: [],
 
   // ─── MICRO-BLOGS / INSIGHTS ─────────────────────────────────────────────────
-  microblogs: [
-    {
-      id: "insight-1",
-      text: "Setting up Playwright with GitHub Actions today. The DX is incredibly smooth compared to my older Selenium setups. Parallel test execution out of the box is a game changer for PR checks.",
-      date: "Jul 11, 2026",
-    }
-  ]
+  microblogs: []
 }

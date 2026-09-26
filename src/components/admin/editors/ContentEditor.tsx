@@ -13,6 +13,10 @@ interface FieldConfig {
 const FIELDS: FieldConfig[] = [
   { key: 'title', label: 'About Title', type: 'text' },
   { key: 'subtitle', label: 'About Subtitle', type: 'text' },
+  { key: 'projectsHeading', label: 'Projects Heading', type: 'text' },
+  { key: 'projectsIntro', label: 'Projects Introduction', type: 'textarea' },
+  { key: 'skillsHeading', label: 'Skills Heading', type: 'text' },
+  { key: 'skillsIntro', label: 'Skills Introduction', type: 'textarea' },
   { key: 'featuredTitle', label: 'Featured Section Title', type: 'text' },
   { key: 'featuredDesc', label: 'Featured Section Desc (Short)', type: 'text' },
   { key: 'featuredLong', label: 'Featured Section Content (Long)', type: 'textarea' },
