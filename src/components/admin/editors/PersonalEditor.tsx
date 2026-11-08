@@ -23,7 +23,12 @@ const FIELDS: FieldConfig[] = [
   { key: 'github', label: 'GitHub URL', type: 'url' },
   { key: 'linkedin', label: 'LinkedIn URL', type: 'url' },
   { key: 'twitter', label: 'Twitter URL', type: 'url' },
-  { key: 'avatar', label: 'Avatar Image URL', type: 'url' },
+  { key: 'avatar', label: 'Avatar local image path', type: 'text' },
+  { key: 'resume', label: 'Resume local PDF path', type: 'text' },
+  { key: 'website', label: 'Website URL', type: 'url' },
+  { key: 'careerStart', label: 'Career start (includes internships)', type: 'text' },
+  { key: 'emailZoho', label: 'Secondary email', type: 'email' },
+  { key: 'description', label: 'Short description', type: 'textarea' },
 ]
 
 export function PersonalEditor() {

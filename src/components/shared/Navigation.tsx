@@ -5,10 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAdmin } from '@/components/admin/AdminProvider'
-import { navigation } from '@/lib/data/content'
+import { portfolioConfig } from '@/config/portfolio.config'
 import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
-const links = navigation
+const links = portfolioConfig.navigation
 
 export function Navigation() {
   const { portfolioData } = useAdmin()
@@ -52,7 +52,7 @@ export function Navigation() {
       } else if (lastY.current < heroBoundary || delta < -5) {
         setVisible(true)
       } else if (delta > 7) {
-        setVisible(false)
+        setVisible(true)
       }
 
       lastY.current = y
@@ -92,7 +92,7 @@ export function Navigation() {
   }, [])
 
   useEffect(() => {
-    const media = window.matchMedia('(min-width: 901px)')
+    const media = window.matchMedia('(min-width: 900px)')
     const closeAtDesktop = () => {
       if (media.matches) setMenuOpen(false)
     }
@@ -128,6 +128,7 @@ export function Navigation() {
 
         {/* Center links */}
         <div className="minimal-nav__links">
+          <Link href="/downloads/" data-cursor="link">Apps & downloads</Link>
           {links.map((link) => (
             <Link
               key={link.id}
@@ -145,9 +146,7 @@ export function Navigation() {
         {/* Right-side CTAs */}
         <div className="minimal-nav__actions">
           {resumeHref && (
-            <a href={resumeHref} download className="minimal-nav__resume" data-cursor="link" data-no-transition>
-              ↓ Resume
-            </a>
+            <Link href="/resume" className="minimal-nav__resume" data-cursor="link">Resume</Link>
           )}
           <Link
             href="/#contact"
@@ -204,6 +203,7 @@ export function Navigation() {
                 </Link>
               </motion.div>
             ))}
+            <Link href="/downloads/" onClick={closeMenu}>Apps & downloads</Link>
             {/* Mobile CTAs */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -212,9 +212,7 @@ export function Navigation() {
               style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}
             >
               {resumeHref && (
-                <a href={resumeHref} download className="minimal-nav__resume" onClick={closeMenu}>
-                  ↓ Resume
-                </a>
+                <Link href="/resume" className="minimal-nav__resume" onClick={closeMenu}>Resume</Link>
               )}
               <Link
                 href="/#contact"

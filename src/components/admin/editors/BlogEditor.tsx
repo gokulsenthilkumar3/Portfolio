@@ -33,7 +33,7 @@ export function BlogEditor() {
       category: 'General',
       excerpt: 'Brief summary of the post...',
       content: '### New Post\n\nStart writing here...',
-      slug: 'new-insight',
+      slug: 'insight-' + Date.now(),
   
       tags: [],
       featured: false

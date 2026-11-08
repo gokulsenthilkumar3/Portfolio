@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -11,6 +11,68 @@ interface StatLike {
   label?: string
   value?: number
   suffix?: string
+}
+
+function AnimatedStatNumber({ value }: { value: number }) {
+  const [displayValue, setDisplayValue] = useState<number>(value)
+  const elementRef = useRef<HTMLSpanElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    if (hasAnimated.current) {
+      setDisplayValue(value)
+    }
+  }, [value])
+
+  useEffect(() => {
+    const el = elementRef.current
+    if (!el) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced) {
+      setDisplayValue(value)
+      hasAnimated.current = true
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const start = 0
+          const end = value
+          const duration = 1400
+          const startTime = performance.now()
+
+          const step = (currentTime: number) => {
+            const elapsed = currentTime - startTime
+            const progress = Math.min(elapsed / duration, 1)
+            const easeOut = 1 - Math.pow(1 - progress, 3)
+            const current = Math.round(start + (end - start) * easeOut)
+            setDisplayValue(current)
+
+            if (progress < 1) {
+              requestAnimationFrame(step)
+            } else {
+              setDisplayValue(end)
+            }
+          }
+
+          requestAnimationFrame(step)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [value])
+
+  return (
+    <span ref={elementRef} data-stat-number data-value={value}>
+      {displayValue}
+    </span>
+  )
 }
 
 interface AboutStoryProps {
@@ -32,10 +94,13 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount,
   const portraitFrame = useRef<HTMLElement>(null)
   const portraitImage = useRef<HTMLDivElement>(null)
 
+  const yearsExp = Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 3)
+  const githubRepos = Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 14)
+
   const statItems = [
-    { value: Number(stats.find((stat) => stat.label === 'Years Experience')?.value ?? stats[0]?.value ?? 0), suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '', label: 'Years engineering quality' },
-    { value: projectCount, suffix: '', label: 'Projects and research' },
-    { value: Number(stats.find((stat) => stat.label === 'GitHub Repos')?.value ?? 0), suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '', label: 'Public repositories' },
+    { value: yearsExp > 0 ? yearsExp : 3, suffix: stats.find((stat) => stat.label === 'Years Experience')?.suffix ?? '', label: 'Years engineering quality' },
+    { value: projectCount, suffix: '', label: 'Projects' },
+    { value: githubRepos > 0 ? githubRepos : 14, suffix: stats.find((stat) => stat.label === 'GitHub Repos')?.suffix ?? '', label: 'Public repositories' },
   ]
 
   const place = location.split(',')[0]?.trim() || location
@@ -63,19 +128,6 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount,
           end: 'bottom 44%',
           scrub: 0.8,
         },
-      }
-    )
-
-    gsap.fromTo(
-      '[data-stat-number]',
-      { innerText: 0 },
-      {
-        innerText: (_index: number, element: HTMLElement) => Number(element.dataset.value || 0),
-        duration: 1.6,
-        stagger: 0.12,
-        snap: { innerText: 1 },
-        ease: 'power2.out',
-        scrollTrigger: { trigger: '[data-about-stats]', start: 'top 82%', once: true },
       }
     )
 
@@ -153,14 +205,14 @@ export function AboutStory({ bio, portrait, name, location, stats, projectCount,
         {statItems.map((stat) => (
           <div key={stat.label} className="about-story__stat">
             <p aria-label={`${stat.value}${stat.suffix} ${stat.label}`}>
-              <span data-stat-number data-value={stat.value}>{stat.value}</span>
+              <AnimatedStatNumber value={stat.value} />
               <span>{stat.suffix}</span>
             </p>
             <span>{stat.label}</span>
           </div>
         ))}
       </div>
-      <p className="about-story__stat-source">GitHub public count · {repoCountSource === 'live' ? 'live API' : 'curated fallback'}</p>
+      <p className="about-story__stat-source">{repoCountSource === 'live' ? 'Repository count refreshed from GitHub' : 'Repository count from the published portfolio'} · Credentials listed below</p>
       {children}
     </section>
   )

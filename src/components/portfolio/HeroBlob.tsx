@@ -21,16 +21,16 @@ function Blob() {
   })
 
   return (
-    <mesh ref={mesh} scale={1.18}>
-      <icosahedronGeometry args={[1.45, 5]} />
+    <mesh ref={mesh} scale={1.04}>
+      <icosahedronGeometry args={[1.38, 5]} />
       <MeshDistortMaterial
-        color="#16130d"
+        color="#12100d"
         emissive="#d4a853"
-        emissiveIntensity={0.14}
-        roughness={0.34}
-        metalness={0.72}
-        distort={0.28}
-        speed={0.72}
+        emissiveIntensity={0.08}
+        roughness={0.22}
+        metalness={0.88}
+        distort={0.22}
+        speed={0.65}
       />
     </mesh>
   )

@@ -5,6 +5,8 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
@@ -42,3 +44,5 @@ pnpm-debug.log*
 next-env.d.ts
 .portfolio-admin-data.json
 .portfolio-published-data.json
+/.cleanup-archive/
+/graphify-out/

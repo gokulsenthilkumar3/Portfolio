@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next'
-import { seo } from '@/lib/data/content'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
 
-const base = seo.siteUrl || 'https://portfolio-ten-plum-98.vercel.app'
-
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const data = await getPublishedPortfolio()
+  const base = process.env.NEXT_PUBLIC_SITE_URL || data.seo.siteUrl
   return {
     rules: [
       {

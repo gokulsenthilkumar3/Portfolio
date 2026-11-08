@@ -1,7 +1,8 @@
 import { baselineData, parsePortfolioData, type PortfolioData } from '@/lib/portfolio-content'
-import { readPublishedData } from './storage'
+import { readPublishedData } from '../admin/storage'
+import { cache } from 'react'
 
-export async function getPublishedPortfolio(): Promise<PortfolioData> {
+export const getPublishedPortfolio = cache(async (): Promise<PortfolioData> => {
   try {
     const stored = await readPublishedData()
     return stored ? parsePortfolioData(stored) : baselineData
@@ -9,4 +10,4 @@ export async function getPublishedPortfolio(): Promise<PortfolioData> {
     console.error('[portfolio] Published content unavailable; using checked-in baseline', error)
     return baselineData
   }
-}
+})

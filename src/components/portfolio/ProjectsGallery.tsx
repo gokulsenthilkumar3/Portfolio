@@ -63,7 +63,7 @@ function ProjectCard({ project, index, selected, clone = false, setRef, onOpen }
       <div className="project-card__header">
         <span>{String(index + 1).padStart(2, '0')}</span>
         <span>
-          {project.status === 'planned' ? 'Research phase' : index === 0 ? 'Featured' : projectRole(project)}
+          {project.status === 'planned' ? 'Research phase' : project.featured ? 'Featured' : projectRole(project)}
         </span>
       </div>
 
@@ -90,7 +90,7 @@ function ProjectCard({ project, index, selected, clone = false, setRef, onOpen }
 
       <div className="project-card__footer">
         <span>{projectYear(project)}</span>
-        <span>{projectRole(project)}</span>
+        <span>{project.category ? project.category.toUpperCase() : projectRole(project)}</span>
       </div>
 
       <button
@@ -182,9 +182,11 @@ function ExpandedProject({ project, onClose, closeRef }: ExpandedProjectProps) {
           </div>
 
           <div className="project-expanded__actions">
-            <a href={`/projects/${project.id}`}>
-              Read the case study <ArrowUpRight aria-hidden="true" />
-            </a>
+            {project.kind !== 'research' && (
+              <a href={`/projects/${project.id}`}>
+                Read the case study <ArrowUpRight aria-hidden="true" />
+              </a>
+            )}
             {project.links?.github && (
               <a href={project.links.github} target="_blank" rel="noreferrer" data-no-transition>
                 Source <Github aria-hidden="true" />
@@ -301,7 +303,7 @@ export function ProjectsGallery({ projects, heading, intro }: { projects: Projec
       const first = element.querySelector<HTMLElement>('.project-card:not([data-loop-clone])')
       const clone = element.querySelector<HTMLElement>('[data-loop-clone]')
       const period = first && clone ? clone.offsetLeft - first.offsetLeft : 0
-      const next = element.scrollLeft + delta * 0.18
+      const next = element.scrollLeft + delta * 0.08
       element.scrollLeft = period > 0 && next >= period ? next - period : next
       frame = requestAnimationFrame(advance)
     }
@@ -383,13 +385,13 @@ export function ProjectsGallery({ projects, heading, intro }: { projects: Projec
               : research.title}
           </p>
         )}
-        <a href="#about" className="projects-gallery__skip" data-cursor="link">
-          Skip to about <ArrowDownRight aria-hidden="true" />
+        <a href="#skills" className="projects-gallery__skip" data-cursor="link">
+          Skip to skills <ArrowDownRight aria-hidden="true" />
         </a>
       </div>
 
       <div ref={stage} className="projects-gallery__stage">
-        <div className="projects-gallery__controls" aria-label="Project gallery controls">
+        <div className="projects-gallery__controls" role="toolbar" aria-label="Project gallery controls">
           <span className="projects-gallery__position" aria-live="off">{String(activeIndex + 1).padStart(2, '0')} / {String(displayedProjects.length).padStart(2, '0')}</span>
           <button type="button" className="projects-gallery__arrow" onClick={() => goToProject(Math.max(0, activeIndex - 1))} aria-label="Previous project" disabled={activeIndex === 0}><ArrowLeft size={14} aria-hidden="true" /></button>
           <button type="button" className="projects-gallery__arrow" onClick={() => goToProject(activeIndex + 1)} aria-label="Next project"><ArrowRight size={14} aria-hidden="true" /></button>

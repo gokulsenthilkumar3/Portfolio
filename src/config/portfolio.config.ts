@@ -23,7 +23,7 @@ export const portfolioConfig = {
     emailZoho: "gokulsenthilkumar3@zohomail.in",
     location: "Sivanmalai, Tamil Nadu, India",
     availability: "busy" as "available" | "busy" | "open-to-offers",
-    avatar: "/gokul-photo.jpg",
+    avatar: "/profile-portrait.png",
     resume: "/Gokul_S_Resume.pdf",
     github: "https://github.com/gokulsenthilkumar3",
     linkedin: "https://www.linkedin.com/in/gokulsenthilkumar3/",
@@ -58,8 +58,8 @@ export const portfolioConfig = {
   // ─── THEME & APPEARANCE ─────────────────────────────────────────────────────
   theme: {
     defaultTheme: "dark" as "dark" | "light" | "neon" | "pastel" | "cyberpunk",
-    enableCustomizationPanel: true,
-    enableThemeSelector: true,
+    enableCustomizationPanel: false,
+    enableThemeSelector: false,
     enableProgressBar: false,
     enableSectionIndicators: false,
     enableScrollToTop: true
@@ -68,8 +68,8 @@ export const portfolioConfig = {
   // ─── PRIMARY NAVIGATION ───────────────────────────────────────────────────
   // Keep the visible navigation aligned with the sections rendered on the home page.
   navigation: [
-    { label: "Work", id: "projects" },
     { label: "About", id: "about" },
+    { label: "Work", id: "projects" },
     { label: "Skills", id: "skills" },
     { label: "Contact", id: "contact" },
   ],

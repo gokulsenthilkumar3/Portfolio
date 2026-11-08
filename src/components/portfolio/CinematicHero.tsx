@@ -124,13 +124,13 @@ export function CinematicHero({ name, role, available, heroHeading = '', tagline
             {tagline}
           </p>
           <Link href="#projects" className="cinematic-hero__cta" data-hero-cta data-cursor="link">
-            View all projects
+            Explore work
             <ArrowDownRight aria-hidden="true" />
           </Link>
         </div>
       </div>
 
-      <a className="cinematic-hero__scroll" href="#projects" data-hero-scroll aria-label="Scroll to all projects">
+      <a className="cinematic-hero__scroll" href="#about" data-hero-scroll aria-label="Scroll to about section">
         <span />
       </a>
     </section>

@@ -66,6 +66,6 @@ export async function rateLimit(
   } catch (error) {
     // If KV fails, allow the request but log the error
     console.error('Rate limiting error:', error)
-    return { success: true, limit, remaining: 1, reset }
+    return { success: !identifier.startsWith('admin-auth:'), limit, remaining: 0, reset }
   }
 }

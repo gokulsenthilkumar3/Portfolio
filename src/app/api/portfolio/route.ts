@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getPublishedPortfolio } from '@/lib/admin/published'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
-import { readPublishedData, writePublishedData } from '@/lib/admin/storage'
+import { readPortfolioData, readPublishedData, writePublishedData } from '@/lib/admin/storage'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
 import { parsePortfolioData } from '@/lib/portfolio-content'
 import { z } from 'zod'
 
@@ -35,6 +36,13 @@ export async function POST(request: NextRequest) {
     }
     const rawData = await request.json()
     const parsed = parsePortfolioData(rawData)
+    const draft = await readPortfolioData()
+    if (Object.keys(draft).length) {
+      const server = parsePortfolioData({ ...await getPublishedPortfolio(), ...draft })
+      if (JSON.stringify(server) !== JSON.stringify(parsed)) {
+        return NextResponse.json({ error: 'The server draft differs from this tab. Reload the editor before publishing.' }, { status: 409 })
+      }
+    }
     await writePublishedData(parsed as unknown as Record<string, unknown>)
     const verified = await readPublishedData()
     if (!verified || JSON.stringify(parsePortfolioData(verified)) !== JSON.stringify(parsed)) {
