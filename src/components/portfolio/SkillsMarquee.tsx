@@ -53,21 +53,32 @@ export function SkillsMarquee({ skills, heading, intro }: { skills: Skill[]; hea
     gsap.registerPlugin(ScrollTrigger)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    gsap.from('[data-skills-heading]', {
-      clipPath: 'inset(0 100% 0 0)',
-      duration: 0.85,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: root.current, start: 'top 72%', once: true },
-    })
+    gsap.fromTo(
+      '[data-skills-heading]',
+      { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
+      {
+        clipPath: 'inset(0 0% 0 0)',
+        opacity: 1,
+        duration: 0.85,
+        ease: 'power3.out',
+        immediateRender: false,
+        scrollTrigger: { trigger: root.current, start: 'top 85%', once: true },
+      }
+    )
 
-    gsap.from('[data-marquee-row]', {
-      y: 40,
-      opacity: 0,
-      stagger: 0.08,
-      duration: 0.75,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: '[data-marquee-stack]', start: 'top 82%', once: true },
-    })
+    gsap.fromTo(
+      '[data-marquee-row]',
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.75,
+        ease: 'power3.out',
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-marquee-stack]', start: 'top 88%', once: true },
+      }
+    )
   }, { scope: root })
 
   return (

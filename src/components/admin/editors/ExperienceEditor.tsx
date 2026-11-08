@@ -222,7 +222,7 @@ function ExperienceForm({
                 setDescInput(e.target.value)
                 setForm(prev => ({
                   ...prev,
-                  description: e.target.value
+                  description: e.target.value.split('\n').map(line => line.trim()).filter(Boolean)
                 }))
               }}
               rows={4}

@@ -156,16 +156,14 @@ export function PinModal({ onClose, onSuccess, inertSelectors }: PinModalProps) 
                 type={showPin ? 'text' : 'password'}
                 value={pin}
                 onChange={e => {
-                  const val = e.target.value.replace(/\D/g, '').slice(0, 6)
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 12)
                   setPin(val)
                   setError('')
-                  // Automatically verify when 6 digits are reached
-                  if (val.length === 6 && !loading && !success) {
-                    handleVerify(val)
-                  }
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter PIN"
+                inputMode="numeric"
+                maxLength={12}
                 className={`w-full text-center text-2xl tracking-[0.5em] py-3.5 px-4 rounded-xl text-white placeholder-gray-700 bg-white/5 border focus:outline-none transition-all ${
                   error ? 'border-red-500/50' : 'border-white/10'
                 }`}

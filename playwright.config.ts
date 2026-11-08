@@ -9,7 +9,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [['list']],
   webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
-    command: 'npm run dev -- --port 3100',
+    command: process.env.CI ? 'npm run start -- --port 3100' : 'npm run dev -- --port 3100',
     url: baseURL,
     timeout: 120_000,
     reuseExistingServer: false,

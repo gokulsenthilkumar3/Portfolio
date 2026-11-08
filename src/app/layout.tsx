@@ -2,12 +2,13 @@ import type { Metadata, Viewport } from 'next'
 import 'lenis/dist/lenis.css'
 import '../styles/globals.css'
 import '../styles/cinematic.css'
-import { ThemeProvider } from '@/components/shared/ThemeProvider'
+import '../styles/editorial.css'
 import { AdminClientWrapper } from '@/components/admin/AdminClientWrapper'
 import { Toaster } from 'sonner'
-import { getPublishedPortfolio } from '@/lib/admin/published'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
 import { Analytics } from '@vercel/analytics/react'
 import { PublicChrome } from '@/components/shared/PublicChrome'
+import { ExploreTools } from '@/components/shared/ExploreTools'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,28 +52,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     jobTitle: personal.title,
   }
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" data-theme="dark">
       <head>
-        {/* Preconnect to font provider — speeds up first font fetch */}
-        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
-        {/* dns-prefetch as fallback for browsers that ignore preconnect */}
-        <link rel="dns-prefetch" href="https://api.fontshare.com" />
-        {/*
-          Load fonts as non-blocking:
-          1. Preload the stylesheet so the browser discovers it early.
-          2. Set media="print" so it does not block render.
-          3. Inline script swaps media to "all" once loaded (FOUC prevention).
-          4. <noscript> fallback for JS-disabled environments.
-        */}
-        <link
-          rel="preload"
-          as="style"
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap"
-        />
-        <link
-          rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap"
-        />
+        <link rel="preload" href="/fonts/satoshi-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* JSON-LD structured data for Google Search rich results */}
         <script
           type="application/ld+json"
@@ -87,14 +69,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to main content
         </a>
-        <ThemeProvider>
           <AdminClientWrapper initialData={initialData}>
             <PublicChrome />
             <main id="main-content">{children}</main>
+            <ExploreTools />
             {/* Toaster lives here so it's available to all sections */}
             <Toaster position="bottom-right" richColors closeButton />
           </AdminClientWrapper>
-        </ThemeProvider>
         {/* Vercel Analytics — privacy-first, no cookies */}
         <Analytics />
       </body>

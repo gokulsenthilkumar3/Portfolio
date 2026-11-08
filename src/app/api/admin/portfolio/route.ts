@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokenFromCookie, verifyToken } from '@/lib/admin/auth'
 import { readPortfolioData, updatePortfolioSection } from '@/lib/admin/storage'
-import { getPublishedPortfolio } from '@/lib/admin/published'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
 import { z } from 'zod'
+import { parsePortfolioData } from '@/lib/portfolio-content'
 
 const SectionSchema = z.enum([
   'personal', 'stats', 'projects', 'skills', 'experiences', 
-  'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'certifications', 'about'
+  'socialLinks', 'seo', 'blog', 'microblogs', 'education', 'certifications', 'about', 'extras'
 ])
 
 const PayloadSchema = z.object({
@@ -57,9 +58,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing data' }, { status: 400 })
     }
 
-    await updatePortfolioSection(section, data)
+    const published = await getPublishedPortfolio()
+    const draft = await readPortfolioData()
+    const validated = parsePortfolioData({ ...published, ...draft, [section]: data })
+    await updatePortfolioSection(section, validated[section])
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (error instanceof z.ZodError) return NextResponse.json({ error: error.issues.map(i => i.path.join('.') + ': ' + i.message).join('; ') }, { status: 400 })
     const message = error instanceof Error ? error.message : 'Server error'
     // Surface the real reason (e.g. "no KV configured") instead of a generic
     // 500 — this is what would have made the original silent-failure bug

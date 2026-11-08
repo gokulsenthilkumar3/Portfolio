@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { portfolioConfig } from '@/config/portfolio.config'
-import type { Certification, Experience, Microblog, Project, SiteConfig, Skill, SocialLink } from '@/lib/types/portfolio'
+import type { BlogPost, Certification, Experience, Microblog, Project, SiteConfig, Skill, SocialLink } from '@/lib/types/portfolio'
 
 export interface PortfolioData {
   personal: SiteConfig
@@ -13,7 +13,8 @@ export interface PortfolioData {
   certifications: Certification[]
   socialLinks: SocialLink[]
   seo: typeof portfolioConfig.seo
-  blog: typeof portfolioConfig.blog
+  blog: BlogPost[]
+  extras: { now: string[]; uses: string[]; updated: string; schedulingUrl: string; testimonials: { name: string; role: string; quote: string; url?: string }[] }
   microblogs: Microblog[]
 }
 
@@ -30,6 +31,7 @@ export const baselineData: PortfolioData = {
   seo: portfolioConfig.seo,
   blog: portfolioConfig.blog,
   microblogs: portfolioConfig.microblogs as Microblog[],
+  extras: { now: ['Working in quality engineering at CloudAssert.', 'Building and documenting the projects in this portfolio.'], uses: ['Testing: K6 and automated test frameworks.', 'Development: React, Next.js, TypeScript and Node.js.', 'Delivery: Azure DevOps pipelines and GitHub.'], updated: '2026-11-08', schedulingUrl: '', testimonials: [] },
 }
 
 const webUrl = z.string().url().refine((value) => value.startsWith('https://'), 'Use an HTTPS URL')
@@ -64,6 +66,7 @@ const projectSchema = z.object({
 })
 
 const schema = z.object({
+  extras: z.object({ now: z.array(text).max(30), uses: z.array(text).max(50), updated: shortText, schedulingUrl: z.union([webUrl, z.literal('')]), testimonials: z.array(z.object({ name: shortText.min(1), role: shortText, quote: text.min(1), url: optionalWebUrl })).max(30) }),
   personal: z.object({
     name: shortText.min(1), title: shortText.min(1), tagline: text, description: text.optional(),
     bio: text, email: z.email(), emailZoho: z.email().optional(), location: shortText,
@@ -99,9 +102,12 @@ export function parsePortfolioData(input: unknown): PortfolioData {
   const merged = {
     ...baselineData,
     ...stored,
+    extras: { ...baselineData.extras, ...stored.extras },
     personal: { ...baselineData.personal, ...stored.personal },
     about: { ...baselineData.about, ...stored.about },
     seo: { ...baselineData.seo, ...stored.seo },
   }
+  // Upgrade the original default portrait in existing published snapshots.
+  if (merged.personal.avatar === '/gokul-photo.jpg') merged.personal.avatar = baselineData.personal.avatar
   return schema.parse(merged) as PortfolioData
 }

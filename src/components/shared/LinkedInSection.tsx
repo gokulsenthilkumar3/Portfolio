@@ -1,6 +1,6 @@
 'use client'
 
-import { GraduationCap } from 'lucide-react'
+import { GraduationCap, Award } from 'lucide-react'
 import type { Certification, Education, Experience } from '@/lib/types/portfolio'
 
 interface LinkedInSectionProps {
@@ -99,7 +99,7 @@ export function LinkedInSection({ experiences, education, certifications = [] }:
                 <p className="linkedin-profile__label" style={{marginTop: '2rem'}}>Certifications</p>
                 {certifications.map((cert) => (
                   <p key={cert.id} className="linkedin-profile__education">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{width: '18px', height: '18px', marginTop: '2px'}}><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                    <Award aria-hidden="true" style={{ width: '18px', height: '18px', marginTop: '2px', flexShrink: 0 }} />
                     <span>
                       <strong>{cert.name}</strong>
                       <small>{cert.issuer}</small>

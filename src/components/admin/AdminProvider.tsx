@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { baselineData, parsePortfolioData, type PortfolioData } from '@/lib/portfolio-content'
 import { toast } from 'sonner'
 
@@ -82,6 +82,7 @@ export function AdminProvider({ children, initialData }: { children: React.React
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [adminPanelTab, setAdminPanelTab] = useState('dashboard')
+  const draftWrites = useRef<Promise<unknown>>(Promise.resolve())
 
   // Curated content is authoritative for the public page. Only an authenticated
   // admin session may load the durable draft; this prevents stale local storage
@@ -168,6 +169,13 @@ export function AdminProvider({ children, initialData }: { children: React.React
   }, [])
 
   const updateSection = useCallback(async (section: keyof PortfolioData, data: unknown) => {
+    try {
+      parsePortfolioData({ ...portfolioData, [section]: data })
+    } catch (error) {
+      const issues = error && typeof error === 'object' && 'issues' in error ? error.issues as { path: PropertyKey[]; message: string }[] : []
+      toast.error(issues[0] ? issues[0].path.join('.') + ': ' + issues[0].message : 'Invalid content. Please check the fields.')
+      return
+    }
     setIsSaving(true)
     try {
       setPortfolioData((current) => {
@@ -176,18 +184,23 @@ export function AdminProvider({ children, initialData }: { children: React.React
         return updated
       })
       setHasUnsavedChanges(true)
-      const response = await fetch(buildApiPath('/api/admin/portfolio'), {
+      const pending = draftWrites.current.catch(() => {}).then(() => fetch(buildApiPath('/api/admin/portfolio'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ section, data }),
-      })
-      if (!response.ok) toast.error('Draft saved in this browser only; server draft could not be updated')
+      }))
+      draftWrites.current = pending
+      const response = await pending
+      if (!response.ok) {
+        const result = await response.json().catch(() => null)
+        toast.error(result?.error || 'Draft saved in this browser only; server draft could not be updated')
+      }
     } catch {
       toast.error('Draft saved in this browser only; server draft could not be updated')
     } finally {
       setTimeout(() => setIsSaving(false), 500)
     }
-  }, [])
+  }, [portfolioData])
 
   const exportConfig = useCallback(() => {
     return JSON.stringify(portfolioData, null, 2)
@@ -198,6 +211,7 @@ export function AdminProvider({ children, initialData }: { children: React.React
     setIsPublishing(true)
     setPublishError(null)
     try {
+      await draftWrites.current
       const res = await fetch(buildApiPath('/api/admin/save'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

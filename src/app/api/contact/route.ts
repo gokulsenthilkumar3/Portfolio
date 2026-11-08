@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   const { name, email, subject, message } = body
   const normalizedName = name.trim()
   const normalizedEmail = email.trim().toLowerCase()
-  const normalizedSubject = subject.trim()
+  const normalizedSubject = subject.trim().replace(/[\r\n]+/g, ' ')
   const normalizedMessage = message.trim()
 
   try {

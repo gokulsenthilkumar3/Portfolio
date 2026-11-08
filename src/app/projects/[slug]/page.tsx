@@ -3,7 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowUpRight, Github } from 'lucide-react'
-import { getPublishedPortfolio } from '@/lib/admin/published'
+import { getPublishedPortfolio } from '@/lib/server/portfolio'
+import { ReadingProgress } from '@/components/shared/ReadingProgress'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const project = await getProject(slug)
   if (!project) return { title: 'Project not found' }
-  return { title: `${project.title} | Gokul Senthilkumar`, description: project.description }
+  return { title: `${project.title} | Gokul Senthilkumar`, description: project.description, alternates: { canonical: '/projects/' + slug }, openGraph: { title: project.title, description: project.description, images: ['/projects/' + slug + '/opengraph-image'] } }
 }
 
 export default async function ProjectCaseStudy({ params }: Props) {
@@ -24,12 +25,20 @@ export default async function ProjectCaseStudy({ params }: Props) {
   const project = await getProject(slug)
   if (!project) notFound()
 
+  const data = await getPublishedPortfolio()
+  const projects = data.projects.filter(p => p.kind !== 'research')
+  const index = projects.findIndex(p => p.id === slug)
+  const previous = projects[index - 1]
+  const next = projects[index + 1]
+
   const status = project.status === 'planned' ? 'Research / design' : project.status === 'completed' ? 'Completed' : 'In progress'
   const isConcept = project.mediaType === 'concept'
 
   return (
     <article className="case-study">
+      <ReadingProgress />
       <div className="case-study__shell">
+        <nav aria-label="Breadcrumb"><Link href="/">Home</Link> / <Link href="/#projects">Projects</Link> / <span aria-current="page">{project.title}</span></nav>
         <Link href="/#projects" className="case-study__back" data-no-transition><ArrowLeft aria-hidden="true" /> All projects</Link>
         <p className="case-study__eyebrow">Project note / {status}</p>
         <h1>{project.title}</h1>
@@ -48,18 +57,20 @@ export default async function ProjectCaseStudy({ params }: Props) {
 
         <div className="case-study__grid">
           <div className="case-study__body">
-            <section><p className="case-study__label">The problem</p><h2>Why this exists</h2><p>{project.problem || project.description}</p></section>
-            <section><p className="case-study__label">My contribution</p><h2>What I worked on</h2><p>{project.responsibility || 'See the repository for the current implementation and project history.'}</p></section>
-            <section><p className="case-study__label">Current evidence</p><h2>What is there today</h2><p>{project.evidence || 'The linked repository is the source of truth for the current state of this project.'}</p></section>
-            {project.nextSteps && <section><p className="case-study__label">Still to do</p><h2>Where it goes next</h2><p>{project.nextSteps}</p></section>}
+            <section id="problem"><p className="case-study__label">The problem</p><h2>Why this exists</h2><p>{project.problem || project.description}</p></section>
+            <section id="contribution"><p className="case-study__label">My contribution</p><h2>What I worked on</h2><p>{project.responsibility || 'See the repository for the current implementation and project history.'}</p></section>
+            <section id="evidence"><p className="case-study__label">Current evidence</p><h2>What is there today</h2><p>{project.evidence || 'The linked repository is the source of truth for the current state of this project.'}</p></section>
+            {project.nextSteps && <section id="next-steps"><p className="case-study__label">Still to do</p><h2>Where it goes next</h2><p>{project.nextSteps}</p></section>}
           </div>
           <aside className="case-study__aside" aria-label="Project facts">
+            <nav aria-label="Table of contents"><a href="#problem">The problem</a><a href="#contribution">My contribution</a><a href="#evidence">Current evidence</a>{project.nextSteps && <a href="#next-steps">Next steps</a>}</nav>
             <div><span>Status</span><strong>{status}</strong></div>
             {project.sourceReviewedAt && <div><span>Source reviewed</span><strong>{project.sourceReviewedAt}</strong></div>}
             <div><span>Stack and methods</span><div className="case-study__tags">{(project.technologies || project.tech || []).map((item) => <span key={item}>{item}</span>)}</div></div>
             <p>Descriptions reflect the repository state at the review date. Roadmap items are not presented as shipped features.</p>
           </aside>
         </div>
+        <nav className="case-study__links" aria-label="More projects">{previous && <Link href={'/projects/' + previous.id}>← {previous.title}</Link>}{next && <Link href={'/projects/' + next.id}>{next.title} →</Link>}</nav>
       </div>
     </article>
   )

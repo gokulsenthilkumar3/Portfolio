@@ -8,7 +8,7 @@ test('renders a specific, navigable hero', async ({ page }) => {
   await expect(page.locator('section#home')).toBeVisible()
   await expect(page.getByRole('heading', { name: /I test the seams. Then I build./i })).toBeVisible()
   await expect(page.getByText('Focused on current work')).toBeVisible()
-  await expect(page.getByRole('link', { name: /View all projects/i }).first()).toHaveAttribute('href', '#projects')
+  await expect(page.getByRole('link', { name: /Explore work/i }).first()).toHaveAttribute('href', '#projects')
 })
 
 test('primary navigation points to the sections in reading order', async ({ page }) => {
